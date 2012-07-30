@@ -1,0 +1,25 @@
+#+TITLE: Rook example using SVG circles
+
+* Server-side
+
+We have a static HTML file being served statically via Rook.
+
+Next we construct a new application ~circle~, that behaves similarly
+to the FastRWeb example. In other words, it takes a GET parameter,
+~cx~ that informs the server what the value of ~cx~ is. As before, we
+simply increment the value of ~cx~ and return it as part of a modified
+SVG document.
+
+The way this is done is that the request is given an environment to
+operate within. In other words, unless we assign to a global
+environment, everything is done on a *per request basis*. We grab all
+of the request information using a ~Request~ object, and build up a
+response using a ~Response~ object. When the ~finish~ method is called
+on a ~Response~ object we send the result back to the client.
+
+* Client-side
+
+The HTML is (for all intents and purposes) the same as the FastRWeb
+example where we just have an inline SVG document. The only slight
+difference is the location of the dynamically generated SVG circle.
+

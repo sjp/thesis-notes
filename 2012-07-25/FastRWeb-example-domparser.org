@@ -1,0 +1,40 @@
+#+TITLE: FastRWeb example structure
+
+The browser loads a page at the location
+~http://localhost/cgi-bin/Rcgi/svgtest~
+
+The page contains some SVG embedded within the HTML document, along
+with a small amount of JavaScript.
+
+The SVG circle contains an ~onclick~ handler that calls a JavaScript
+function called ~updatePos~ each time it is clicked.
+
+When ~updatePos~ is called, it sets up an AJAX request to call
+~http://localhost/cgi-bin/Rcgi/circle~. However, the request includes
+a single GET parameter, ~cx~, that is value of the ~cx~ attribute
+present in the SVG circle that has the onclick event attribute.
+
+As the AJAX request occurs, the code in circle.R is executed. What it
+does is increment the value of ~cx~ by 30 and returns an SVG document
+containing a circle element as a string. When the browser receives the
+string, it is able to parse it, and grab the first child of the SVG
+document. This is an actual SVG "node" that can be inserted into our
+inline SVG document. This circle "node" is identical to the existing
+one, barring the incremented ~cx~ value.
+
+We then swap out the old element with the new, so we have created a
+method by which new SVG elements are created using R and establishing
+communication between R and the browser.
+
+Another improvement to the code is that although the code used to
+execute each time there was a change in the readyState of the AJAX
+object, we only really cared about what happened when there was data
+received from the server, a check for whether that happens has been
+added.
+
+Note that although this approach is perhaps more idiomatic, and we're
+dealing with the correct separation and data structures, building up
+an SVG object via JavaScript appears to be *much* faster (in Chrome
+anyway). This is according to
+http://jsperf.com/svg-domparser-vs-createelement. Probably not going
+to be an issue but worth noting.

@@ -1,0 +1,63 @@
+<html>
+<head>
+    <title>SVG Test</title>
+</head>
+<body>
+    <div id="wsdi_status"> Connection not initialized </div>
+    <hr>
+    <svg height="300" width="300">
+        <g id="wrapper">
+            <circle id="svgcirc" cx="50" cy="50" r="50" fill="red" onclick="updatePos();" />
+        </g>
+    </svg>
+    <hr>
+    <div id="istat"></div>
+    <br>
+    <div id="output"></div>
+    <script type="text/javascript">
+    // The following is just a convenience function for use within a JS environment
+    String.prototype.startsWith = function(str) {
+        return (this.indexOf(str) === 0);
+    }
+    
+    var socket;
+    try {
+        socket = new WebSocket("ws://" + window.location.host, "svgdemo");
+      
+        socket.onopen = function() {
+            document.getElementById("wsdi_status").textContent = " websocket connection opened ";
+            document.getElementById("wsdi_status").style.backgroundColor = "#40ff40";
+        } 
+      
+        socket.onmessage = function got_packet(msg) {
+            if (msg.data.startsWith("Connection")) {
+                document.getElementById("istat").textContent = msg.data;
+            } else {
+                console.log(msg.data);
+                var wrapper = document.getElementById("wrapper");
+                var mycirc = document.getElementById("svgcirc");
+                mycirc.parentNode.removeChild(mycirc);
+                var newdoc = new DOMParser().parseFromString(msg.data, "image/svg+xml");
+                // document.documentElement is the *root* element of the doc
+                // we need to import the first child of that doc into our doc
+                var newnode = document.importNode(newdoc.documentElement.firstChild, true);
+                wrapper.appendChild(newnode);
+            }
+        } 
+      
+        socket.onclose = function(){
+            document.getElementById("wsdi_status").textContent = " websocket connection CLOSED ";
+            document.getElementById("wsdi_status").style.backgroundColor = "#ff4040";
+        }
+    } catch(ex) {
+        document.getElementById("output").textContent = "Error: " + ex;
+    }
+    
+    function updatePos() {
+        var mycirc = document.getElementById("svgcirc");
+        var cx = mycirc.getAttribute("cx");
+        socket.send(cx);
+    }
+    </script>
+</body>
+</html>

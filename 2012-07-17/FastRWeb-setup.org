@@ -1,0 +1,38 @@
+#+TITLE: How to set up FastRWeb
+
++ Install [[http://www.rforge.net/Rserve/files/][Rserve]] *from source as root*. This means that we can start
+  Rserve by running ~R CMD Rserve~.
+
+  The reason why we install as root means that we can run Rserve as
+  any user, not just root. In this instance something like ~www-data~
+  might be adequate user to use to run Rserve.
+
++ Install [[http://www.rforge.net/FastRWeb/files/][FastRWeb]], again *as root*.
+
++ If Apache is not present, install it.
+
+  If a ~cgi-bin~ directory has not been configured to handle CGI,
+  this must be done (though by default, at least on Debian it is the
+  case).
+
++ Copy the ~Rcgi~ file from the installed ~FastRWeb~ directory and
+  paste it into Apache's ~cgi-bin~ directory.
+
++ There is an ~install.sh~ script present in the ~FastRWeb~
+  directory, that installs all of the content needed to serve
+  ~FastRWeb~ at ~/var/FastRWeb~.
+
+  Correct permissions should be assigned to this folder so that
+  nothing nasty may happen to the system or the ~FastRWeb~
+  directories. Again, the ~www-data~ user is probably the most
+  appropriate one, seeing as it basically does the same thing when
+  serving PHP/Python/Perl/whatever.
+
++ Make sure ~Rserve~ is running (check via ~ps aux | grep Rserve~),
+  and start Apache if it is not running (~service apache2 start~, as
+  root).
+
++ Check that installation was successful by visiting
+  http://localhost/cgi-bin/Rcgi/
+
++ Modify the code in the ~/var/FastRWeb/web.R/~ directory to suit.

@@ -1,0 +1,511 @@
+#+TITLE: Notes
+
+* What currently exists
+
+** RFirefox
+
+   + URL :: https://github.com/gmbecker/RFirefox
+   + Authors :: Gabriel Becker [[mailto:gmbecker@ucdavis.edu][gmbecker@ucdavis.edu]],
+		Duncan Temple Lang [[mailto:duncan@wald.ucdavis.edu][duncan@wald.ucdavis.edu]]
+   + Status :: Active. Project appears to be active with commits
+               published within the last month (despite apparently
+               being removed from Omegahat).
+   + Category :: Client-side plugin
+
+   No binaries available, must build the plugin yourself. Windows
+   support not known, but Mac and Linux support appears to be present.
+
+   Installation requires installing two packages from Omegahat,
+   [[http://www.omegahat.org/RGraphicsDevice/][RAutoGenRunTime]] and [[http://www.omegahat.org/RGraphicsDevice/][RGraphicsDevice]].
+
+   Attempts to be a bridge between R and JavaScript, embedding R
+   within the browser.
+
+   Instead of running code in a browser using code like so:
+
+   : <script type="text/javascript">...</script>
+
+   A different MIME type is used to show that the R interpreter should be used instead:
+
+   : <script type="text/R">...</script>
+
+   Offloads graphics to the Raphael library using a ~raphaelDev~ device.
+
+   I had issues running the example code, the examples didn't seem to
+   work when running them over a local HTTP server (i.e. via ~python
+   -m SimpleHTTPServer~). Seemed to only work on some examples, and
+   only then on ~file://~ URIs.
+
+   Graphics worked but nothing else, often this was because Firefox complained of the following error:
+
+   : Error: A script from "file://" was denied UniversalXPConnect privileges.
+
+   Looks to still need work or perhaps contacting the developers is
+   necessary. The error message that I received regarding privileges
+   points towards using an extension to perform the task, rather than
+   a browser plugin. Something to do with a browser plugin being able
+   to modify browser content or vice-versa.  Either way, the RFirefox
+   project appears to (currently) lack the desired functionality.
+
+** SNetscape
+
+   Dead project, no surprise seeing as Netscape is dead too...
+
+   Looks to have been superceded by *RFirefox*.
+
+** SSOAP
+
+   + URL :: http://www.omegahat.org/SSOAP/ https://github.com/omegahat/SSOAP
+   + Author :: Duncan Temple Lang [[mailto:duncan@wald.ucdavis.edu][duncan@wald.ucdavis.edu]]
+   + Status :: Active (last update 12 Jan 2012)
+   + Category :: API consumer
+
+   When given a WSDL file describing API of a web service, SSOAP
+   creates all of the functions necessary to call such an API. In
+   other words, given an existing web service, SSOAP allows you to
+   call such a web service with little effort.
+
+   This will not help us particularly because at the moment we're
+   concerned with R and how it communicates to the browser. SSOAP just
+   communicates between R and a server, no browser involved as R is
+   just a client.
+
+   However, this may be useful when constructing browser applications
+   and simply giving a WSDL file for R to consume. This is because we
+   may want to provide a data source to a JavaScript application that
+   conveniently defines its API in terms of a WSDL file.
+
+** Rserve
+
+   + URL :: http://www.rforge.net/Rserve/
+   + Author :: Simon Urbanek [[mailto:simon.urbanek@r-project.org][simon.urbanek@r-project.org]]
+   + Status :: Active (commits in June 2012)
+   + Category :: Protocol Server (via TCP)
+
+   Runs R as a daemon that binds to a TCP socket (port 6311). This
+   socket can then be connected to by clients. Unfortunately
+   JavaScript itself does not have any way of connecting to these
+   sockets, thus our web browser would have to speak to something else
+   first.
+
+   A way in which Rserve could speak to the browser would be to build
+   a web application in Python/PHP/whatever that can use sockets to
+   speak to Rserve. This has the advantage of being able to run R, the
+   web application, and the web browser on entirely different
+   machines.
+
+   Unfortunately because the extra layer is required, we need to build
+   the web application ourself. However, because it creates a
+   persistent session to interact with, it seems like it would be a
+   good fit for our needs. We would need to be careful not to break
+   the session however.
+
+** RNetWeb
+
+   + URL :: https://www.msbi.nl/dnn/Research/SurvivalAnalysis/RNetWeb/tabid/142/Default.aspx
+   + Author :: H. J. van der Wijk [[mailto:H.J.van_der_Wijk@lumc.nl][H.J.van_der_Wijk@lumc.nl]]
+   + Status :: Unknown, but an new analysis was put up on the demo page 5th July 2012
+   + Category :: Protocol Server (via (D)COM)
+   + Examples :: https://www.msbi.nl/SV/Chart.aspx?model=Survival+model+Salivary+Gland+Malignancies
+
+   Based on R, according to the website: "The web application uses
+   R-(D)COM / statconnDCOM to run R and execute commands in
+   R.". [[http://sunsite.univie.ac.at/rcom/download.html#statconnDCOM][statconnDCOM]] supports at least R 2.12, so that indicates that
+   the software has been updated no earlier than Oct 2010. The
+   installer for statconn's RAndFriends software was updated on 23rd
+   June 2012, so perhaps it has been somewhat recently.
+
+   Unfortunately (D)COM is only available for Windows, so I cannot
+   test this out on Linux. Also the free statconn software has a
+   non-commercial licence, potentially limiting its
+   application. Moreover, COM is deprecated in favour of a .NET-based
+   replacement.
+
+** Rpad
+
+   + URL :: http://code.google.com/p/rpad/
+   + Author :: Tom Short [[mailto:tshort@epri.com][tshort@epri.com]], Philippe Grosjean
+   + Status :: Dead (last update early 2007)
+   + Category :: Application Server
+
+   Rpad runs off either an Apache webserver or R's built-in
+   webserver. The default is to run off of the built-in webserver.
+
+   After looking at the package's examples, some of the demos are
+   broken, errors and warnings are encountered in the
+   console. However, for some of the more basic examples, Rpad appears
+   to adequately perform the task we want it to do.
+
+   Unfortunately some of the warnings encountered are due to upcoming
+   changes in R that deprecate certain behaviour. As a result, the
+   package would have to be updated (unlikely by the authors,
+   considering it has been 5 years since that last occurred) and
+   requires learning the source code of the Rpad package itself.
+
+** rApache
+
+   + URL :: http://rapache.net/, https://github.com/jeffreyhorner/rapache
+   + Author :: Jeffrey Horner [[mailto:jeff.horner@vanderbilt.edu][jeff.horner@vanderbilt.edu]]
+   + Status :: Active (Last commit June 2012)
+   + Category :: R integrated with the server
+
+   rApache is a module that allows processing of R code via HTTP using
+   the popular Apache webserver. Apache calls R directly, but each
+   request executes R code within a *new session*, i.e. R's state is
+   *not maintained* between requests.
+
+   Scripts can be executed when requested on the webserver as common R
+   scripts.
+
+   Examples show that it can be used with the [[http://cran.r-project.org/package=brew][brew]] package so that R
+   code can be executed within templates. This approach is similar to
+   how Sweave and knitr work, except that usually these packages only
+   produce PDF documents.
+
+   However, because [[https://github.com/yihui/knitr][knitr]] can process HTML documents, it should be
+   possible to use that to process ~Rhtml~ files using rApache to
+   produce the appropriate output.
+
+   Uses different Apache config directives to determine how to process
+   R code.
+
+   + r-handler :: Calls an R function *without* arguments.
+   + r-info :: Equivalent to PHP's ~phpinfo~, generates output
+	       detailing the execution environment.
+   + r-script :: Calls an R function with *two* arguments, one being
+                 the file to execute, the second being the environment
+                 that the code is to be executed within.
+
+   There are typically two ways to execute code, via ~RHandler~ or
+   ~RFileHandler~. The former will execute a function, the latter will
+   process a file and optionally a function within that file.
+
+   rApache can also set HTTP headers that may be useful, e.g. MIME
+   types, cookies.
+
+   When receiving requests with GET parameters, the ~GET~ variable is
+   created. This is a named list which is pretty much a key-value
+   pairing. POSTs behave similarly.
+
+** OpenCPU
+
+   + URL :: http://www.opencpu.org, https://github.com/jeroenooms/opencpu
+   + Author :: Jeroen Ooms [[mailto:jeroen.ooms@stat.ucla.edu][jeroen.ooms@stat.ucla.edu]]
+   + Status :: Active (Updated constantly)
+   + Category :: Application Framework
+
+   OpenCPU appears to have implemented a very nice web application
+   framework. It allows you to retrieve plots in PDF, SVG, PNG,
+   etc. *Note: gridSVG* is installed on the OpenCPU server (example:
+   see the list of exported objects from the gridSVG package,
+   http://public.opencpu.org/R/pub/gridSVG).
+
+   However, because it leverages rApache, it causes a new session per
+   request. If we're trying to modify the state of the display list,
+   this may not be the correct approach.
+
+   Essentially OpenCPU exposes a REST API to be able to call
+   R. Because it can output to JSON, we can read the output natively
+   in the browser without much effort. If gridSVG can print out its
+   output, we could serve that as JSON to the browser or perhaps
+   simply as XML if it is possible to do so.
+
+   Due to speed however, it may not be feasible to do so.
+
+** Rcgi
+
+   + URL :: http://www.ms.uky.edu/~statweb/
+   + Author :: Mai Zhou [[mai@ms.uky.edu][mai@ms.uky.edu]]
+   + Status :: Dead
+   + Category :: CGI web application server
+
+   Doesn't appear to work and the last update to the website was 8
+   years ago.
+
+** Rweb
+
+   + URL :: http://www.math.montana.edu/Rweb/
+   + Author :: Jeff Banfield [[mailto:banfield@math.montana.edu][banfield@math.montana.edu]]
+   + Status :: Dead, none of the project web pages are accessible
+   + Category :: CGI web application server
+   + Examples :: http://pbil.univ-lyon1.fr/Rweb/
+
+   Appears to make calls to the server via CGI, but little more is
+   known about how to build applications using Rweb besides this.
+
+   Apparently uses Perl to manage CGI calls and each request starts a
+   new interpreter. Not ideal as the state of the display list needs
+   to be maintained. Can be worked around via ~save~ and ~load~ but as
+   stated before, not ideal.
+
+** Rook
+
+   + URL :: https://github.com/jeffreyhorner/Rook
+   + Author :: Jeffrey Horner [[mailto:jeff.horner@vanderbilt.edu][jeff.horner@vanderbilt.edu]]
+   + Status :: Active, commits within the past couple of weeks
+   + Category :: Application Server
+
+   Using R's built-in webserver, or rApache, Rook is a framework for
+   building web applications using R.
+
+   Means we simply create the web application (just as we would with
+   something that spoke to Rserve or svSocket) and do not need to
+   worry about communication to the R process via TCP as there is no
+   communication necessary. The application is just run from R, or
+   mod_R, not R as a separate daemon.
+
+   The web application is written in *R* (unlike many Rserve clients)
+   and thus is at least familiar to most statisticians.
+
+** FastRWeb
+
+   + URL :: http://www.rforge.net/FastRWeb/
+   + Author :: Simon Urbanek [[mailto:urbanek@research.att.com][urbanek@research.att.com]]
+   + Status :: Active (release in 2012)
+   + Category :: Application Server
+
+   Builds a web framework upon R, using *Rserve* to persist a session
+   to respond to web requests. Uses a simple means of calling
+   functions, all GET/POST parameters are simply passed into R
+   functions. The functions are determined by the URL that is
+   called. For example http://server/tmp?first=hello&second=world
+   would call the ~run~ function within the ~tmp.R~ file and the rest
+   of the query string can be passed in as ~...~. So the evaluated
+   function call would be something like ~run(first = "hello", second
+   = "world")~.
+
+   Requires a little bit of prior configuration regarding file
+   permissions, dropping in an Rcgi executable for Apache, and
+   configuring utility scripts. Most of this is reasonably
+   straightforward.
+
+   Building applications in this manner appears to be quite simple,
+   just using AJAX to pull in responses and evaluate them.
+
+   + Example :: [[http://localhost/cgi-bin/Rcgi/svgtest][http://localhost/cgi-bin/Rcgi/svgtest]]
+
+** RStudio Server
+
+   + URL :: http://rstudio.org/, [[https://github.com/rstudio/rstudio][https://github.com/rstudio/rstudio]]
+   + Author :: Josh Paulson, Joe Cheng, JJ Allaire
+   + Status :: Active
+   + Category :: Application Server
+
+   Installs a webserver and an application server. Instead of using
+   RStudio as a GUI, the browser *is* the GUI. To start off, when
+   running the server you need to browse to http://0.0.0.0:8787/ in
+   order to log in. The login prompt is simply your user account on
+   the system (i.e. for me it is simply ~simon~).
+
+   After logging in, you are presented with a typical RStudio GUI that
+   happens to be running in the browser. This clearly presents that
+   there is some method of bidirectional communication going on
+   between the browser and R (or at least RStudio Server).
+
+   From the looks of the source code, it seems that there is JSON
+   being communicated to the browser. However, the means by which this
+   should occur (if we were to try to receive the JSON) is not
+   obvious. Without an authenticated session, one would assume that R
+   commands cannot be run, complicating the use of RStudio as a server
+   because it would require logging into their web application to even
+   make use of this.
+
+   Without any obvious API, it seems like it would be too much effort
+   using the RStudio Server to do the heavy lifting for the work we
+   want to do.
+
+** R-Node
+
+   + URL :: http://squirelove.net/r-node/doku.php
+   + Author :: Jamie Love [[mailto:jamie@nsquaredsoftware.com][jamie@nsquaredsoftware.com]]
+   + Status :: Alive (According to http://gitorious.org/r-node, most
+               recent commit was July 24 2011)
+   + Category :: Application Server
+
+   R-Node is the glue that sits between R and the web browser. It
+   speaks to R via *Rserve*, while the browser speaks to the node.js
+   server hosting the application.
+
+   As R-Node is essentially an application for node.js, we can write
+   our application for the browser in the same language that we use
+   within the browser, JavaScript.
+
+** websockets
+
+   + URL :: http://illposed.net/websockets.html
+   + Author :: Bryan Lewis [[mailto:blewis@illposed.net][blewis@illposed.net]]
+   + Status :: Alive (Last commit with the last week)
+   + Category :: Protocol Server (via WebSockets)
+
+   Websockets are a new way of getting web browsers to communicate
+   with servers. Usually when a request for data is made, it is done
+   over HTTP. HTTP is stateless and the connection to the server is
+   closed once the transfer of data is complete. Due to the
+   statelessness of HTTP, we cannot tell the browser when an event has
+   occurred without polling a server repeatedly. WS obviates the need
+   for polling and allows us to be able to get R to push data to the
+   browser, rather than the browser repeatedly asking for it.
+
+   We can (as of the past week) instantiate a websockets daemon that
+   serves requests to a web browser. When setting up the WS server, we
+   simply provide 3 functions to execute at different stages of the
+   connection.
+
+   + Established :: Execute a function to run whenever we instantiate
+                    a WS connection. Could be used similar to a
+                    constructor function.
+   + Closed :: Execute a function when the connection is closed. Could
+               be used similar to a destructor function.
+   + Receive :: Execute a function whenever the socket receives
+                information. This is what we are probably going to be
+                using most of the time for data transport.
+
+   In the browser we construct similar handlers:
+
+   + ~onopen~
+   + ~onclose~
+   + ~onmessage~ (receiving from the server)
+   + ~send~ (sending to the server)
+
+   In other words, you send data to the server using the WS ~send~
+   method, and receive information from the server using
+   ~onmessage~. By using both of these we can see how bi-directional
+   information can be transmitted. Note also that this is
+   asynchronous, and that it is not required that a call to ~send~
+   will cause an ~onmessage~ event to be triggered. It is also not the
+   case that an ~onmessage~ event is fired after a call to
+   ~send~. Examples of this might be sending logging information to
+   the server (~send~ but no ~onmessage~) and getting the current
+   server time from the WS server every minute (~onmessage~ but no
+   ~send~).
+
+   Complex information is probably most easily sent via JSON, so the
+   ~RJSONIO~ package comes in handy for this. The reason why is
+   because the socket can only be given a single argument, ~data~. We
+   need to encapsulate the data in a single object, and JSON is a
+   natural way of doing this. XML is an alternative, but it is more
+   complex doing this in the browser than by JSON.
+
+   The ~websockets~ package also provides the ability to serve via
+   HTTP, just like ~Rook~, ~FastRWeb~, etc. Essentially there is a
+   simple function that determines what to do based on the HTTP
+   parameters it is given. So it can inspect the requested URL and the
+   given GET/POST parameters and react accordingly. This is a *simple*
+   method of serving pages over HTTP, and could be useful for
+   complementing a WS service. Perhaps a combination of WS + AJAX
+   would be apt?
+
+   Some of the difficulty in implementing WS may be in implementing a
+   parser for SVG elements. This would be able to turn SVG nodes into
+   equivalent JSON objects. This may be possible already with the
+   ~JSON.stringify~ function. However, if the state is present on the
+   server, we may not need to inform the server what the state is
+   anyway.
+
+** svSocket (SciViews)
+
+   + URL :: http://www.sciviews.org/SciViews-R/
+            [[http://cran.r-project.org/package=svSocket][http://cran.r-project.org/package=svSocket]]
+   + Author :: Philippe Grosjean [[mailto:phgrosjean@sciviews.org][phgrosjean@sciviews.org]]
+   + Status :: Last updated on CRAN on 29th March
+   + Category :: Protcol Server (via TCP)
+
+   Much like *Rserve*, svSocket aims to run a persistent R session
+   that runs as a service that can be connected to via typical TCP
+   sockets. The socket management is done via Tcl, which R usually has
+   support for.
+
+   Because socket management is done in Tcl and not R, it is
+   non-blocking. This means that R is still usable while several
+   requests are being served.
+
+   Seems to work fine as a server, based on its examples from
+   ~evalServer~ but we don't have a means of communicating with the
+   browser as the browser speaks HTTP, not TCP. Potential backend for
+   an application server.
+
+* JavaScript libraries
+
+** d3
+
+   [[http://d3js.org/][d3]] is a library that aims to do some things similar to ggplot2,
+   i.e. mapping data to aesthetics. But in general it is simply a nice
+   way of creating and interacting with SVG graphics in the
+   browser. Of note is that it is quite performant, due to some
+   implementation tricks i.e. using CSS transforms and rasterising SVG
+   instead of just plain SVG with styling.
+
+   Perhaps if we can offload rendering to d3 we may end up with a
+   cleaner implementation, or a faster implementation. Though care
+   would have to be taken to ensure adequate output.
+
+** jQuery
+
+   [[http://jquery.com/][jQuery]] is a JavaScript library that is very popular, performant,
+   cross-platform, reliable, etc.
+
+   Its strengths lie in its clean DOM manipulation interface. Because
+   much of what we aim to do is DOM manipulation, this would be an
+   ideal library for our uses. jQuery also has AJAX functions that
+   might avoid or work around any bugs that we might run into in this
+   area.
+
+   Another nice feature of jQuery is that it is extensible, so many
+   people have created plugins that allow jQuery to do more than the
+   base "toolbox" allows. A particular plugin of note is [[http://keith-wood.name/svg.html][jQuery SVG]]
+   which aims to ease SVG manipulation in HTML documents using
+   jQuery. It does this by providing constructor and helper functions
+   for common SVG element manipulation. One thing that might be quite
+   useful in particular is the ~svg.toSVG~ function.
+
+** Backbone
+
+   [[http://backbonejs.org/][Backbone]] is a "light" JavaScript MVC framework (i.e. small specific
+   tools and isn't opinionated about its behaviour and use). If we're
+   going to be building JavaScript applications, separations of
+   concerns into Models and Views (with R as the "Controller") seems
+   like it would save us a lot of hassle.
+
+   An example of this interacting with SVG is available at
+   https://github.com/addywaddy/Backbone-SVG-Demo
+
+** Underscore
+
+   [[http://underscorejs.org/][Underscore]] is a set of utlity JavaScript functions, many of which
+   aim to behave are similar to R functions. This is because many act
+   upon arrays rather than scalar values. The website says it goes
+   well with jQuery and Backbone.
+
+   An example of things it might be useful for are ~min~, ~max~,
+   ~filter~, ~all~, ~any~, etc.
+
+* Notes
+
+  + Duncan Temple Lang is on GitHub with a whole bunch of useful
+    projects:
+
+    https://github.com/duncantl
+
+    Of particular interest, the ~XML~ package and ~RJSONIO~. Both of which
+    would be excellent message formats for the browser to communicate
+    with a server. ~XML~ seems ideal because it is "native" to
+    SVG. However, ~RJSONIO~ sends ~JSON~ which is native to JavaScript, so
+    it may also be useful.
+
+  + [[https://github.com/hadley/r2d3][r2d3]] is a new package by Hadley that aims to be a bridge between
+    ~ggplot2~ and d3 in the browser. We may be able to piggyback off
+    his work if it works out nicely and still looks enough like R
+    graphics (unlike ~googleVis~).
+
+* COMMENT
+    - document them all
+        - short description
+        - feature list
+        - categorisation (client/server, ...)
+        - state (active, dead, developing)
+        - who is involved
+        - pros and cons
+
+    - implement a simple example
+        - a single SVG circle that on-click is modified BY R
+          (e.g., R selects a new random location for the circle)

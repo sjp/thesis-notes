@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head><title>SVG Test</title></head>
+<body>
+<svg height="300" width="300">
+<g id="wrapper"><circle id="svgcirc" cx="50" cy="50" r="50" fill="red" onclick="updatePos();" /></g>
+</svg>
+<script type="text/javascript">
+  var updatePos = function() {
+      var el = document.getElementById("svgcirc");
+      var g = document.getElementById("wrapper");
+      if (window.XMLHttpRequest) {
+          var insertCircle = function() {
+              // Only execute the rest of the function when we have
+              // received data from the server, not any intermediary states
+              if (xhr.readyState !== 4)
+                  return;
+              var dp = new DOMParser();
+              var newdoc = dp.parseFromString(xhr.responseText, "image/svg+xml");
+              var newnode = document.importNode(newdoc.documentElement.firstChild, true);
+              g.removeChild(el);
+              g.appendChild(newnode);
+          };
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = insertCircle;
+          xhr.open('GET', "/custom/circle?cx=" + el.getAttribute("cx"));
+          xhr.send();
+      }
+  };
+</script>
+</body>
+</html>

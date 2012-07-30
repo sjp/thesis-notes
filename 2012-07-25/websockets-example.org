@@ -1,0 +1,51 @@
+#+TITLE: Websockets example using SVG circles
+
+* Server-side
+
+The R code that instantiates the ~websockets~ server first does a
+couple of things.
+
+1. It determines which port the WS service is going to bind to.
+2. It also determines which HTML page to serve when the browser loads
+   the URL at the given port, acting as a basic HTTP daemon.
+
+After the server object has been created, the callback functions are
+created. The only one of particular interest is that of the *receive*
+callback. At the moment, the function that has been created is sent
+information on the current ~cx~ value that the circle has, and
+constructs a new SVG document. This SVG document contains a single
+element (besides the root element), which is a new ~circle~ element,
+identical to the one currently in the browser, with an incremented
+~cx~ value.
+
+Once the SVG document has been created, it is then served back to the
+browser to be parsed and inserted into the document.
+
+After all of the callback functions have been created, the last thing
+to do is to open up the server to requests. This is done by using the
+new ~daemonize~ function. This function services incoming requests in
+the background, returning control back to the user, unlike the
+previous method which required running an infinite loop on
+~service(w)~, locking up the REPL.
+
+* Client-side
+
+The HTML is (for all intents and purposes) the same as the FastRWeb
+example where we just have an inline SVG document. Again, we have an
+~onclick~ handler for our circles that call a JavaScript function that
+does all the heavy-lifting.
+
+Much like the WS server, in JavaScript we have to construct a few
+handlers to respond to each Websocket event. Opening, closing, errors,
+etc. However, in our example we want handlers to *send* a message over
+WS, and also to *receive* a message back.
+
+In my example I have my ~onclick~ handler sending the value of the
+~cx~ attribute over WS via ~socket.send~. When the server processes
+this information and sends it back, we handle this via the ~onmessage~
+function. This function simply parses the resulting SVG document using
+~DOMParser~, just like our FastRWeb example, and swaps out the
+existing SVG circle with a new one. This appears to the user (barring
+any latency) to have the same effect as the FastRWeb example, despite
+using a different transport protocol, WS instead of HTTP.
+
