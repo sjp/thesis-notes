@@ -1,0 +1,216 @@
+
+2012-07-31
+----------
+
+IDEA:
+
+  + modify 'gridSVG' to auto-insert a javascript function, say convert(), 
+    into SVG output (plus an array of constants) that effectively 
+    records the coordinate system conversions for every 'grid'
+    viewport.  Then you can easily write javascript code to 
+    do things like add a new shape at a location within a viewport
+    (SVG <g>) that are positioned relative to the "native" coordinate
+    system of the original 'grid' viewport (e.g., draw stuff relative
+    to plot axis scales)
+
+
+2012-07-25
+----------
+
+THE BIG EXAMPLE:
+
+  + A web page containing a scatterplot (SVG) and a slider.
+
+    The slider controls the "smoothness" of a smoother 
+    through the data on the scatterplot.
+
+    The smoother (line in the scatterplot) is updated
+    by the web browser talking to R and getting new 
+    information to describe the smoother and then
+    the SVG scatterplot is modified in place.
+
+    NOT generating an entire new scatterplot from R.
+
+    NOT producing an initial plot with all possible 
+    smoothers and then showing/hiding the appropriate ones.
+
+
+TODO:
+
+  + Add note about RStatServer (RSOAP, RSessionDA, R-Zope?)
+
+    All Greg Warnes stuff that appears abandoned?
+
+    http://research.warnes.net/statcomp/projects/RStatServer/   
+
+  + Set up git repos for working with Paul
+
+  + Investigate some more R-web tech (Rook and R-Node and websockets)
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+  + Document the example code (and ALL example code from now on!)
+
+  + Explore javascript libraries for manipulating SVG/DOM?
+
+
+PAUL TODO:
+
+  + READ Simon's notes
+
+  + Email Jay Emerson
+
+
+DONE:
+
+  + Overview of ways to set up R as web back-end
+
+    See 2012-07-25/notes-2012-07-17.txt (Org-mode doc)
+
+
+2012-07-17
+----------
+
+PAUL DONE:
+
+  + Check timings and deadlines with Arden for Master Thesis
+
+    Simon is officially part-time, so has until Sem 2 2013 to finish!
+
+
+TODO:
+
+  + Overview of ways to set up R as web back-end
+
+    RFirefox
+    SNetscape
+    Rserve
+    RSOAP
+    R.NET.Web
+    Rpad
+    RApache
+    Rcgi
+    Rook
+    FastRWeb
+    RStudio
+    webSockets
+    ...
+
+    - find them all 
+        - Google
+        - R-forge
+        - R-help
+        - http://www.sciviews.org/_rgui/
+        - GSoC
+
+    - document them all
+        - short description
+        - feature list
+        - categorisation (client/server, ...)
+        - state (active, dead, developing)
+        - who is involved
+        - pros and cons
+
+    - implement a simple example
+        - a single SVG circle that on-click is modified BY R
+          (e.g., R selects a new random location for the circle)
+
+
+IDEAS:
+
+  + Another reason to "flatten" the grid display list
+    (flattening would take gTrees and replace them with
+     their children [being careful to store all relevant 
+     info for correctly drawing the children in the children])
+
+    Could then have a combination of viewports and grobs where
+    you could draw more "efficiently" by creating each viewport
+    and then drawing ALL grobs in that viewport
+    (no need to get going back into and out of the same viewport)
+    => things like clipping become easier
+    (have a clean tree structure)
+
+
+2012-06-22
+----------
+
++ Masters degree Guidelines
+
+  http://www.auckland.ac.nz/webdav/site/central/shared/for/current-students/postgraduate-students/documents/publications/masters-handbook.pdf
+
++ Main idea is system for creating dynamic interactive plots
+
++ Probably based on gridSVG, but with R as live back-end to update
+  SVG on-the-fly
+
++ Competing projects are the usual suspects 
+  (protovis, Google Viz API, ...)
+
+  PLUS Duncan Temple-Lang's
+  - SVGAnnotation
+  - R embedded in Firefox
+
+  PLUS Simon Urbanek's projects
+  - FastRWeb (and R graphics)
+  - WebGL and WS+Rserve
+
++ Also see some of the discussion on GSOC 2012 about interactive web 
+  graphics.
+
+  Matt Shotwell has some good ideas about a "grammar" or "language"
+  for expressing interactive graphics
+
++ Awwation for animated zooming presentation slides
+
+  http://adityabhatt.wordpress.com/2012/04/06/writing-a-prezi-clone-with-html5-svg-and-javascript/
+
+  Useful comments on SVG vs Canvas 
+
+  Nice example demo linked at the bottom.
+
++ Sasha Goodman wants to combine 'gridSVG' and D3 
+
+  http://vis.stanford.edu/papers/d3
+
+  See email discussion in 'gridSVG' folder (2012-04)
+
+
+Simon's BIG IDEA:
+
+  + Keep R in the picture.
+
+    Rather than ...
+
+    R -> SVG -> Browser
+
+    ... do something like ...
+
+    R <-> (SVG <->) browser
+
+  + Applications:
+
+    - VIT done better (Chris Wild's stuff)
+
+    - Plot "templates" that you can choose the data for
+
+    - Dynamic reporting
+
+  
+INFO:
+
+  + Masters (following BSc honours)
+ 
+  + 6 paper project (instead of 2)
+
+    => 90 points
+
+    => "Thesis"
+
+  + 2 papers already done
+
+
+PAUL TODO:
+
+  + Check timings and deadlines with Arden for Master Thesis
+
