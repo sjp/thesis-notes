@@ -14,6 +14,88 @@ IDEA:
     to plot axis scales)
 
 
+TODO:
+
+  + Reorganize git repo
+
+    - instead of 2012-07-25/2012-07-25.org 
+      have litreview.org (at top level)
+
+    - instead of 2012-07-25/Rook/ etc
+      have Examples/Rook/
+
+  + Can you use D3 to muck about with existing SVG?
+    Can it be used as an "SVG accelerator" to render faster?
+
+  + Push the three candidate R-as-web-server options (glossary!)
+    a bit harder by trying to implement a more complex example
+    (see "BIG EXAMPLE" below)
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+PAUL TODO:
+
+  + Read Simon's notes
+
+
+DONE:
+
+  + Investigate some more R-web tech (Rook and R-Node and websockets)
+
+    Executive summary:
+
+    - Three possible candidates so far:  FastRWeb, Rook, and websockets
+
+  + Add note about RStatServer (RSOAP, RSessionDA, R-Zope?)
+
+    All Greg Warnes stuff that appears abandoned?
+
+    http://research.warnes.net/statcomp/projects/RStatServer/   
+
+  + Set up git repos for working with Paul
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+  + Document the example code (and ALL example code from now on!)
+
+    See 2012-07-25/*/ and 2012-07-25/*.org
+    (e.g., 2012-07-25/Rook/ and 2012-07-25/Rook-example.org)
+
+  + Explore javascript libraries for manipulating SVG/DOM?
+
+
+FOR NOTING:
+
+  + "timely portfolio" blog has stuff on combining R and D3 via
+    'websockets'
+    
+    http://timelyportfolio.blogspot.co.nz/2012/07/hi-r-and-axys-im-d3js-nice-to-meet-you.html
+
+    Looks like all *drawing* done in D3, just use R for data analysis
+
+  + Hadley Wickham is also looking at D3+R
+
+    New r2d3 project on github
+
+    - first impressions are that this is converting ggplot2 R objects
+      to JSON arrays (of arrays) so far
+      Presumably, the next step is to write D3 code to render the
+      JSON arrays (?)
+      
+    The D3-js Google group has a thread "correct way to display
+    lat/lon data onto a D3.geo projection with fluid 'width' and
+    'height'" started by Hadley
+
+    https://groups.google.com/group/d3-js/tree/browse_frm/month/2012-07/09f754d891cdbcfd?rnum=121&_done=%2Fgroup%2Fd3-js%2Fbrowse_frm%2Fmonth%2F2012-07%3F
+
+    Also some stuff in interview Hadly gave to MetaMarkets
+
+    http://metamarkets.com/2012/data-scientist-profile-hadley-wickham/
+
+
 2012-07-25
 ----------
 
