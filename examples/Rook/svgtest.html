@@ -14,8 +14,9 @@
               // received data from the server, not any intermediary states
               if (xhr.readyState !== 4)
                   return;
-              var dp = new DOMParser();
-              var newdoc = dp.parseFromString(xhr.responseText, "image/svg+xml");
+              // Because the response is text/xml, we can use responseXML to parse
+              // automatically for us
+              var newdoc = xhr.responseXML;
               var newnode = document.importNode(newdoc.documentElement.firstChild, true);
               g.removeChild(el);
               g.appendChild(newnode);

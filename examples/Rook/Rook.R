@@ -18,6 +18,7 @@ ws$add(name = "circle",
                              cx + 30,
                              '" cy="50" r="50" id="svgcirc" fill="red" onclick="updatePos();" />',
                              '</svg>')
+           res$header("Content-Type", "text/xml")
            res$write(svg.doc)
            res$finish()
        })
