@@ -426,6 +426,17 @@
 
 * JavaScript libraries
 
+** Overview
+
+   There have recently been overviews of the currently available MVC
+   libraries/frameworks for JavaScript.
+
+   http://blog.stevensanderson.com/2012/08/01/rich-javascript-applications-the-seven-frameworks-throne-of-js-2012/
+   http://coding.smashingmagazine.com/2012/07/27/journey-through-the-javascript-mvc-jungle/
+
+   From the looks of it, perhaps Backbone and Angular.js are prime
+   candidates if the need arises for us to use MVC frameworks.
+
 ** d3
 
    [[http://d3js.org/][d3]] is a library that aims to do some things similar to ggplot2,
@@ -438,6 +449,32 @@
    Perhaps if we can offload rendering to d3 we may end up with a
    cleaner implementation, or a faster implementation. Though care
    would have to be taken to ensure adequate output.
+
+   We can import SVG documents using ~d3.xml~ or ~d3.json~:
+
+   http://bl.ocks.org/1014829
+
+   We can also use an SVG node as a basis for selection. What is handy
+   is being able to pass in the object itself to a function to be
+   modified. If we're using ~addEventListener~ this is pretty
+   straightforward, but when using inline ~onclick~ handlers, not so
+   much. We need to set the event attributes to ~return fn(this)~, as
+   opposed to ~fn()~. This means that the function gets the node
+   object itself, rather than ~window~ (which isn't particularly useful).
+
+   What appears to be case however, is that when using usual d3
+   selectors, we cannot select SVG elements. In other words, in my
+   example, we cannot do something like
+   ~d3.select("#geom_point.points.2")~ and are instead forced to grab
+   the node first using ~document.getElementById~.
+
+   I've created a demo to show that d3 can work with gridSVG output in
+   ~/examples/d3/ggplot-demo.html~. First, when the page loads, the
+   points in the plot are enlarged to have a radius of 15px. Then,
+   when any of the points are clicked, the inline event attribute on
+   the surrounding group causes the colours to change to a uniformly
+   distributed random colour within the RGB space. The ~cx~ attribute
+   is also modified to be incremented +/- 25px.
 
 ** jQuery
 
