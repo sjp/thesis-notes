@@ -1,0 +1,9 @@
+<%
+get.vars <- req$GET()
+cx <- if (! is.null(get.vars$cx)) as.numeric(get.vars$cx) + 30 else 50
+# Make sure the response is XML
+res$header("Content-Type", "image/svg+xml")
+svg.header <- '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">'
+svg.footer <- '</svg>'
+%>
+<%= svg.header %><circle cx="<%= cx %>" cy="50" r="50" id="svgcirc" fill="red" onclick="updatePos();" /><%= svg.footer %>

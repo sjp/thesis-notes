@@ -257,6 +257,24 @@
    The web application is written in *R* (unlike many Rserve clients)
    and thus is at least familiar to most statisticians.
 
+   Note that all URLs are somewhat hard-coded as the built-in
+   RhttpdApp reference class forces the following to occur:
+
+   : .self$path <- ifelse(.self$name=='httpd','', paste('/custom',.self$name,sep='/'))
+
+   This means that we can't quite get "nice" looking URLs, but it
+   appears to be due to the behaviour of ~tools:::.httpd.handlers.env~
+   so can't really be worked around.
+
+   When building Rook applications using the ~Brewery~ reference
+   class, we automatically get two reference class objects that enable
+   us to read and write data. These objects ~req~ and ~res~ are
+   ~Request~ and ~Response~ reference class objects respectively. This
+   is how we can pass information to any "brewed" page. In particular
+   this is useful when building, say, a circle, because we can build a
+   template for a circle, and simply "brew" the required argment,
+   rather than having to build up a string.
+
 ** FastRWeb
 
    + URL :: http://www.rforge.net/FastRWeb/
