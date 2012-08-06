@@ -1,0 +1,29 @@
+<%
+get.vars <- req$GET()
+smooth <- if (! is.null(get.vars$smooth)) as.numeric(get.vars$smooth) else 0.75
+# Make sure the response is XML
+res$header("Content-Type", "image/svg+xml")
+svg.header <- '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">'
+svg.footer <- '</svg>'
+l.fit <- loess(ys ~ xs, span = smooth)
+ys.fitted <- fitted(l.fit)
+
+# Because we are not dealing in "native" units anymore,
+# we require some transformations
+
+# Range of the original xs is [30.55, 641.45]
+new.xs <- seq(from = 30.55, to = 641.45, length.out = 100)
+# Range of the original ys is [30.55, 641.57],
+# scale factor of 1.1 produces the full range
+y.scale.factor <- 1.1
+orig.yrange <- range(ys)
+r.to.svg.scale <- (672 / 1.1) / (orig.yrange[2] - orig.yrange[1])
+fitted.yrange <- range(ys.fitted)
+
+# Scale values plus the offset to the min value
+ys.fitted <- r.to.svg.scale * ys.fitted +
+             (abs(min(ys)) * r.to.svg.scale)
+
+line.data <- paste(new.xs, ys.fitted, sep = ",", collapse = " ")
+%>
+<%= svg.header %><polyline id="smoothline" points="<%= line.data %>" stroke="red" fill="none" /><%= svg.footer %>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head><title>SVG Smoother Demo</title></head>
+<body>
+<h1>Interactive smoother example</h1>
+<input id="span-slider" type="range" min="0.05" max="1" step="0.01" value="0.75" />
+<svg height="672" width="672">
+<g id="wrapper" transform="translate(0, 672) scale(1, -1)"><polyline id="dataline" points="30.55,560.15 36.72,531.63 42.89,583.6 49.06,534.77 55.23,312.39 61.4,456.95 67.57,480.39 73.74,525.98 79.91,480.89 86.08,462.13 92.25,466.93 98.42,445.76 104.6,406.24 110.77,292.24 116.94,291.29 123.11,304.82 129.28,325.74 135.45,234.86 141.62,344.97 147.79,240.99 153.96,277.02 160.13,282.49 166.3,284.51 172.47,411.13 178.64,336.36 184.82,265.62 190.99,288.45 197.16,174.31 203.33,281.82 209.5,202.1 215.67,259.63 221.84,257.11 228.01,74.57 234.18,147.24 240.35,168.51 246.52,230.98 252.69,123.16 258.87,144.16 265.04,84.53 271.21,126.44 277.38,221.64 283.55,249.82 289.72,105.24 295.89,113.72 302.06,164.86 308.23,256.56 314.4,157.29 320.57,243.04 326.74,114.49 332.91,126.02 339.09,162.84 345.26,125.04 351.43,164.19 357.6,139.18 363.77,150.96 369.94,199.55 376.11,235.89 382.28,216.13 388.45,82.17 394.62,30.55 400.79,121 406.96,204.38 413.13,188.93 419.31,118.51 425.48,202.46 431.65,175.74 437.82,98.76 443.99,261.53 450.16,199.75 456.33,188.99 462.5,207.2 468.67,99.44 474.84,151.88 481.01,179.73 487.18,301.39 493.36,295.4 499.53,236.09 505.7,287.36 511.87,264.44 518.04,293.43 524.21,334.22 530.38,318.75 536.55,385.78 542.72,409.96 548.89,311.39 555.06,337.5 561.23,346.21 567.4,403.34 573.58,393.95 579.75,368.34 585.92,414.16 592.09,432.65 598.26,610.65 604.43,390.75 610.6,423.33 616.77,420.52 622.94,401.66 629.11,578.01 635.28,594.28 641.45,641.57" stroke="black" fill="none" /></g>
+</svg>
+<script type="text/javascript">
+  var updatePos = function() {
+      var el = document.getElementById("smoothline");
+      var g = document.getElementById("wrapper");
+      if (window.XMLHttpRequest) {
+          var insertSmoother = function() {
+              // Only execute the rest of the function when we have
+              // received data from the server, not any intermediary states
+              if (xhr.readyState !== 4)
+                  return;
+              // Because the response is text/xml, we can use responseXML to parse
+              // automatically for us
+              var newdoc = xhr.responseXML;
+              var newnode = document.importNode(newdoc.documentElement.firstChild, true);
+              // At the start we don't have a smoother, only remove if available
+              if (el)
+                  g.removeChild(el);
+              g.appendChild(newnode);
+          };
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = insertSmoother;
+          xhr.open('GET', "/custom/svgtest/brew/smoothLine?smooth=" + slider.value);
+          xhr.send();
+      }
+  };
+  var slider = document.getElementById("span-slider");
+  slider.addEventListener("mouseup", updatePos);
+</script>
+</body>
+</html>
