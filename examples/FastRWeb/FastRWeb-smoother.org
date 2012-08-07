@@ -1,0 +1,34 @@
+#+TITLE: FastRWeb Loess smoother example
+
+The browser loads a page at the location
+~http://localhost/cgi-bin/Rcgi/smooth-ex~
+
+This calls the ~web.R/smooth-ex.R~ file, which serves a plain HTML
+file, from ~web/smooth-ex.html~. At this point, the user is able to
+see the HTML with an inline SVG image embedded within it. This
+document is the same as is present in the Rook example, the only
+difference is how the server processes the code.
+
+When the AJAX call to ~web.R/smoothLine.R~ is made, silently the code
+within ~web.R/common.R~ is executed. This is the case for every page
+load as the default configuration for FastRWeb is for the code in that
+file to be executed. We are loading the data used for Loess smoothing
+within ~common.R~. This could be loaded as part of the initialisation
+of the Rserve/FastRWeb daemon, but because you may want to leave the
+instance running for a long time without restarting, leaving the code
+in ~web.R/common.R~ is preferable.
+
+As the AJAX request occurs, the code in ~smoothLine.R~ is
+executed. What it does is receive the value of the parameter GET
+parameter ~smooth~ from the HTML input range slider. It then takes
+this parameter, and passes it onto a Loess smoother which is then
+using the data loaded in from ~web.R/common.R~. We then take the
+fitted values from this smoother and use it to build up an SVG line.
+
+One small bit of trickiness that needs to be worked around is
+rescaling from native R values to SVG coordinates. Once this is done,
+an SVG document is created containing a sole ~polyline~
+element. Finally, we return this SVG document and set the HTTP header
+so that it is sent as ~image/svg+xml~ and not ~text/html~. This is
+then returned to the browser and manipulated in the same way as the
+Rook smoother example.
