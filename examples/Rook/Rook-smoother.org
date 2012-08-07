@@ -1,0 +1,70 @@
+#+TITLE: Rook example using Loess smoothers
+
+* Server-side
+
+We have a static HTML file being served statically via Rook,
+~smoother-ex.html~.
+
+We add a ~Brewery~ to our Rook application that runs ~brew~ on
+everything in the ~brew~ directory. Of note is the file ~smoothLine~.
+This file contains a large block of code that produces no output, it
+simply does all of the work necessary to generate appropriate line
+coordinates. Next we have a simple text fragment of SVG code, however
+the ~points~ attribute of the ~polyline~ element is just a reference
+to a variable that is going to be printed out (this variable is called
+~line.data~).
+
+The code block in the ~smoothLine~ file assumes that there are two
+variables already set, ~xs~ and ~ys~ that define the line coordinates
+in our plot. Another assumption is that there is a GET parameter
+called ~smooth~. This parameter controls the ~span~ smoothing
+parameter for Loess smoothing (larger values of ~span~ correspond to
+smoother surfaces).
+
+When ~smoothLine~ is brewed, we essentially just have an SVG
+~polyline~ returned (wrapped in ~svg~ document elements), with line
+coordinates that are Loess smoothed estimates of the global variables
+~xs~ and ~ys~. When the ~smooth~ GET parameter is large, we end up
+with a smooth ~polyline~, more "wiggly" lines otherwise.
+
+* Client-side
+
+The HTML document consists of an SVG image and two ~input~
+elements. The SVG image was simply produced in R by setting a viewport
+with an ~xscale~ and ~yscale~ equal to the range of the ~xs~ and ~ys~
+variables respectively and then plotting a ~linesGrob~. Some of the
+information in the SVG document was stripped for the sake of
+simplicity.
+
+The ~input~ elements consist of a ~range~ slider, (with min, max, and
+default values) and a ~text~ field. When the ~onmouseup~ event is
+triggered when changing the value of the slider, we update the text
+field to show the current value of the smoothing parameter (by default
+this is 0.75). The event also causes a new smoother to be inserted
+into the document.
+
+The way in which the new smoother is inserted into the document is
+similar to the previous example with ~circle~ elements. In this case
+we are doing things slightly differently. We are still grabbing the
+SVG document from a page located at ~/custom/svgtest/smoothLine~ and
+we are adding a GET parameter ~smooth~ which is equal to the current
+value of the numeric slider. This request causes a "brew" to be
+performed, resulting in an SVG document containing a ~polyline~
+element to be returned.
+
+If the current document does not contain a smoother, we insert a new
+one. In the case where a smoother already exists, I have decided to
+make use of the d3 library. When we have received the SVG document,
+and grabbed the ~polyline~ as a node, we store the value of the
+~points~ attribute of that element. This is so that we can use d3 to
+transition between the old points, and the new ones. We use d3 to
+"select" the existing smoother line, and transition between the old
+line coordinates and the new ones over a duration of one second.
+
+The effect is that we can see exactly how the line changes as we
+change the smoother value. I could have used the ~onchange~ event to
+trigger a new smooth line, which would have appeared as though the
+line was changing as my slider was changing. However, this is quite
+infeasible due to the "noisy" implementation (if we were using just
+JavaScript this would be fine), and the fact that in practice over a
+network, we would probably be experiencing a lot more latency.
