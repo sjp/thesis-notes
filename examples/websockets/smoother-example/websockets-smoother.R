@@ -1,5 +1,6 @@
 # Simple example
 library(websockets)
+library(XML)
 PORT <- 9999L
 w <- create_server(port = PORT, webpage = static_file_service("smoother-ex.html"))
 
@@ -34,18 +35,24 @@ f <- function(DATA, WS, ...)
   ys.fitted <- r.to.svg.scale * ys.fitted +
                (abs(min(ys)) * r.to.svg.scale)
 
-  svg.header <- '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">'
-  svg.footer <- '</svg>'
+  svg.el <- newXMLNode("svg", namespaceDefinitions = "http://www.w3.org/2000/svg",
+                       attrs = list(width = "300", height = "300"))
   line.data <- paste(new.xs, ys.fitted, sep = ",", collapse = " ")
+  line.el <- newXMLNode("polyline",
+                        parent = svg.el,
+                        attrs = list(id = "smoothline",
+                                     points = line.data,
+                                     stroke = "red",
+                                     fill = "none"))
 
-  # Generating response
-  smooth.line <- paste0(svg.header,
-                        '<polyline id="smoothline" points="',
-                        line.data,
-                        '" stroke="red" fill="none" />',
-                        svg.footer)
+  # Get a string representation *without* indentation.
+  # This makes using DOM methods easier because we don't
+  # need to worry about text nodes in the DOM. Also has
+  # the benefit of reducing the amount of data sent over
+  # the wire.
+  svg.output <- saveXML(svg.el, indent = FALSE)
 
-  websocket_write(DATA=smooth.line,WS=WS)
+  websocket_write(DATA=svg.output,WS=WS)
 }
 set_callback('receive',f,w)
 cl <- function(WS)

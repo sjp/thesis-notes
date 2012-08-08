@@ -20,6 +20,16 @@ element (besides the root element), which is a new ~polyline~ element,
 identical to the one currently in the browser, but it contains
 smoothed values.
 
+The document is constructed using the XML package, where we can
+specify the root node, ~svg~, give it a namespace definition, and any
+relevant attributes. We then construct the child ~polyline~ node and
+add attributes, however we also note that the parent of this node is
+the ~svg~ element. This changes the object that contains the ~svg~
+element to also have the ~polyline~ element as a child. When returning
+the smoothed line we use the ~saveXML~ function on the ~svg~ object
+but *without* indentation so that we don't need to worry about text
+nodes when parsing the document in JavaScript using ~DOMParser~.
+
 The way in which smoothing is performed is that we always use the
 original ~xs~ and ~ys~ data that was loaded in from the binary
 file. The only difference is the ~span~ parameter which defines the
