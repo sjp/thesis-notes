@@ -1,0 +1,54 @@
+#+TITLE: Websockets Loess smoother example
+
+* Server-side
+
+The R code that instantiates the ~websockets~ server first does a
+couple of things.
+
+1. It determines which port the WS service is going to bind to.
+2. It also determines which HTML page to serve when the browser loads
+   the URL at the given port, acting as a basic HTTP daemon.
+3. It loads a binary file that contains the data used to generate the
+   original SVG line visible in the plot.
+
+After the server object has been created, the callback functions are
+created. The only one of particular interest is that of the *receive*
+callback. At the moment, the function that has been created is sent
+information on the current value that the ~input~ slider element has,
+and constructs a new SVG document. This SVG document contains a single
+element (besides the root element), which is a new ~polyline~ element,
+identical to the one currently in the browser, but it contains
+smoothed values.
+
+The way in which smoothing is performed is that we always use the
+original ~xs~ and ~ys~ data that was loaded in from the binary
+file. The only difference is the ~span~ parameter which defines the
+"smoothness" of our smoother. This simply passed into a loess smoother
+function, that we grab fitted values from.
+
+After all of the callback functions have been created, the last thing
+to do is to open up the server to requests. This is done by using the
+new ~daemonize~ function. This function services incoming requests in
+the background, returning control back to the user.
+
+* Client-side
+
+The HTML is (for all intents and purposes) the same as the other
+smoother examples. We have an inline SVG document and bind an
+~onmouseup~ event handler to a JavaScript function that does all the
+heavy-lifting.
+
+Much like the WS server, in JavaScript we have to construct a few
+handlers to respond to each Websocket event. Opening, closing, errors,
+etc. However, in our example we want handlers to *send* a message over
+WS, and also to *receive* a message back.
+
+In this example the ~onmouseup~ event handler is sending the value of
+the ~input~ slider over WS via ~socket.send~. When the server
+processes this information and sends it back, we handle this via the
+~onmessage~ function. This function simply parses the resulting SVG
+document using ~DOMParser~. We then pull out the ~points~ attribute
+from the sole ~polyline~ element and use the d3 library to transition
+from the old points to the new ones. This appears to the user as if
+the line is warping from one smoother to another.
+
