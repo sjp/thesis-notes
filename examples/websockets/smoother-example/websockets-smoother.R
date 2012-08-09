@@ -22,18 +22,16 @@ f <- function(DATA, WS, ...)
   # Because we are not dealing in "native" units anymore,
   # we require some transformations
   
-  # Range of the original xs is [30.55, 641.45]
-  new.xs <- seq(from = 30.55, to = 641.45, length.out = 100)
-  # Range of the original ys is [30.55, 641.57],
-  # scale factor of 1.1 produces the full range
-  y.scale.factor <- 1.1
-  orig.yrange <- range(ys)
-  r.to.svg.scale <- (672 / 1.1) / (orig.yrange[2] - orig.yrange[1])
-  fitted.yrange <- range(ys.fitted)
-  
-  # Scale values plus the offset to the min value
-  ys.fitted <- r.to.svg.scale * ys.fitted +
-               (abs(min(ys)) * r.to.svg.scale)
+  # Range of the line xs is [88.57, 625.89]
+  new.xs <- seq(from = 88.57, to = 625.89, length.out = 100)
+
+  # Range of original ys = [-32.86, 132.09]
+  # Range of line ys = [77.13, 625.46]
+  # Scale for R -> SVG is 3.324x
+  scale.factor <- 3.324
+  # The offset is the point at which y = 0
+  ys.offset <- 77.13 + abs(min(ys)) * scale.factor
+  ys.fitted <- (scale.factor * ys.fitted) + ys.offset
 
   svg.el <- newXMLNode("svg", namespaceDefinitions = "http://www.w3.org/2000/svg",
                        attrs = list(width = "300", height = "300"))
