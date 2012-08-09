@@ -1,0 +1,23 @@
+#+TITLE: Glossary
+
++ Application Server :: Creates a framework for building web-based
+     applications. Typically it will also provide a means to access
+     the applications that are created by it, for example by running
+     an HTTP daemon.
+
++ Protocol Server :: Provides a method of interacting with R via a
+     protocol. Protocols typically bind to sockets and are accessible
+     over a defined port. This means that if we can speak to R via the
+     correct protocol (and over the correct port), e.g. websockets,
+     TCP, we can use R remotely.
+
++ WebSocket :: A bi-directional protocol for communicating over a
+               single TCP connection. WebSockets allow a connection to
+               be maintained over a long period of time. HTTP requests
+               on the other hand are opened, requested, received then
+               closed for each request that a web browser makes. The
+               advantage of a connection that is always open (or at
+               least open for a long period of time) is that the
+               server can initiate responses to the client, rather
+               than the client always having to initiate (as is the
+               case with HTTP).
