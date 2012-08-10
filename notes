@@ -65,7 +65,9 @@ TODO:
     
   + Need a more "real" example
 
-    Stripped down version of one of Chris's simulation movies?
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
 
   + Keep thinking about categorisation of different options
     (including diagram and glossary)
