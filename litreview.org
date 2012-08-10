@@ -542,6 +542,9 @@
    http://stackoverflow.com/questions/5873683/jquery-class-selector-for-svg-in-xhtml
    http://stackoverflow.com/questions/3294553/jquery-selector-svg-incompatible/5759456#5759456
 
+   Although that said, the WS smoother example seems to work fine with
+   selecting a line just by its ID...
+
    I've created a demo to show that d3 can work with gridSVG output in
    ~/examples/d3/ggplot-demo.html~. First, when the page loads, the
    points in the plot are enlarged to have a radius of 15px. Then,
