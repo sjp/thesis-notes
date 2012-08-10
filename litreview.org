@@ -531,8 +531,16 @@
    What appears to be case however, is that when using usual d3
    selectors, we cannot select SVG elements. In other words, in my
    example, we cannot do something like
-   ~d3.select("#geom_point.points.2")~ and are instead forced to grab
-   the node first using ~document.getElementById~.
+   ~d3.select("#geom_point.points.2")~ and are instead required to
+   either grab the node first using ~document.getElementById~ or use a
+   more complicated selector. For example, the selector would have to
+   be ~d3.select('circle[id~="geom_point.points.2"]')~, selecting all
+   circles that have an ~id~ that contains the word
+   ~geom_point.points.2~. The reason for this is because SVG classes
+   and IDs do not behave the same as HTML ones. The following URLs explain this distinction:
+
+   http://stackoverflow.com/questions/5873683/jquery-class-selector-for-svg-in-xhtml
+   http://stackoverflow.com/questions/3294553/jquery-selector-svg-incompatible/5759456#5759456
 
    I've created a demo to show that d3 can work with gridSVG output in
    ~/examples/d3/ggplot-demo.html~. First, when the page loads, the
@@ -599,16 +607,3 @@
     ~ggplot2~ and d3 in the browser. We may be able to piggyback off
     his work if it works out nicely and still looks enough like R
     graphics (unlike ~googleVis~).
-
-* COMMENT
-    - document them all
-        - short description
-        - feature list
-        - categorisation (client/server, ...)
-        - state (active, dead, developing)
-        - who is involved
-        - pros and cons
-
-    - implement a simple example
-        - a single SVG circle that on-click is modified BY R
-          (e.g., R selects a new random location for the circle)

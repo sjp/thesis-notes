@@ -248,7 +248,7 @@
                 // At the start we don't have a smoother, only remove if available
                 if (el) {
                     var newpoints = newnode.getAttribute("points");
-                    d3.select(el)
+                    d3.select('polyline[id~="smoothline"]')
                         .transition()
                         .duration(1000)
                         .attr("points", newpoints);
