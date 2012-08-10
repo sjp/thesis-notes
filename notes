@@ -1,4 +1,96 @@
 
+2012-08-14
+----------
+
+NOTES:
+
+  + Simon's examples/websockets/smoother-example/
+    is wildly good because it is the browser and R communicating
+    to update the *graphics* DOM. 
+    In particular, it is NOT just asking R for a completely new plot.
+    It talks to R to get new information to MODIFY existing components
+    of an existing plot (SVG DOM).
+
+  + Also implemented the example with FastRWeb and Rook
+    BUT FastRWeb is a pain in the ass to install/configure
+
+  + In the websockets model, R sends messages to browser AND browser 
+    sends messages to R.
+    In the Rook (http) model, browser sends request to R and R 
+    generates response.
+
+  + There appear to be several people working on side-stepping R
+    or reproducing R graphics in javascript (D3).
+    The advantage of our approach is that we get (almost) all
+    plots that grid can produce PLUS the grid graphics infrastructure
+    (viewports etc) and THEN we can use D3 to manipulate it.
+    => don't have to reimplement R/grid graphics (visible) output in javascript
+    AND don't have to reimplement R/grid graphics (invisible) infrastructure
+
+
+FOR NOTING:
+
+  + Slides from Jay Emerson from JSM talk
+    (see Resources/MikeSession.pdf)
+
+  + Duncan Temple Lang (and Gabriel Becker) gave presentation at JSM
+    on "RBrowserPlugin framework".  Can't find any other links to
+    this, but it sounds like RFirefox (?)
+
+  + project 'gg' on github
+
+    https://github.com/gigamonkey/gg
+
+    Allows Grammar of Graphics style description of plot
+    and renders it using javascript (D3)
+
+    Any interactivity???
+
+
+TODO:
+
+  + Export viewport transforms to SVG
+
+    - current.transform() gets (some of) the info 
+    - devGrob.viewport() needs to add the info 
+    - svgStartGroup() needs to accumulate the info
+    - svgClose() needs to write the info out (as JSON?)
+    - also need to write a bunch of standard javascript functions
+      to do the transformations, culminating in ...
+
+      viewportConvertX(vpname, x, from, to)
+      viewportConvertY(vpname, x, from, to)
+      viewportConvertWidth(vpname, x, from, to)
+      viewportConvertHeight(vpname, x, from, to)
+    
+  + Need a more "real" example
+
+    Stripped down version of one of Chris's simulation movies?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + Can you use D3 to muck about with existing SVG?
+    Can it be used as an "SVG accelerator" to render faster?
+
+  + Push the three candidate R-as-web-server options (glossary!)
+    a bit harder by trying to implement a more complex example
+    (see "BIG EXAMPLE" below)
+
+  + New D3 demo (see examples/d3/ggplot-demo.html)
+
+  + Reorganize git repo
+
+    - instead of 2012-07-25/2012-07-25.org 
+      have litreview.org (at top level)
+
+    - instead of 2012-07-25/Rook/ etc
+      have Examples/Rook/
+  
+
 2012-07-31
 ----------
 
@@ -68,6 +160,18 @@ DONE:
 
 
 FOR NOTING:
+
+  + git for DUMMIES
+
+    - git clone  (create LOCAL[*] from ORIGIN[*])
+
+    - git status  (what the hell is going on)
+
+    - git pull  (changes from ORIGIN[MASTER] to LOCAL[MASTER])
+    - modify file
+    - git add file  (stage changes for commit)
+    - git commit  (commit to LOCAL[MASTER])
+    - git push  (push to ORIGIN[MASTER])
 
   + "timely portfolio" blog has stuff on combining R and D3 via
     'websockets'
