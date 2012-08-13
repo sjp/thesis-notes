@@ -2,6 +2,61 @@
 2012-08-14
 ----------
 
+DISCUSS:
+
+  + Extend the interactive campus map ?
+    (William's project from a couple of years back)
+
+  + Link to "Grammar of Graphics" Google group from Hadley
+
+    https://groups.google.com/group/gsofgs
+
+
+TODO:
+
+  + Export viewport transforms to SVG
+
+    - keep going
+
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE: 
+
+  + Export viewport transforms to SVG
+
+    - current.transform() gets (some of) the info 
+    - devGrob.viewport() needs to add the info 
+    - svgStartGroup() needs to accumulate the info
+    - svgClose() needs to write the info out (as JSON?)
+    - also need to write a bunch of standard javascript functions
+      to do the transformations, culminating in ...
+
+      viewportConvertX(vpname, x, from, to)
+      viewportConvertY(vpname, x, from, to)
+      viewportConvertWidth(vpname, x, from, to)
+      viewportConvertHeight(vpname, x, from, to)
+    
+
+PAUL DONE:
+
+  + emailed Hadley Wickham, Jay Emerson, and Sasha Goodman just to let
+    them know that we are working in the area (they are all doing  
+    things vaguely similar).  This serves both to politely carve out
+    a little space for ourselves and to create an opportunity for 
+    feedback and ideas and examples from these other guys.
+
+
+2012-08-09
+----------
+
 NOTES:
 
   + Simon's examples/websockets/smoother-example/
