@@ -1,0 +1,5 @@
+library(gridSVG)
+library(ggplot2)
+print(qplot(mpg, wt, data=mtcars, colour=cyl))
+gridToSVG("tmp.svg", export.coords = "file")
+dev.off()

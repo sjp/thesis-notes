@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Coordinate System Tests</title>
+    <link rel="stylesheet" href="./qunit-1.9.0.css" />
+    <script type="text/javascript" src="./qunit-1.9.0.js"></script>
+    <script type="text/javascript" src="conversion.js"></script>
+    <script>
+    var approxEqual = function(fnum, snum) {
+        var tol = 0.001;
+        return (fnum - snum) < tol;
+    };
+
+    test("toInches(), absolute unit conversions", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [5.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("inches", 1, vpDimSize, nativeScale, dimInchSize), 1),
+           "inches -> inches");
+        ok(approxEqual(toInches("cm", 2.54, vpDimSize, nativeScale, dimInchSize), 1),
+           "cm -> inches");
+        ok(approxEqual(toInches("mm", 25.4, vpDimSize, nativeScale, dimInchSize), 1),
+           "mm -> inches");
+        ok(approxEqual(toInches("points", 100, vpDimSize, nativeScale, dimInchSize), 1.384),
+           "points -> inches");
+        ok(approxEqual(toInches("picas", 120, vpDimSize, nativeScale, dimInchSize), 19.925),
+           "picas -> inches");
+        ok(approxEqual(toInches("bigpts", 100, vpDimSize, nativeScale, dimInchSize), 1.389),
+           "bigpts -> inches");
+        ok(approxEqual(toInches("dida", 1138, vpDimSize, nativeScale, dimInchSize), 17.130),
+           "dida -> inches");
+        ok(approxEqual(toInches("cicero", 100, vpDimSize, nativeScale, dimInchSize), 17.767),
+           "cicero -> inches");
+        ok(approxEqual(toInches("scaledpts", 72.27 * Math.pow(2, 16), vpDimSize, nativeScale, dimInchSize), 1),
+           "scaledpts -> inches");
+    });
+
+    test("toUnit(), absolute unit conversions", function() {
+        // Note: input units are *inches*
+
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [5.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("inches", 2, vpDimSize, nativeScale, dimInchSize), 2),
+           "inches -> inches");
+        ok(approxEqual(toUnit("cm", 2, vpDimSize, nativeScale, dimInchSize), 5.08),
+           "inches -> cm");
+        ok(approxEqual(toUnit("mm", 2, vpDimSize, nativeScale, dimInchSize), 50.8),
+           "inches -> mm");
+        ok(approxEqual(toUnit("points", 1, vpDimSize, nativeScale, dimInchSize), 72.27),
+           "inches -> points");
+        ok(approxEqual(toUnit("picas", 100, vpDimSize, nativeScale, dimInchSize), 602.25),
+           "inches -> picas");
+        ok(approxEqual(toUnit("bigpts", 1, vpDimSize, nativeScale, dimInchSize), 72),
+           "inches -> bigpts");
+        ok(approxEqual(toUnit("dida", 10, vpDimSize, nativeScale, dimInchSize), 675.415),
+           "inches -> dida");
+        ok(approxEqual(toUnit("cicero", 10, vpDimSize, nativeScale, dimInchSize), 56.285),
+           "inches -> cicero");
+        ok(approxEqual(toUnit("scaledpts", 1/10, vpDimSize, nativeScale, dimInchSize), 473628.672),
+           "inches -> scaledpts");
+    });
+
+    test("unit -> inches -> unit, absolute unit conversions", function() {
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [5.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        var convert = function(unit, value) {
+            var inches = toInches(unit, value, vpDimSize, nativeScale, dimInchSize);
+            var unit = toUnit(unit, inches, vpDimSize, nativeScale, dimInchSize);
+            return unit;
+        };
+
+        ok(approxEqual(convert("inches", 3), 3), "inches -> inches -> inches");
+        ok(approxEqual(convert("cm", 3), 3), "cm -> inches -> cm");
+        ok(approxEqual(convert("mm", 3), 3), "mm -> inches -> mm");
+        ok(approxEqual(convert("points", 12), 12), "points -> inches -> points");
+        ok(approxEqual(convert("picas", 12), 12), "picas -> inches -> picas");
+        ok(approxEqual(convert("bigpts", 12), 12), "bigpts -> inches -> bigpts");
+        ok(approxEqual(convert("dida", 60), 60), "dida -> inches -> dida");
+        ok(approxEqual(convert("cicero", 60), 60), "cicero -> inches -> cicero");
+        ok(approxEqual(convert("scaledpts", 40000), 40000), "scaledpts -> inches -> scaledpts");
+    });
+
+    test("native toInches(), scale is [+, +] increasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [5.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("native", 5.6 + 84.816, vpDimSize, nativeScale, dimInchSize), 1),
+           "native -> inches");
+    });
+
+    test("native toInches(), scale is [+, +] decreasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [123.4, 5.6];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("native", 123.4 - 84.816, vpDimSize, nativeScale, dimInchSize), 1),
+           "native -> inches");
+    });
+
+    test("native toInches(), scale is [-, +]", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [-30.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("native", 72 + -30.6, vpDimSize, nativeScale, dimInchSize), 1),
+           "native -> inches");
+    });
+
+    test("native toInches(), scale is [+, -]", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [30.6, -123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("native", 30.6 - 72, vpDimSize, nativeScale, dimInchSize), 1),
+           "native -> inches");
+    });
+
+    test("native toInches(), scale is [-, -] decreasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [-30.6, -123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("native", -30.6 - 84.816, vpDimSize, nativeScale, dimInchSize), 1),
+           "native -> inches");
+    });
+
+    test("native toInches(), scale is [-, -] increasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [-123.4, -30.6];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toInches("native", -123.4 + 66.816, vpDimSize, nativeScale, dimInchSize), 1),
+           "native -> inches");
+    });
+
+    test("native toUnit(), scale is [+, +] increasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [5.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("native", 1, vpDimSize, nativeScale, dimInchSize), 5.6 + 84.816),
+           "inches -> native");
+    });
+
+    test("native toUnit(), scale is [+, +] decreasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [123.4, 5.6];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("native", 1, vpDimSize, nativeScale, dimInchSize), 123.4 - 84.816),
+           "inches -> native");
+    });
+
+    test("native toUnit(), scale is [-, +]", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [-30.6, 123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("native", 1, vpDimSize, nativeScale, dimInchSize), -30.6 + 110.88),
+           "inches -> native");
+    });
+
+    test("native toUnit(), scale is [+, -]", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [30.6, -123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("native", 1, vpDimSize, nativeScale, dimInchSize), 30.6 - 110.88),
+           "inches -> native");
+    });
+
+    test("native toUnit(), scale is [-, -] decreasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [-30.6, -123.4];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("native", 1, vpDimSize, nativeScale, dimInchSize), -30.6 - 66.816),
+           "inches -> native");
+    });
+
+    test("native toUnit(), scale is [-, -] increasing", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [-123.4, -30.6];
+        var vpDimSize = 100; // viewport 100px wide
+        ok(approxEqual(toUnit("native", 1, vpDimSize, nativeScale, dimInchSize), -123.4 + 66.816),
+           "inches -> native");
+    });
+
+    test("npc toInches()", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [30.6, 123.4];
+        var vpDimSize = 100;
+        ok(approxEqual(toInches("npc", 0.3, vpDimSize, nativeScale, dimInchSize),
+                                (vpDimSize / dimInchSize) * 0.3),
+           "0.3npc -> inches");
+        ok(approxEqual(toInches("npc", 0.74, vpDimSize, nativeScale, dimInchSize),
+                                (vpDimSize / dimInchSize) * 0.74),
+           "0.74npc -> inches");
+        ok(approxEqual(toInches("npc", 0.15, vpDimSize, nativeScale, dimInchSize),
+                                (vpDimSize / dimInchSize) * 0.15),
+           "0.15npc -> inches");
+        vpDimSize = 253;
+        ok(approxEqual(toInches("npc", 0, vpDimSize, nativeScale, dimInchSize),
+                                (vpDimSize / dimInchSize) * 0),
+           "0npc -> inches");
+        ok(approxEqual(toInches("npc", 1, vpDimSize, nativeScale, dimInchSize),
+                                (vpDimSize / dimInchSize) * 1),
+           "1npc -> inches");
+        ok(approxEqual(toInches("npc", 0.64, vpDimSize, nativeScale, dimInchSize),
+                                (vpDimSize / dimInchSize) * 0.64),
+           "0.64npc -> inches");
+    });
+
+    test("npc toUnit()", function() {
+        // Hard coding some constants
+        var dimInchSize = 72; // DPI in the *R* device
+        var nativeScale = [30.6, 123.4];
+        var vpDimSize = 100;
+        ok(approxEqual(toUnit("npc", 1, vpDimSize, nativeScale, dimInchSize), 0.72),
+           "1inches -> npc");
+        ok(approxEqual(toUnit("npc", 0.5, vpDimSize, nativeScale, dimInchSize), 0.36),
+           "0.5inches -> npc");
+        ok(approxEqual(toUnit("npc", 4.35, vpDimSize, nativeScale, dimInchSize), 3.132),
+           "4.35inches -> npc");
+    });
+
+    test("SVG, toInches(), different DPIs", function() {
+        // Hard coding some constants
+        var nativeScale = [-123.4, -30.6];
+        var vpDimSize = 100; // viewport 100px wide 
+        ok(approxEqual(toInches("svg", 72, vpDimSize, nativeScale, 72), 1), "72dpi");
+        ok(approxEqual(toInches("svg", 1000, vpDimSize, nativeScale, 1000), 1), "1000dpi");
+        ok(approxEqual(toInches("svg", 90, vpDimSize, nativeScale, 90), 1), "90dpi");
+        ok(approxEqual(toInches("svg", 96, vpDimSize, nativeScale, 96), 1), "96dpi");
+        ok(approxEqual(toInches("svg", 1, vpDimSize, nativeScale, 1), 1), "1dpi");
+    });
+
+    test("SVG, toUnit(), different DPIs", function() {
+        // Hard coding some constants
+        var nativeScale = [-123.4, -30.6];
+        var vpDimSize = 100; // viewport 100px wide 
+        ok(approxEqual(toUnit("svg", 1, vpDimSize, nativeScale, 72), 72), "72dpi");
+        ok(approxEqual(toUnit("svg", 1, vpDimSize, nativeScale, 1000), 1000), "1000dpi");
+        ok(approxEqual(toUnit("svg", 1, vpDimSize, nativeScale, 90), 90), "90dpi");
+        ok(approxEqual(toUnit("svg", 1, vpDimSize, nativeScale, 96), 96), "96dpi");
+        ok(approxEqual(toUnit("svg", 1, vpDimSize, nativeScale, 1), 1), "1dpi");
+    });
+    </script>
+</head>
+<body>
+    <div id="qunit"></div>
+</body>
+</html>

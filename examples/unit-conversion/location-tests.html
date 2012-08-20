@@ -1,0 +1,116 @@
+<html>
+    <head>
+        <title>Coordinate Testing</title>
+    </head>
+    <body>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="672px"
+     height="672.12px"
+     version="1.0"><g transform="translate(0, 672.12)  scale(1, -1)">
+  <g id="gridSVG"  fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1.33px" font-size="16.04px" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0">
+    <g id="blvp.1"  >
+      <g id="GRID.circle.1"  >
+      <circle id="GRID.circle.1.1" cx="37.84" cy="37.84" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.2"  >
+      <circle id="GRID.circle.2.1" cx="96.11" cy="96.11" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.3"  >
+      <circle id="GRID.circle.3.1" cx="268.8" cy="100.82" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.4"  >
+      <circle id="GRID.circle.4.1" cx="60.87" cy="224.04" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.5"  >
+      <circle id="GRID.circle.5.1" cx="304.35" cy="67.21" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.rect.6"  >
+      <rect id="GRID.rect.6.1" x="0" y="0" width="336" height="336.06"   />
+      </g>
+    </g>
+    <g id="trvp.1"  >
+      <g id="GRID.circle.7"  >
+      <circle id="GRID.circle.7.1" cx="373.84" cy="373.9" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.8"  >
+      <circle id="GRID.circle.8.1" cx="432.11" cy="432.17" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.9"  >
+      <circle id="GRID.circle.9.1" cx="604.8" cy="436.88" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.10"  >
+      <circle id="GRID.circle.10.1" cx="504" cy="432.08" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.circle.11"  >
+      <circle id="GRID.circle.11.1" cx="403.2" cy="528.1" r="37.84"  stroke="rgb(0,0,0)" fill="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1" />
+      </g>
+      <g id="GRID.rect.12"  >
+      <rect id="GRID.rect.12.1" x="336" y="336.06" width="336" height="336.06"   />
+      </g>
+    </g>
+  </g>
+</g>
+</svg>
+<script type="text/javascript" src="coords.js"></script>
+<script type="text/javascript" src="conversion.js"></script>
+<script type="text/javascript">
+    var blvp = document.getElementById("blvp.1");
+    var trvp = document.getElementById("trvp.1");
+    
+    var createCircle = function() {
+        var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("stroke", "rgb(255,0,0)");
+        c.setAttribute("fill", "rgb(255,0,0)");
+        c.setAttribute("stroke-opacity", "1");
+        c.setAttribute("fill-opacity", "1");
+        c.setAttribute("r", "20");
+        return c;
+    }
+
+    // blvp targets
+    var c = createCircle();
+    c.setAttribute("cx", viewportConvertX("blvp.1", 1, "cm"));
+    c.setAttribute("cy", viewportConvertY("blvp.1", 1, "cm"));
+    blvp.appendChild(c);
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("blvp.1", 1, "inches"));
+    c.setAttribute("cy", viewportConvertY("blvp.1", 1, "inches"));
+    blvp.appendChild(c)
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("blvp.1", 0.8, "npc"));
+    c.setAttribute("cy", viewportConvertY("blvp.1", 0.3, "npc"));
+    blvp.appendChild(c);
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("blvp.1", 0, "native"));
+    c.setAttribute("cy", viewportConvertY("blvp.1", 100, "native"));
+    blvp.appendChild(c);
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("blvp.1", 40, "native"));
+    c.setAttribute("cy", viewportConvertY("blvp.1", 30, "native"));
+    blvp.appendChild(c);
+
+    // trvp targets
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("trvp.1", 1, "cm"));
+    c.setAttribute("cy", viewportConvertY("trvp.1", 1, "cm"));
+    trvp.appendChild(c);
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("trvp.1", 1, "inches"));
+    c.setAttribute("cy", viewportConvertY("trvp.1", 1, "inches"));
+    trvp.appendChild(c)
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("trvp.1", 0.8, "npc"));
+    c.setAttribute("cy", viewportConvertY("trvp.1", 0.3, "npc"));
+    trvp.appendChild(c);
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("trvp.1", 25, "native"));
+    c.setAttribute("cy", viewportConvertY("trvp.1", -100, "native"));
+    trvp.appendChild(c);
+    c = createCircle();
+    c.setAttribute("cx", viewportConvertX("trvp.1", 10, "native"));
+    c.setAttribute("cy", viewportConvertY("trvp.1", 0, "native"));
+    trvp.appendChild(c);
+</script>
+</body>
+</html>
