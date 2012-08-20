@@ -1,0 +1,50 @@
+<%
+get.vars <- req$GET()
+p <- if (! is.null(get.vars$p)) as.numeric(get.vars$p) else 0
+q <- if (! is.null(get.vars$q)) as.numeric(get.vars$q) else 0
+
+# Make sure the response is XML
+res$header("Content-Type", "image/svg+xml")
+svg.header <- '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">'
+svg.footer <- '</svg>'
+
+acfSVG <- function(p, q) {
+  heights <- acf(residuals(arima(Nile, order = c(p, 0, q))),
+                 plot = FALSE, lag.max = 48)$acf
+  xs <- 1:length(heights) / (length(heights) + 1) 
+  xs <- c(rbind(xs, xs))
+  xs <- viewportConvertX("acfwindowvp", xs, "npc")
+  ys <- c(rbind(rep(0, length(heights)), heights))
+  ys <- viewportConvertY("acfwindowvp", ys, "native")
+  points <- paste(xs, ys, sep = ",")
+
+  line.pairs <- character(length(points) / 2)
+  for (i in 1:(length(points) / 2)) {
+    line.pairs[i] <- paste0(points[2 * i - 1], " ", points[2 * i])
+  }
+
+  paste0('<polyline points="', line.pairs, '" />', collapse = "")
+}
+
+pacfSVG <- function(p, q) {
+  heights <- pacf(residuals(arima(Nile, order = c(p, 0, q))),
+                  plot = FALSE, lag.max = 48)$acf
+  xs <- 1:length(heights) / (length(heights) + 1) 
+  xs <- c(rbind(xs, xs))
+  xs <- viewportConvertX("pacfwindowvp", xs, "npc")
+  ys <- c(rbind(rep(0, length(heights)), heights))
+  ys <- viewportConvertY("pacfwindowvp", ys, "native")
+  points <- paste(xs, ys, sep = ",")
+
+  line.pairs <- character(length(points) / 2)
+  for (i in 1:(length(points) / 2)) {
+    line.pairs[i] <- paste0(points[2 * i - 1], " ", points[2 * i])
+  }
+
+  paste0('<polyline points="', line.pairs, '" />', collapse = "")
+}
+
+polylines <- acfSVG(p, q)
+
+%>
+<%= svg.header %><%= polylines %><%= svg.footer %>

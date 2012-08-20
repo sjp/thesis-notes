@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<head><title>ARMA Models</title></head>
+<body>
+<h1>Interactive ARMA Models</h1>
+<input id="arma-p" type="number" min="0" max="5" step="1" value="0" />
+<input id="arma-q" type="number" min="0" max="5" step="1" value="0" />
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="672px"
+     height="672px"
+     version="1.1"><g transform="translate(0, 672.12)  scale(1, -1)">
+  <g id="gridSVG"  fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1.33px" font-size="16.04px" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0">
+    <g id="acfvp.1"  >
+      <g id="acfwindowvp.1"  >
+        <g id="xaxis"  >
+          <g id="major"  >
+          <polyline id="major.1" points="77.95,369.67 508.03,369.67"  fill="none" />
+          </g>
+          <g id="ticks"  >
+          <polyline id="ticks.1" points="77.95,369.67 77.95,360.04"  fill="none" />
+          <polyline id="ticks.2" points="185.47,369.67 185.47,360.04"  fill="none" />
+          <polyline id="ticks.3" points="292.99,369.67 292.99,360.04"  fill="none" />
+          <polyline id="ticks.4" points="400.51,369.67 400.51,360.04"  fill="none" />
+          <polyline id="ticks.5" points="508.03,369.67 508.03,360.04"  fill="none" />
+          </g>
+          <g id="labels"  >
+          <g id="labels.1"  stroke-width=".1" transform="translate(77.95, 340.8) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0</tspan></text>
+</g>
+</g>
+          <g id="labels.2"  stroke-width=".1" transform="translate(185.47, 340.8) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">10</tspan></text>
+</g>
+</g>
+          <g id="labels.3"  stroke-width=".1" transform="translate(292.99, 340.8) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">20</tspan></text>
+</g>
+</g>
+          <g id="labels.4"  stroke-width=".1" transform="translate(400.51, 340.8) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">30</tspan></text>
+</g>
+</g>
+          <g id="labels.5"  stroke-width=".1" transform="translate(508.03, 340.8) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">40</tspan></text>
+</g>
+</g>
+          </g>
+        </g>
+        <g id="yaxis"  >
+          <g id="major"  >
+          <polyline id="major.1" points="67.2,381.89 67.2,626.29"  fill="none" />
+          </g>
+          <g id="ticks"  >
+          <polyline id="ticks.1" points="67.2,381.89 57.58,381.89"  fill="none" />
+          <polyline id="ticks.2" points="67.2,422.62 57.58,422.62"  fill="none" />
+          <polyline id="ticks.3" points="67.2,463.36 57.58,463.36"  fill="none" />
+          <polyline id="ticks.4" points="67.2,504.09 57.58,504.09"  fill="none" />
+          <polyline id="ticks.5" points="67.2,544.83 57.58,544.83"  fill="none" />
+          <polyline id="ticks.6" points="67.2,585.56 57.58,585.56"  fill="none" />
+          <polyline id="ticks.7" points="67.2,626.29 57.58,626.29"  fill="none" />
+          </g>
+          <g id="labels"  >
+          <g id="labels.1"  stroke-width=".1" transform="translate(47.96, 381.89) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">-0.2</tspan></text>
+</g>
+</g>
+          <g id="labels.2"  stroke-width=".1" transform="translate(47.96, 422.62) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0</tspan></text>
+</g>
+</g>
+          <g id="labels.3"  stroke-width=".1" transform="translate(47.96, 463.36) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.2</tspan></text>
+</g>
+</g>
+          <g id="labels.4"  stroke-width=".1" transform="translate(47.96, 504.09) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.4</tspan></text>
+</g>
+</g>
+          <g id="labels.5"  stroke-width=".1" transform="translate(47.96, 544.83) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.6</tspan></text>
+</g>
+</g>
+          <g id="labels.6"  stroke-width=".1" transform="translate(47.96, 585.56) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.8</tspan></text>
+</g>
+</g>
+          <g id="labels.7"  stroke-width=".1" transform="translate(47.96, 626.29) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">1</tspan></text>
+</g>
+</g>
+          </g>
+        </g>
+        <g id="box"  >
+        <rect id="box.1" x="67.2" y="369.67" width="537.6" height="268.85"   />
+        </g>
+        <g id="zeroline"  >
+        <polyline id="zeroline.1" points="67.2,422.62 604.8,422.62"  fill="none" />
+        </g>
+        <g id="acfclims"  >
+        <polyline id="acfclims.1" points="67.2,462.54 604.8,462.54"  stroke="rgb(0,0,255)" stroke-dasharray="5.33955063096337px,5.33955063096337px" stroke-opacity="1" fill="none" />
+        <polyline id="acfclims.2" points="67.2,382.7 604.8,382.7"  stroke="rgb(0,0,255)" stroke-dasharray="5.33955063096337px,5.33955063096337px" stroke-opacity="1" fill="none" />
+        </g>
+        <g id="acfheights"  >
+        <polyline id="acfheights.1" points="77.95,422.62 77.95,626.29"  fill="none" />
+        <polyline id="acfheights.2" points="88.7,422.62 88.7,524.13"  fill="none" />
+        <polyline id="acfheights.3" points="99.46,422.62 99.46,500.95"  fill="none" />
+        <polyline id="acfheights.4" points="110.21,422.62 110.21,489.4"  fill="none" />
+        <polyline id="acfheights.5" points="120.96,422.62 120.96,471.34"  fill="none" />
+        <polyline id="acfheights.6" points="131.71,422.62 131.71,469.15"  fill="none" />
+        <polyline id="acfheights.7" points="142.46,422.62 142.46,468.92"  fill="none" />
+        <polyline id="acfheights.8" points="153.22,422.62 153.22,467.85"  fill="none" />
+        <polyline id="acfheights.9" points="163.97,422.62 163.97,483.72"  fill="none" />
+        <polyline id="acfheights.10" points="174.72,422.62 174.72,451.49"  fill="none" />
+        <polyline id="acfheights.11" points="185.47,422.62 185.47,440.91"  fill="none" />
+        <polyline id="acfheights.12" points="196.22,422.62 196.22,466.51"  fill="none" />
+        <polyline id="acfheights.13" points="206.98,422.62 206.98,465.99"  fill="none" />
+        <polyline id="acfheights.14" points="217.73,422.62 217.73,470.89"  fill="none" />
+        <polyline id="acfheights.15" points="228.48,422.62 228.48,462.26"  fill="none" />
+        <polyline id="acfheights.16" points="239.23,422.62 239.23,454.07"  fill="none" />
+        <polyline id="acfheights.17" points="249.98,422.62 249.98,462.3"  fill="none" />
+        <polyline id="acfheights.18" points="260.74,422.62 260.74,450.41"  fill="none" />
+        <polyline id="acfheights.19" points="271.49,422.62 271.49,461.26"  fill="none" />
+        <polyline id="acfheights.20" points="282.24,422.62 282.24,454.04"  fill="none" />
+        <polyline id="acfheights.21" points="292.99,422.62 292.99,445.84"  fill="none" />
+        <polyline id="acfheights.22" points="303.74,422.62 303.74,440.65"  fill="none" />
+        <polyline id="acfheights.23" points="314.5,422.62 314.5,435.22"  fill="none" />
+        <polyline id="acfheights.24" points="325.25,422.62 325.25,423.75"  fill="none" />
+        <polyline id="acfheights.25" points="336,422.62 336,423.33"  fill="none" />
+        <polyline id="acfheights.26" points="346.75,422.62 346.75,432.95"  fill="none" />
+        <polyline id="acfheights.27" points="357.5,422.62 357.5,429.9"  fill="none" />
+        <polyline id="acfheights.28" points="368.26,422.62 368.26,417.63"  fill="none" />
+        <polyline id="acfheights.29" points="379.01,422.62 379.01,406.83"  fill="none" />
+        <polyline id="acfheights.30" points="389.76,422.62 389.76,420.53"  fill="none" />
+        <polyline id="acfheights.31" points="400.51,422.62 400.51,419.93"  fill="none" />
+        <polyline id="acfheights.32" points="411.26,422.62 411.26,399.09"  fill="none" />
+        <polyline id="acfheights.33" points="422.02,422.62 422.02,402.88"  fill="none" />
+        <polyline id="acfheights.34" points="432.77,422.62 432.77,387.03"  fill="none" />
+        <polyline id="acfheights.35" points="443.52,422.62 443.52,388.46"  fill="none" />
+        <polyline id="acfheights.36" points="454.27,422.62 454.27,393.17"  fill="none" />
+        <polyline id="acfheights.37" points="465.02,422.62 465.02,404.99"  fill="none" />
+        <polyline id="acfheights.38" points="475.78,422.62 475.78,420.21"  fill="none" />
+        <polyline id="acfheights.39" points="486.53,422.62 486.53,431.58"  fill="none" />
+        <polyline id="acfheights.40" points="497.28,422.62 497.28,409.58"  fill="none" />
+        <polyline id="acfheights.41" points="508.03,422.62 508.03,407.62"  fill="none" />
+        <polyline id="acfheights.42" points="518.78,422.62 518.78,395.58"  fill="none" />
+        <polyline id="acfheights.43" points="529.54,422.62 529.54,415.28"  fill="none" />
+        <polyline id="acfheights.44" points="540.29,422.62 540.29,402.03"  fill="none" />
+        <polyline id="acfheights.45" points="551.04,422.62 551.04,407.01"  fill="none" />
+        <polyline id="acfheights.46" points="561.79,422.62 561.79,408.99"  fill="none" />
+        <polyline id="acfheights.47" points="572.54,422.62 572.54,392.67"  fill="none" />
+        <polyline id="acfheights.48" points="583.3,422.62 583.3,391.39"  fill="none" />
+        <polyline id="acfheights.49" points="594.05,422.62 594.05,398.78"  fill="none" />
+        </g>
+      </g>
+    </g>
+    <g id="pacfvp.1"  >
+      <g id="pacfwindowvp.1"  >
+        <g id="xaxis"  >
+          <g id="major"  >
+          <polyline id="major.1" points="67.2,33.61 506.06,33.61"  fill="none" />
+          </g>
+          <g id="ticks"  >
+          <polyline id="ticks.1" points="67.2,33.61 67.2,23.98"  fill="none" />
+          <polyline id="ticks.2" points="176.91,33.61 176.91,23.98"  fill="none" />
+          <polyline id="ticks.3" points="286.63,33.61 286.63,23.98"  fill="none" />
+          <polyline id="ticks.4" points="396.34,33.61 396.34,23.98"  fill="none" />
+          <polyline id="ticks.5" points="506.06,33.61 506.06,23.98"  fill="none" />
+          </g>
+          <g id="labels"  >
+          <g id="labels.1"  stroke-width=".1" transform="translate(67.2, 4.74) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0</tspan></text>
+</g>
+</g>
+          <g id="labels.2"  stroke-width=".1" transform="translate(176.91, 4.74) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">10</tspan></text>
+</g>
+</g>
+          <g id="labels.3"  stroke-width=".1" transform="translate(286.63, 4.74) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">20</tspan></text>
+</g>
+</g>
+          <g id="labels.4"  stroke-width=".1" transform="translate(396.34, 4.74) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">30</tspan></text>
+</g>
+</g>
+          <g id="labels.5"  stroke-width=".1" transform="translate(506.06, 4.74) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">40</tspan></text>
+</g>
+</g>
+          </g>
+        </g>
+        <g id="yaxis"  >
+          <g id="major"  >
+          <polyline id="major.1" points="67.2,45.83 67.2,290.23"  fill="none" />
+          </g>
+          <g id="ticks"  >
+          <polyline id="ticks.1" points="67.2,45.83 57.58,45.83"  fill="none" />
+          <polyline id="ticks.2" points="67.2,86.56 57.58,86.56"  fill="none" />
+          <polyline id="ticks.3" points="67.2,127.3 57.58,127.3"  fill="none" />
+          <polyline id="ticks.4" points="67.2,168.03 57.58,168.03"  fill="none" />
+          <polyline id="ticks.5" points="67.2,208.76 57.58,208.76"  fill="none" />
+          <polyline id="ticks.6" points="67.2,249.5 57.58,249.5"  fill="none" />
+          <polyline id="ticks.7" points="67.2,290.23 57.58,290.23"  fill="none" />
+          </g>
+          <g id="labels"  >
+          <g id="labels.1"  stroke-width=".1" transform="translate(47.96, 45.83) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">-0.2</tspan></text>
+</g>
+</g>
+          <g id="labels.2"  stroke-width=".1" transform="translate(47.96, 86.56) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0</tspan></text>
+</g>
+</g>
+          <g id="labels.3"  stroke-width=".1" transform="translate(47.96, 127.3) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.2</tspan></text>
+</g>
+</g>
+          <g id="labels.4"  stroke-width=".1" transform="translate(47.96, 168.03) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.4</tspan></text>
+</g>
+</g>
+          <g id="labels.5"  stroke-width=".1" transform="translate(47.96, 208.76) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.6</tspan></text>
+</g>
+</g>
+          <g id="labels.6"  stroke-width=".1" transform="translate(47.96, 249.5) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">0.8</tspan></text>
+</g>
+</g>
+          <g id="labels.7"  stroke-width=".1" transform="translate(47.96, 290.23) ">
+<g transform="scale(1, -1)">
+<text x="0" y="0" text-anchor="end" fill="rgb(0,0,0)" fill-opacity="1" >
+<tspan dy="6" x="0">1</tspan></text>
+</g>
+</g>
+          </g>
+        </g>
+        <g id="box"  >
+        <rect id="box.1" x="67.2" y="33.61" width="537.6" height="268.85"   />
+        </g>
+        <g id="zeroline"  >
+        <polyline id="zeroline.1" points="67.2,86.56 604.8,86.56"  fill="none" />
+        </g>
+        <g id="pacfclims"  >
+        <polyline id="pacfclims.1" points="67.2,126.48 604.8,126.48"  stroke="rgb(0,0,255)" stroke-dasharray="5.33955063096337px,5.33955063096337px" stroke-opacity="1" fill="none" />
+        <polyline id="pacfclims.2" points="67.2,46.64 604.8,46.64"  stroke="rgb(0,0,255)" stroke-dasharray="5.33955063096337px,5.33955063096337px" stroke-opacity="1" fill="none" />
+        </g>
+        <g id="pacfheights"  >
+        <polyline id="pacfheights.1" points="78.17,86.56 78.17,188.07"  fill="none" />
+        <polyline id="pacfheights.2" points="89.14,86.56 89.14,123.46"  fill="none" />
+        <polyline id="pacfheights.3" points="100.11,86.56 100.11,109.15"  fill="none" />
+        <polyline id="pacfheights.4" points="111.09,86.56 111.09,87.82"  fill="none" />
+        <polyline id="pacfheights.5" points="122.06,86.56 122.06,99.8"  fill="none" />
+        <polyline id="pacfheights.6" points="133.03,86.56 133.03,100.95"  fill="none" />
+        <polyline id="pacfheights.7" points="144,86.56 144,98.85"  fill="none" />
+        <polyline id="pacfheights.8" points="154.97,86.56 154.97,119.74"  fill="none" />
+        <polyline id="pacfheights.9" points="165.94,86.56 165.94,56.42"  fill="none" />
+        <polyline id="pacfheights.10" points="176.91,86.56 176.91,73.41"  fill="none" />
+        <polyline id="pacfheights.11" points="187.89,86.56 187.89,125.35"  fill="none" />
+        <polyline id="pacfheights.12" points="198.86,86.56 198.86,104.31"  fill="none" />
+        <polyline id="pacfheights.13" points="209.83,86.56 209.83,99.77"  fill="none" />
+        <polyline id="pacfheights.14" points="220.8,86.56 220.8,75.85"  fill="none" />
+        <polyline id="pacfheights.15" points="231.77,86.56 231.77,80.49"  fill="none" />
+        <polyline id="pacfheights.16" points="242.74,86.56 242.74,101.41"  fill="none" />
+        <polyline id="pacfheights.17" points="253.71,86.56 253.71,90.04"  fill="none" />
+        <polyline id="pacfheights.18" points="264.69,86.56 264.69,109.99"  fill="none" />
+        <polyline id="pacfheights.19" points="275.66,86.56 275.66,61.37"  fill="none" />
+        <polyline id="pacfheights.20" points="286.63,86.56 286.63,74.49"  fill="none" />
+        <polyline id="pacfheights.21" points="297.6,86.56 297.6,86.07"  fill="none" />
+        <polyline id="pacfheights.22" points="308.57,86.56 308.57,89.91"  fill="none" />
+        <polyline id="pacfheights.23" points="319.54,86.56 319.54,73.42"  fill="none" />
+        <polyline id="pacfheights.24" points="330.51,86.56 330.51,64.19"  fill="none" />
+        <polyline id="pacfheights.25" points="341.49,86.56 341.49,99.74"  fill="none" />
+        <polyline id="pacfheights.26" points="352.46,86.56 352.46,82"  fill="none" />
+        <polyline id="pacfheights.27" points="363.43,86.56 363.43,71.91"  fill="none" />
+        <polyline id="pacfheights.28" points="374.4,86.56 374.4,69.83"  fill="none" />
+        <polyline id="pacfheights.29" points="385.37,86.56 385.37,91.94"  fill="none" />
+        <polyline id="pacfheights.30" points="396.34,86.56 396.34,89.38"  fill="none" />
+        <polyline id="pacfheights.31" points="407.31,86.56 407.31,53.58"  fill="none" />
+        <polyline id="pacfheights.32" points="418.29,86.56 418.29,82.14"  fill="none" />
+        <polyline id="pacfheights.33" points="429.26,86.56 429.26,47.75"  fill="none" />
+        <polyline id="pacfheights.34" points="440.23,86.56 440.23,82.85"  fill="none" />
+        <polyline id="pacfheights.35" points="451.2,86.56 451.2,107.84"  fill="none" />
+        <polyline id="pacfheights.36" points="462.17,86.56 462.17,103.62"  fill="none" />
+        <polyline id="pacfheights.37" points="473.14,86.56 473.14,94.4"  fill="none" />
+        <polyline id="pacfheights.38" points="484.11,86.56 484.11,96.07"  fill="none" />
+        <polyline id="pacfheights.39" points="495.09,86.56 495.09,85.01"  fill="none" />
+        <polyline id="pacfheights.40" points="506.06,86.56 506.06,84.35"  fill="none" />
+        <polyline id="pacfheights.41" points="517.03,86.56 517.03,70.76"  fill="none" />
+        <polyline id="pacfheights.42" points="528,86.56 528,124.34"  fill="none" />
+        <polyline id="pacfheights.43" points="538.97,86.56 538.97,51.21"  fill="none" />
+        <polyline id="pacfheights.44" points="549.94,86.56 549.94,99.11"  fill="none" />
+        <polyline id="pacfheights.45" points="560.91,86.56 560.91,93.08"  fill="none" />
+        <polyline id="pacfheights.46" points="571.89,86.56 571.89,69.68"  fill="none" />
+        <polyline id="pacfheights.47" points="582.86,86.56 582.86,94.37"  fill="none" />
+        <polyline id="pacfheights.48" points="593.83,86.56 593.83,87.79"  fill="none" />
+        </g>
+      </g>
+    </g>
+  </g>
+</g>
+</svg>
+<script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+<script type="text/javascript">
+  var updateHeights = function() {
+      var acfheights = document.getElementById("acfheights");
+      var pacfheights = document.getElementById("pacfheights");
+      if (window.XMLHttpRequest) {
+          var transitionHeights = function() {
+              // Only execute the rest of the function when we have
+              // received data from the server, not any intermediary states
+              if (xhr.readyState !== 4)
+                  return;
+              // Because the response is text/xml, we can use responseXML to parse
+              // automatically for us
+              var newdoc = xhr.responseXML;
+              var newnode = document.importNode(newdoc.documentElement, true);
+              d3.select(acfheights)
+                  .selectAll("polyline")
+                  .transition()
+                  .duration(1000)
+                  .attr("points", function(d, i) {
+                      var currLine = newnode.childNodes[i];
+                      return currLine.getAttribute("points");
+                  });
+          };
+          xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = transitionHeights;
+          xhr.open('GET', "/custom/arma/brew/acf?p=" + armap.value + "&q=" + armaq.value);
+          xhr.send();
+      }
+  };
+  var armap = document.getElementById("arma-p");
+  var armaq = document.getElementById("arma-q");
+  armap.addEventListener("change", updateHeights);
+  armaq.addEventListener("change", updateHeights);
+
+</script>
+</body>
+</html>
