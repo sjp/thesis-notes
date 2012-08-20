@@ -1,4 +1,96 @@
 
+2012-08-21
+----------
+
+DISCUSS:
+
+  + Sasha Goodman asks:
+
+    "Do you know if websockets can handle high volumes of users?"
+ 
+  + Nunez example
+
+
+NOTES:
+
+  + R event handler code needs to be able to see the coordinate info
+    that goes with the SVG file that is calling back to it ?
+
+    In other words, do we need conversion functions in R to
+    convert between coordinate systems in the SVG image?
+
+    Yes, at least sometimes.  Best option is to provide this so
+    that people can either generate values in R and then convert 
+    them in javascript OR generate and convert in R and just 
+    send px values back to javascript.  Allows developer to  
+    choose whichever is easiest.
+
+    It is NOT completely mental because, although the coordinate info
+    is already available in R when you *draw* the image (using grid
+    and gridSVG), a new R session that the SVG code talks to has
+    NO IDEA about the structure of the SVG image unless we send
+    it to the new R session.
+
+  + How to send coordinate info to R?  Only once up front or every
+    time you make a request?  
+
+    BOTH!  Have a "global" default, but allow per-request as well.
+
+coinfogen <- function() { 
+    info <- NULL
+    function(newinfo=NULL) { 
+        if (is.null(newinfo)) { 
+            info 
+        } else { 
+            info <<- newinfo 
+        }
+    } 
+}
+
+> coinfo <- coinfogen()
+> coinfo()
+NULL
+> coinfo(1)
+> coinfo()
+[1] 1
+
+
+TODO:
+
+  + MAKE SURE YOU put your name on everything you do
+
+  + export javascript coordinate conversion functions from 'gridSVG'
+    (controlled by arg just like coordinate info)
+
+  + add R coordinate conversion functions to 'gridSVG'
+
+  + Document the new examples (at least novel features of them)
+
+  + Document the new 'gridSVG' features
+
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + Export viewport transforms to SVG
+
+    See examples/time-series/       (use google-chrome!)
+        examples/unit-conversion/   (including unit tests!!!)
+        examples/unit-conversion/coords.js  (example coordinate info)
+        examples/unit-conversion/conversion.js  (conversion functions)
+        examples/unit-conversion/location-test.html  (example usage)
+
+    Also see gridsvg/ (to capture coordinate info and export it)
+
+
 2012-08-14
 ----------
 
