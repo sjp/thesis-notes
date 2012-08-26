@@ -1,0 +1,108 @@
+#+TITLE: Coordinate System Retention
+
+The need is present for a means of translating between SVG pixels and
+R units. The reasons for this are quite clear, for example, if we wish
+to add an SVG element to a plot which has scales on each dimension
+present (i.e. plotting a point at (3.5, 6.25)) we need to know how to
+turn those native units into SVG pixels.
+
+The difficulty arises in the fact that when gridSVG writes out a plot,
+it translates every unit to SVG pixels. No viewport location,
+dimensions or scales are retained currently. This information needs to
+be serialised in some way. Changes to gridSVG have been made such that
+this is now retained and the way in which this is retained is by
+writing out a file as gridSVG is drawing an SVG plot.
+
+The important information that is currently retained when gridSVG is
+processing each viewport is the following:
+
++ x :: the ~x~ location of the viewport (SVG pixels)
++ y :: the ~y~ location of the viewport (SVG pixels)
++ width :: the ~width~ of the viewport (SVG pixels)
++ height :: the ~height~ of the viewport (SVG pixels)
++ xscale :: a vector of 2 numbers indicating the minimum and maximum
+            values along the ~x~ dimension
++ yscale :: a vector of 2 numbers indicating the minimum and maximum
+            values along the ~y~ dimension
++ inch :: the size of what R interpreted to be an inch (in SVG pixels)
+          as gridSVG was creating the SVG file
+
+An important thing to note is that the rotation property of viewports
+is not retained. This is because it makes the implementation of a lot
+of things in SVG a lot more difficult.
+
+# Expand on this, rotation is not easy
+
+Another piece of information that is not retained is that of the
+transformation matrix that allows us to translate between a viewport's
+coordinates to coordinates on a plotting device. This is no longer
+strictly necesary because we have all of the information available to
+us in terms of SVG pixels and the viewport information. In other
+words, we don't need to use a transformation matrix to know where a
+point in a viewport is because we know the size of the SVG document is
+in pixels, and the location of the point is represented in terms of
+pixels regardless of the viewport.
+
+Although the information about inches is repeated, and is not stricly
+necessary, it does allow us to keep all the information we need about
+a viewport in one coherent object. Furthermore, because we are storing
+this information in ~JSON~, the current structure of the JSON object
+is simply an object with many key-value pairs of viewport names, and
+the information relating to those viewports. It may be ideal to nest
+this information further down so that we can store meta-information
+about the plot and indeed inches but currently it is very simple and
+straightforward to collate all of a viewport's information in one
+object.
+
+Now that the information is stored in some way, we need to be able to
+convert between (grid's) units. It is particularly useful to perform
+conversions between the following units:
+
++ native
++ npc
++ inches
++ svg (pixels)
+
+The first two are units relative to some scale that are useful to
+have, but the other two are absolute units that aid us in converting
+between relative units and absolute units. Note: other units can be
+converted but are not particular relevant for discussion (e.g. ~cm~,
+but it is simply inches * 2.54...).
+
+The approach that is being used for unit conversion is that we first
+attempt to convert every unit to an inch, and then convert that inch
+to the unit we want. This saves us from writing unit conversion
+routines for conversion between each unit.
+
+We can then wrap these conversion functions in functions that apply
+these transformations relative to viewports. These functions are as follows:
+
++ viewportConvertWidth :: Converts the width of one unit, to the width
+     of another. Width is important in the case of relative units
+     (~native~, ~npc~) because they can be interpreted as being
+     locations or dimensions. Here we explicitly ask for the
+     dimension.
++ viewportConvertHeight :: Converts the height of one unit, to the
+     width of another. Again, as with converting widths, we use this
+     to specify the height dimension because of the ambiguity between
+     locations and dimensions.
++ viewportConvertX :: Converts the width of the unit, plus the offset
+     of the viewport location into SVG pixels.
++ viewportConvertY :: Converts the height of the unit, plus the offset
+     of the viewport location into SVG pixels.
+
+However, while these are useful functions, it may be the case that you
+would want to use them in R (when generating content for the browser
+to accept) or in the browser without communicating to R. The reason
+for this is because you might, say, want to draw a point at a certain
+location in the plot. No communication from the browser to R is
+strictly necessary for this to occur, so JavaScript code has been
+written to handle this. However, for more complex cases, R code should
+be getting used, for example if more complicated processing needs to
+occur that would be prohibitive to write in JS that is ideal in R, we
+should be able to return information from R in a form that the browser
+doesn't need to transform.
+
+This way, we are able to provide the user with the option of being
+able to choose between transforming locations in R (ideal for more
+complicated tasks), or in JS (for simpler cases).
