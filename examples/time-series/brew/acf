@@ -1,7 +1,35 @@
 <%
+
 get.vars <- req$GET()
 p <- if (! is.null(get.vars$p)) as.numeric(get.vars$p) else 0
 q <- if (! is.null(get.vars$q)) as.numeric(get.vars$q) else 0
+outFormat <- if (! is.null(get.vars$format)) as.character(get.vars$format) else "SVG"
+
+# In the case where we have been given some coordinate information
+# to use *per request*, set coordsInfo(), also assume for this
+# example that the only thing that could be posted is coordinates
+# information
+if (req$post()) {
+  cinfo <- Utils$unescape(req$POST()[["coords"]])
+
+  # Update the coordinate information with new information
+  # when present, overwrite if names clash. Do not remove
+  # existing information
+  currCoords <- coordsInfo()
+  if (is.null(currCoords)) {
+    coordsInfo(fromJSON(cinfo))
+  } else {
+    newCoords <- fromJSON(cinfo)
+    keepOldName <- ! names(currCoords) %in% names(newCoords)
+    if (any(keepOldName)) {
+      existingNames <- names(currCoords)[keepOldName]
+      for (i in 1:length(existingNames)) {
+        newCoords[[existingNames[i]]] <- currCoords[[existingNames[i]]]
+      }
+    }
+    coordsInfo(newCoords)
+  }
+}
 
 # Make sure the response is XML
 res$header("Content-Type", "image/svg+xml")
@@ -23,7 +51,7 @@ acfSVG <- function(p, q) {
     line.pairs[i] <- paste0(points[2 * i - 1], " ", points[2 * i])
   }
 
-  paste0('<polyline points="', line.pairs, '" />', collapse = "")
+  line.pairs
 }
 
 pacfSVG <- function(p, q) {
@@ -41,10 +69,17 @@ pacfSVG <- function(p, q) {
     line.pairs[i] <- paste0(points[2 * i - 1], " ", points[2 * i])
   }
 
-  paste0('<polyline points="', line.pairs, '" />', collapse = "")
+  line.pairs
 }
 
-polylines <- acfSVG(p, q)
+acf.line.pairs <- acfSVG(p, q)
+pacf.line.pairs <- pacfSVG(p, q)
 
 %>
-<%= svg.header %><%= polylines %><%= svg.footer %>
+<%
+if (outFormat == "SVG") {
+  brew("acfSVG")
+} else if (outFormat == "JSON") {
+  brew("acfJSON")
+}
+%>

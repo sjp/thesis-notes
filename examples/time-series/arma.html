@@ -2,8 +2,15 @@
 <head><title>ARMA Models</title></head>
 <body>
 <h1>Interactive ARMA Models</h1>
+<div style="clear: both;">
+<input id="coords-load" type="button" value="Load Coordinates File">
+<select id="req-format">
+    <option>SVG</option>
+    <option>JSON</option>
+</select>
 <input id="arma-p" type="number" min="0" max="5" step="1" value="0" />
 <input id="arma-q" type="number" min="0" max="5" step="1" value="0" />
+</div>
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink"
      width="672px"
@@ -347,39 +354,110 @@
 </g>
 </svg>
 <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+<script type="text/javascript" src="/custom/arma/coords.js"></script>
 <script type="text/javascript">
   var updateHeights = function() {
       var acfheights = document.getElementById("acfheights");
       var pacfheights = document.getElementById("pacfheights");
+      var reqFormat = document.getElementById("req-format");
+      // Getting the selected *value* of the combobox
+      reqFormat = reqFormat.options[reqFormat.selectedIndex].text;
       if (window.XMLHttpRequest) {
           var transitionHeights = function() {
               // Only execute the rest of the function when we have
               // received data from the server, not any intermediary states
               if (xhr.readyState !== 4)
                   return;
-              // Because the response is text/xml, we can use responseXML to parse
-              // automatically for us
-              var newdoc = xhr.responseXML;
-              var newnode = document.importNode(newdoc.documentElement, true);
-              d3.select(acfheights)
-                  .selectAll("polyline")
-                  .transition()
-                  .duration(1000)
-                  .attr("points", function(d, i) {
-                      var currLine = newnode.childNodes[i];
-                      return currLine.getAttribute("points");
-                  });
+              if (reqFormat === "SVG") {
+                  // Because the response is text/xml, we can use responseXML to parse
+                  // automatically for us
+                  var newdoc = xhr.responseXML;
+                  var newnode = document.importNode(newdoc.documentElement, true);
+                  var acfgroup = newnode.childNodes[0];
+                  var pacfgroup = newnode.childNodes[1];
+                  d3.select(acfheights)
+                      .selectAll("polyline")
+                      .transition()
+                      .duration(1000)
+                      .attr("points", function(d, i) {
+                          var currLine = acfgroup.childNodes[i];
+                          return currLine.getAttribute("points");
+                      });
+                  d3.select(pacfheights)
+                      .selectAll("polyline")
+                      .transition()
+                      .duration(1000)
+                      .attr("points", function(d, i) {
+                          var currLine = pacfgroup.childNodes[i];
+                          return currLine.getAttribute("points");
+                      });
+              } else if (reqFormat == "JSON") {
+                  var linesData = JSON.parse(xhr.responseText);
+                  var acfData = linesData.acf;
+                  var pacfData = linesData.pacf;
+                  d3.select(acfheights)
+                      .selectAll("polyline")
+                      .data(acfData)
+                      .transition()
+                      .duration(1000)
+                      .attr("points", function(d) {
+                          return d;
+                      });
+                  d3.select(pacfheights)
+                      .selectAll("polyline")
+                      .data(pacfData)
+                      .transition()
+                      .duration(1000)
+                      .attr("points", function(d) {
+                          return d;
+                      });
+              }
           };
-          xhr = new XMLHttpRequest();
+          var xhr = new XMLHttpRequest();
           xhr.onreadystatechange = transitionHeights;
-          xhr.open('GET', "/custom/arma/brew/acf?p=" + armap.value + "&q=" + armaq.value);
+          // Here we send a GET request assuming that the coords
+          // have already been loaded in R.
+          xhr.open("GET", "/custom/arma/brew/acf?p=" + armap.value +
+                          "&q=" + armaq.value +
+                          "&format=" + reqFormat);
           xhr.send();
+          // Uncomment the following lines to send coordinate information
+          // on a *per request* basis
+          //
+          // var fd = new FormData();
+          // fd.append("coords", JSON.stringify(gridSVGCoords));
+          // xhr.open("POST", "/custom/arma/brew/acf?p=" + armap.value + 
+          //                  "&q=" + armaq.value +
+          //                  "&format=" + reqFormat);
+          // xhr.send(fd);
       }
   };
+
   var armap = document.getElementById("arma-p");
   var armaq = document.getElementById("arma-q");
   armap.addEventListener("change", updateHeights);
   armaq.addEventListener("change", updateHeights);
+
+  // The following allows us to be able to initialise a coordinate
+  // system *in R* that we already know about because we have loaded
+  // a coordinates file via a <script> tag into the gridSVGCoords var.
+  var sendCoordsInfo = function() {
+      var fd = new FormData();
+      fd.append("coords", JSON.stringify(gridSVGCoords));
+      var confirmSent = function() {
+          if (xhr.readyState === 4) {
+              alert("successfully sent");
+          }
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = confirmSent;
+      xhr.open("POST", "/custom/arma/brew/initCoords");
+      xhr.send(fd);
+  };
+  var coordsLoader = document.getElementById("coords-load");
+  coordsLoader.addEventListener("click", sendCoordsInfo);
+
+
 
 </script>
 </body>

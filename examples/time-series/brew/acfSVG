@@ -1,0 +1,7 @@
+<%
+
+acf.polylines <- paste0('<polyline points="', acf.line.pairs, '" />', collapse = "")
+pacf.polylines <- paste0('<polyline points="', pacf.line.pairs, '" />', collapse = "")
+
+%>
+<%= svg.header %><g><%= acf.polylines %></g><g><%= pacf.polylines %></g><%= svg.footer %>

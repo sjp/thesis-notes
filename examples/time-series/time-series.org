@@ -1,0 +1,173 @@
+#+TITLE: Time Series example with ARMA plots
+
+* Introduction
+
+In this example the following new features are demonstrated:
+
++ Initialisation of coordinate information
++ Multiple grob responses
++ JSON & SVG output
+
+The idea with this plot is to show how we can produce a set of
+autocorrelation plots relating to ARMA models. Of note is that we have
+two numeric pickers, the first relating to the AR(p) parameter, while
+the second is relating to the MA(q) parameter. When either parameter
+changes, a request is made for new lines for the ACF plots. What R
+does is first fit a new model with these parameters and stores the
+resulting ACF and PACF information up to 48 lagged time periods into
+two vectors. Then, knowing the viewports that the data is to be
+plotted in, it transforms the data into numbers that represent SVG
+pixels. From there, the points data is formatted in such a way that it
+can be placed into an SVG ~points~ attribute.
+
+Later, this data is formatted into the appropriate message format,
+where it is then returned to the browser. d3 then transitions from the
+old line heights to the new line heights based on this data. The only
+real difference between the two formats, at least to d3, is that the
+JSON version can be passed into a ~data~ method on a selection.
+
+* Initialisation of coordinate information
+
+The plot we initially have produced a coordinates file (in JSON), and
+we have loaded this coordinate information into our HTML via a
+~<script>~ tag that assigns the JSON to a JS variable called
+~gridSVGCoords~. We need to be able to inform R that these coordinates
+is the reference by which we're going to be plotting everything.
+
+There are two ways of going about this:
+
++ Initialising the coordinate system up-front in an initial request
+  prior to performing any coordinate calculation in R. This ensures
+  that R knows everything that the browser currently knows (and indeed
+  the entire plot), at the cost of a larger upload than we might need.
+
++ Informing R of viewport information on a per-request basis. In other
+  words, when we ask for new information from R (in this case, say,
+  ACF information) we can also ~POST~ the information that is needed
+  for the required coordinates to be calculated. So we would in this
+  case only need to send the information about the viewport that the
+  ACF lines are being plotted in to calculate the correct line
+  dimensions and locations.
+
+  This requires that the implementation of the browser-side code knows
+  what viewport the grob to be modified or inserted belongs in. This
+  is not a difficult task to find out however, given the hierarchical
+  structure of SVG and that a JS function ~grobViewport~ has been
+  written to grab the name of a viewport that an SVG "grob" belongs in.
+
+The information is easily sent to R because there is a native method
+to serialise a JS object (i.e.  the coordinate information object
+~gridSVGCoords~ into a JSON string, ~JSON.stringify~. Therefore to
+send all information to R we can just call ~stringify~ on that object,
+but if we want to send a smaller amount of information, subsetting
+this object would be possible. An example of how we might do that is
+using the following code:
+
+: // Defining a function to perform subsetting for us
+: var objectSubset = function(obj, keyList) {
+:     var newCoords = {};
+:     for (var i = 0; i < keyList.length; i++) {
+:         newCoords[keyList[i]] = obj[keyList[i]];
+:     }
+:     return newCoords;
+: };
+:
+: // Subsetting
+: var subCoords = objectSubset(gridSVGCoords, ["acfvp", "pacfvp"]);
+: // Sending the subsetted result
+: xhr.send(JSON.stringify(subCoords));
+
+* Multiple grob responses
+
+In this example, because we want to be able to manipulate both the ACF
+plot and the PACF too, we need to find a way to ensure that this
+happens at the same time (or near enough). There is no easy way for
+multiple responses to be synchronised upon response, thus we need to
+package up a response from R that contains data for both the ACF and
+the PACF.
+
+The way in which this is being done currently is that the data is
+being grouped, with one group for ACF data and one group for PACF
+data. As described later, there are two ways in which we can group the
+data, via JSON or via SVG. The example there shows how this is being
+done.
+
+The advantage of this approach is that we know that both pieces of
+data arrive at the same time, so we can perform transitions on the
+heights of each line roughly at the same time for the ACF and the
+PACF.
+
+This provides a way in which we can produce responses that relate to
+multiple grobs/elements. When responses get more complicated, we can
+perhaps return the resulting grouping information, keyed by the
+grob/element name it relates to.
+
+* JSON & SVG output
+
+We can utilise two different structured message formats to transfer
+information from R to the browser. Going from the browser to R is more
+limited in that we are mostly restricted to query parameters and JSON
+objects. We can still serialise XML objects but it does not really
+make sense for us to do that as there is rarely a case for us to parse
+XML in R.
+
+: // To serialise an XML document in JS
+: var tmp = document.getElementsByTagName("svg")[0];
+: var xs = new XMLSerializer();
+: var tmpAsString = xs.serializeToString(tmp);
+
+However, because we're really only concerned with displaying SVG
+documents, SVG is an obvious choice for a message format. Also,
+because ~d3~ allows us to map data to elements, and the data needs to
+be in a JS array, we can see how JSON as a message format is also
+useful. To demonstrate how both of these formats can be used, a
+drop-down list has been created that allows us to specify which
+message format to use when receiving data from R.
+
+The effect of the list selection is that it changes the query
+parameter passed into the ~brew/acf~ file. It changes the ~format~ GET
+parameter so that we end up sending one of ~&format=SVG~ or
+~&format=JSON~. This affects the output received because the ~acf~
+file simply generates the points values and stores them in two
+vectors, one for the ACF data and one for the PACF data. The ~acf~
+file then calls ~brew()~ on one of ~acfSVG~ or ~acfJSON~, depending on
+the value of the ~format~ GET parameter. These two files are simply
+templates that generate the output we want from the given line
+data. So for the same data we can end up with two different outputs.
+
+SVG:
+
+: <svg>
+:   <g>
+:     <polyline points="..." />
+:     <polyline points="..." />
+:     <polyline points="..." />
+:     ...
+:   </g>
+:   <g>
+:     <polyline points="..." />
+:     <polyline points="..." />
+:     <polyline points="..." />
+:     ...
+:   </g>
+: </svg>
+
+JSON:
+
+: {
+:   "acf": ["...", "...", ...],
+:   "pacf: ["...", "...", ...]
+: }
+
+Perhaps unsurprisingly, the JSON output is much more space-efficient
+and thus is faster to transmit over a network connection. Regardless,
+we have shown that we can represent the data in two different ways,
+and so long as the browser knows the format that the data is going to
+be provided in, we can manipulate the existing plot.
+
+The only real difference to the way in which we write our d3 is that
+for SVG we need to iterate through the ~childNodes~ of our different
+~<g>~ groups, and pull out the required points attribute. In JSON, we
+just need to say to use the JSON data, then to simply use a datum from
+that, no indexing required.
+

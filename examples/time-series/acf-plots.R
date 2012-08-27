@@ -99,23 +99,23 @@ pacfSVG <- function(p, q) {
            svg.footer), collapse = "")
 }
 
-library(RJSONIO)
-gridSVGCoords <- fromJSON("acf-demo.json")
+#library(RJSONIO)
+#coordsInfo() <- fromJSON("acf-demo.json")
 
 viewportConvertX <- function(vpname, x, from) {
-  offset <- gridSVGCoords[[vpname]]$x
+  offset <- coordsInfo()[[vpname]]$x
   width <- viewportConvertWidth(vpname, x, from, "svg")
   offset + width
 }
 
 viewportConvertY <- function(vpname, x, from) {
-  offset <- gridSVGCoords[[vpname]]$y
+  offset <- coordsInfo()[[vpname]]$y
   height <- viewportConvertHeight(vpname, x, from, "svg")
   offset + height
 }
 
 viewportConvertWidth <- function(vpname, x, from, to) {
-  vpCoords <- gridSVGCoords[[vpname]]
+  vpCoords <- coordsInfo()[[vpname]]
   i <- toInches(from, x,
                 vpCoords$width,
                 vpCoords$xscale,
@@ -128,7 +128,7 @@ viewportConvertWidth <- function(vpname, x, from, to) {
 }
 
 viewportConvertHeight <- function(vpname, x, from, to) {
-  vpCoords <- gridSVGCoords[[vpname]]
+  vpCoords <- coordsInfo()[[vpname]]
   i <- toInches(from, x,
                 vpCoords$height,
                 vpCoords$yscale,
