@@ -212,7 +212,7 @@ var toUnit = function(to, unitValue, vpDimSize, nativeScale, dimInchSize) {
  *
  * @param {number} number The input number to round
  * @param {number} digits The number of decimal places to round to
- * @retuns {number} The rounded number
+ * @returns {number} The rounded number
  */
 var roundNumber = function(number, digits) {
     var multiple = Math.pow(10, digits);
@@ -256,3 +256,46 @@ var grobViewport = function(grobName) {
         console.error("Unable to find grob [%s]", grobName);
     }
 };
+
+/**
+ * Removes any empty text nodes from an XML tree.
+ *
+ * Often when we create XML, we use indentation to make the structure of
+ * the XML document more obvious to someone who reads it.
+ *
+ * This is a good idea in general, but it makes parsing the DOM a bit
+ * more challenging. Consider the following example:
+ *
+ * : <svg>
+ * :     <rect ... />
+ * : </svg>
+ *
+ * We would expect the <svg> node to have one child, when it in fact has
+ * *three* child nodes. A text node, a rect node and a text node. This
+ * goes against intuition so we would ideally like it so that only the 
+ * nodes that contain elements, such as the rect node, remain. This is
+ * the purpose of this function.
+ * 
+ * @param {Object} node An XML tree that we wish to prune
+ */
+var pruneTextNodes = function(node) {
+    var blank = /^\s*$/;
+    var child, next;
+    switch (node.nodeType) {
+        case 3: // Text node
+            if (blank.test(node.nodeValue)) {
+                node.parentNode.removeChild(node);
+            }
+            break;
+        case 1: // Element node
+        case 9: // Document node
+            child = node.firstChild;
+            while (child) {
+                next = child.nextSibling;
+                pruneTextNodes(child);
+                child = next;
+            }
+            break;
+    }
+};
+

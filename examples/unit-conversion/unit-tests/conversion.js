@@ -212,7 +212,7 @@ var toUnit = function(to, unitValue, vpDimSize, nativeScale, dimInchSize) {
  *
  * @param {number} number The input number to round
  * @param {number} digits The number of decimal places to round to
- * @retuns {number} The rounded number
+ * @returns {number} The rounded number
  */
 var roundNumber = function(number, digits) {
     var multiple = Math.pow(10, digits);
