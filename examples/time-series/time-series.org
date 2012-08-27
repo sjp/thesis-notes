@@ -77,6 +77,27 @@ using the following code:
 : // Sending the subsetted result
 : xhr.send(JSON.stringify(subCoords));
 
+The way in which we send this information to R without having to cause
+a page refresh is now quite simple due to improvements in the
+XMLHttpRequest object in most browsers. We create a ~FormData~ object
+that is a JS equivalent of what we would normally mark up in
+HTML. Through this we can assign values to keys that we can then parse
+in R through Rook's ~Request~ instances. The only thing to note here
+is that data is sent in a form-encoded format. This means that in
+order to parse correct JSON in R, we need use Rook's ~Utils$unescape~
+method to get valid JSON.
+
+We need to use the ~FormData~ object because Rook does not handle the
+case where we simply send it text, it assumes that only forms may POST
+data.
+
+More information about improvements to XHR:
+
+http://www.html5rocks.com/en/tutorials/file/xhr2/
+https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest/FormData
+http://stackoverflow.com/questions/6974684/how-to-send-formdata-objects-with-ajax-requests-in-jquery
+http://hacks.mozilla.org/2010/05/formdata-interface-coming-to-firefox/
+
 * Multiple grob responses
 
 In this example, because we want to be able to manipulate both the ACF
