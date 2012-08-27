@@ -7,6 +7,7 @@ In this example the following new features are demonstrated:
 + Initialisation of coordinate information
 + Multiple grob responses
 + JSON & SVG output
++ Loading datasets
 
 The idea with this plot is to show how we can produce a set of
 autocorrelation plots relating to ARMA models. Of note is that we have
@@ -192,3 +193,35 @@ for SVG we need to iterate through the ~childNodes~ of our different
 just need to say to use the JSON data, then to simply use a datum from
 that, no indexing required.
 
+* Loading datasets
+
+Instead of simply loading the same dataset for a given application, in
+this case ARMA models, it is more interesting if we can generalise
+this to work with any datasets, particularly those unknown to R. To
+demonstrate this, I have introduced a data loading feature into the
+ARMA example.
+
+The process that is taken to load data into R is that first, we select
+a dataset using the ~<input>~ element. When the value of this element
+changes, it triggers information to be sent to R. Again, like the
+coordinate information, we send this via a ~FormData()~
+object. Because this is a file that we're uploading, Rook treats this
+as a special case and saves it to a temporary location (in my case
+under ~/tmp/Rtmp*/~). We can then read the dataset from this location
+into R manipulate within our example. The dataset is stored in the
+Rook application in the same way in which we store the coordinate
+information, via a closure. This allows us to retrieve and update the
+dataset easily, and by default, the dataset is ~Nile~, one of the
+built-in datasets in R. This is because it is the same dataset that
+generated the original plot.
+
+We can apply this technique in general whenever we want a custom
+dataset. However, some limitations with the current example is that we
+don't update anything except the ACF and PACF line heights, as a
+result, a few things don't occur that we would normally see in the
+built-in ACF and PACF plots:
+
++ Rescaling and replotting of vertical axes for larger/smaller
+  ACF/PACF ranges.
++ Recalculation and replotting of confidence intervals.
++ Ensuring no plotting occurs outside the range of the main viewports.

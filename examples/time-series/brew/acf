@@ -37,7 +37,7 @@ svg.header <- '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
 svg.footer <- '</svg>'
 
 acfSVG <- function(p, q) {
-  heights <- acf(residuals(arima(Nile, order = c(p, 0, q))),
+  heights <- acf(residuals(arima(armaDataset(), order = c(p, 0, q))),
                  plot = FALSE, lag.max = 48)$acf
   xs <- 1:length(heights) / (length(heights) + 1) 
   xs <- c(rbind(xs, xs))
@@ -55,7 +55,7 @@ acfSVG <- function(p, q) {
 }
 
 pacfSVG <- function(p, q) {
-  heights <- pacf(residuals(arima(Nile, order = c(p, 0, q))),
+  heights <- pacf(residuals(arima(armaDataset(), order = c(p, 0, q))),
                   plot = FALSE, lag.max = 48)$acf
   xs <- 1:length(heights) / (length(heights) + 1) 
   xs <- c(rbind(xs, xs))

@@ -3,6 +3,7 @@
 <body>
 <h1>Interactive ARMA Models</h1>
 <div style="clear: both;">
+<input id="dataset" type="file" value="Load Dataset">
 <input id="coords-load" type="button" value="Load Coordinates File">
 <select id="req-format">
     <option>SVG</option>
@@ -457,7 +458,23 @@
   var coordsLoader = document.getElementById("coords-load");
   coordsLoader.addEventListener("click", sendCoordsInfo);
 
-
+  // The following allows us to be able to load a dataset into
+  // R from some location on our hard disk.
+  var sendDataset = function() {
+      var fd = new FormData();
+      fd.append("dataset", dataLoader.files[0]);
+      var confirmSent = function() {
+          if (xhr.readyState === 4) {
+              alert("successfully sent");
+          }
+      }
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = confirmSent;
+      xhr.open("POST", "/custom/arma/brew/loadDataset");
+      xhr.send(fd);
+  };
+  var dataLoader = document.getElementById("dataset");
+  dataLoader.addEventListener("change", sendDataset);
 
 </script>
 </body>

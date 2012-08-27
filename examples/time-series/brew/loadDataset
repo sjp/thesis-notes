@@ -1,0 +1,8 @@
+<%
+
+dataset <- req$POST()[["dataset"]]
+dataset <- Utils$unescape(dataset$tempfile)
+# Assume it has been read in as a tab delimited text file
+armaDataset(read.table(dataset))
+
+%>
