@@ -1,4 +1,67 @@
 
+2012-08-28
+----------
+
+TODO:
+
+  + Get the plot y-scale to dynamically update!
+    (without reproducing the entire plot)
+    e.g., generate new scale grobs + coord info
+    (i.e., MODIFY the viewport!)
+
+  + name coord info by viewport *path* 
+    (plus name mangle to ensure uniqueness)
+    [watch out for path separator being invalid ID char]
+
+  + Use <symbol> elements for data symbols?
+
+    - better than <g> solution we currently have because
+      simpler, faster (only one <symbol> then lots of <use>s)
+
+      BUT only if animation of <symbol> works
+      (e.g., animating 'width' of <symbol> does NOT scale 'width'
+       of lines drawn within <symbol>)
+
+      (OR animation of <use> works)
+
+  + Write a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+
+    - simple example to show export
+    - simple javascript to add point relative to plot scales
+    - "simple" manipulate SVG within R (via 'XML' package) to
+      show import 
+
+  + Add 'RJSONIO' as dependency for 'gridSVG'
+
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + MAKE SURE YOU put your name on everything you do
+
+  + Document the new examples (at least novel features of them)
+
+    See examples/time-series/time-series.org
+
+  + export javascript coordinate conversion functions from 'gridSVG'
+    (controlled by arg just like coordinate info)
+
+  + add R coordinate conversion functions to 'gridSVG'
+
+  + Document the new 'gridSVG' features
+
+    see gridSVG!
+
+
 2012-08-21
 ----------
 
