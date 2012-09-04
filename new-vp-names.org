@@ -1,0 +1,49 @@
+#+TITLE: New Viewport Naming Scheme
+
+The first implementation of a naming scheme for exporting ~grid~
+viewports was to set the ~id~ attribute of the exported viewport
+(i.e. the SVG ~<g>~ element) with a suffix representing the number of
+times that the viewport has been used. This ensures that we have a
+unique ID (and therefore ensuring document validity). However, because
+each usage of a viewport may be nested within different viewports we
+are forced to produce viewport metadata for each time we visit a
+viewport. This includes things like coordinate information and
+clipping paths.
+
+What *are* unique are the paths to viewports. We know that the path to
+a viewport *must* produce the same information about clipping, and
+indeed about coordinate information. This is because ~grid~ does not
+allow viewports to be modified while drawing. The advantage of this is
+removing redundancy of exported information, as well as each viewport
+~id~ clearly describing the path it took to get there.
+
+Because of the fact that it is possible for a particular viewport path
+to be used more than once, and the fact that we require *unique* ~id~
+attributes, we still need to perform name mangling on ~id~s. In this
+case, instead of a viewport name that we're going to be modifying, it
+will be a viewport path.
+
+Given that we know what a viewport path is a vector of viewport names
+joined by a particular separator, we need to ensure that the
+separators we used are valid, and reasonable to use. Valid ID
+characters in HTML 4.01 are the alphanumeric character set, plus
+~.:_-~. However, in HTML 5 we no longer have such a restricted
+character set, in fact much of the UTF-8 character space is valid. Due
+to the fact that ~grid~ uses ~::~ as its path separator, it seems
+reasonable to also use this for our exported ~id~ attributes too. One
+small concern with this choice is that it would require escaping if we
+were attempting to use a selector to target a particular viewport
+~<g>~. This is because a ~:~ is a special character for selectors, but
+is easily escapable using something like the following:
+
+: s/::/\\:\\:/g
+
+The reason why the other characters ~._-~ are not suitable is because of:
+
++ ~lattice~ uses ~.~ for viewport names. ~grid~ automatically assigns
+  viewports with names featuring ~.~ characters when
+  unspecified.
++ ~ggplot2~ constructs viewport names with ~-~ as separators.
++ ~ggplot2~ also uses the ~_~ character as part of its naming
+  convention for some grobs, so we cannot use it in case one of the
+  grobs is a ~gTree~.
