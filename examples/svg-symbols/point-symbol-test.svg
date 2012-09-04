@@ -1,0 +1,107 @@
+<?xml version="1.0" standalone="no"?>
+<svg width="500px" height="500px" version="1.1"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+       <!-- 
+            Define the symbol to be a square located at (0,0) with
+            dimensions of 10x10. These locations are relative to the
+            actual "point" itself. The dimensions are arbitrary units,
+            much like the marker element, so whatever is useful for
+            defining what the point actually looks like is fine.
+       -->
+       <symbol id="symbolRect" viewBox="-5 -5 10 10" overflow="visible">
+        <!-- Uncomment for pch=12
+           <polyline points="0,-4 0,4" stroke="black" />
+           <polyline points="-4,0 4,0" stroke="black" />
+           <rect x="-4" y="-4" width="8" height="8" fill="none" stroke="black" />
+        -->
+        <!-- pch=1 -->
+        <circle cx="0" cy="0" r="4" stroke="black" fill="none" />
+       </symbol>
+    </defs>
+    <!-- Just a blue border rect -->
+    <rect x="1" y="1" width="499" height="499"
+          fill="none" stroke="blue" stroke-width="1" />
+    <!-- Intersecting lines at coordinates, gives us targets
+         for testing whether a point is centred correctly -->
+    <polyline points="0,100 500,100" stroke="black" stroke-width="1" />
+    <polyline points="100,0 100,500" stroke="black" stroke-width="1" />
+    <polyline points="0,200 500,200" stroke="black" stroke-width="1" />
+    <polyline points="200,0 200,500" stroke="black" stroke-width="1" /> 
+    <polyline points="0,250 500,250" stroke="black" stroke-width="1" />
+    <polyline points="250,0 250,500" stroke="black" stroke-width="1" />
+
+    <!--
+         Note: x, y, w, *and* h must be defined otherwise animation
+         doesn't work. The location and width are what we would normally
+         expect, however to get the symbol to be centred at that
+         location, we need to translate 1/2 width & height.
+     -->
+    <use id="testPoint" stroke-width="1px" x="0px" y="0px" width="10px" height="10px" transform="translate(-5,-5)" xlink:href="#symbolRect" />
+    <!-- Animating x,y no problems -->
+    <animate xlink:href="#testPoint" attributeName="x" dur="10s" values="0; 100; 250; 0; 200;" repeatCount="1" fill="freeze" /> 
+    <animate xlink:href="#testPoint" attributeName="y" dur="10s" values="250; 0; 100; 100; 250;" repeatCount="1" fill="freeze" />
+    <!-- 
+         Here we animate the height and width of the entire symbol! 
+         Note that the thickness of the lines is scaled, just like
+         if we were applying a transform="scale(x)". This is not what we
+         want because if we change the size of an instance of a point
+         via something like cex, everything gets larger, but not line
+         thickness.
+
+         However, because we want everything to be centred at a location,
+         when animating width or height, we must also animate the
+         transform too. For example width: 10px -> 20px means that our
+         central x value needs to change from 5 to 10.
+
+         This is reasonably straightforward fortunately as we just animate
+         a translation for the appropriate width and height by dividing
+         them by -2.
+
+         To get stroke-width to stay relatively constant, the value of the
+         property needs to be multiplied by 1/scale, i.e. if we want a
+         stroke-width of 1px, and we're scaling the width by 5, we want the
+         stroke-width to change to 1/5, i.e. 0.2px.
+
+         Somewhat annoyingly, because the size of the point increases at a
+         rate proportional to the square of the increase in width and
+         height, we need to animate the stroke-widths at a non-linear rate.
+         We should make it so that increases happen along a curve with a
+         decreasing gradient, while a decrease in apparent stroke-width
+         should occur with a curve with an increasing gradient. This
+         should ensure that the stroke width appears roughly constant over
+         time.
+
+         An example showing how these spline timing curves work:
+         http://www.bogotobogo.com/svg_source/keyspline.svg
+
+    -->
+    <!-- Making point bigger/smaller -->
+    <animate xlink:href="#testPoint" attributeName="width" dur="10s" values="10; 100; 10; 50; 10;" repeatCount="1" fill="freeze" /> 
+    <animate xlink:href="#testPoint" attributeName="height" dur="10s" values="10; 100; 10; 50; 10;" repeatCount="1" fill="freeze" /> 
+    <!-- Attempting to keep the actual stroke-width the same, regardless of the point size -->
+    <animate xlink:href="#testPoint" attributeName="stroke-width" calcMode="spline" dur="10s"
+             keyTimes="0;0.25;0.5;0.75;1" keySplines="0 1 1 1;1 0 1 1;0 1 1 1;1 0 1 1" values="1px; 0.1px; 1px; 0.2px; 1px;" repeatCount="1" fill="freeze" />
+    <!-- Centering the point -->
+    <animateTransform attributeName="transform"
+                      attributeType="XML"
+                      xlink:href="#testPoint"
+                      type="translate"
+                      values="-5,-5; -50,-50; -5,-5; -25,-25; -5,-5"
+                      dur="10s"
+                      repeatCount="1" fill="freeze" />
+    <!-- 
+        Note that ideally we should just be able to just apply a transform
+        by scaling and translating (to centre) while keeping the stroking
+        the same. This seems to be possible to specify in markup in SVG
+        Tiny 1.2 and is in the works for SVG2 with the 'vector-effect'
+        property, for more information see the following links:
+
+        http://www.w3.org/TR/SVGTiny12/painting.html#VectorEffectProperty
+        https://svgwg.org/svg2-draft/painting.html#StrokeProperties
+
+    -->
+
+
+</svg>
+
