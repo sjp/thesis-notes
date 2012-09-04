@@ -1,4 +1,106 @@
 
+2012-09-05
+----------
+
+DISCUSS:
+
+  + Change regular meeting time to Wednesday 2-3 !
+
+  + Time series document is excellent!
+
+    Only one thought:  have you tried simply replacing old content
+    with new content (rather than using new values to transition 
+    existing content) ?
+
+    One reason:  if you replace OLD with NEW, you might lose some
+    useful attributes on OLD (PLUS you wouldn't be able to do the
+    fancy D3 transitions)
+
+  + David Bank's SVG embedded in HTML with javascript glue
+
+    Easier or harder to have R as server ?  (less javascript)
+
+  + Ok to give Jimmy Oh example of Simon's documentation ?
+
+
+TODO:
+
+  + Read Jimmy Oh's LitReview (graphical tools section)
+
+  + Use 'XML' to generate SVG content in 'gridSVG'
+
+    - this should be FASTER
+    - should make code less ugly (svg.R)
+    - generates SVG in memory so have option to not create file
+      AND can just return content as XML objects AND can 
+      easily return just FRAGMENTS of SVG content AND
+      get greater control over structure of SVG content
+      (e.g., can insert nodes anywhere in XML tree at any time)
+      AND will get better and automatic indentation !
+
+  + Get the plot y-scale to dynamically update!
+    (without reproducing the entire plot)
+    e.g., generate new scale grobs + coord info
+    (i.e., MODIFY the viewport!)
+
+  + Use <symbol> elements for data symbols
+
+    - implement in gridSVG (animate.R)
+
+  + Keep writing a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + name coord info by viewport *path* 
+    (plus name mangle to ensure uniqueness)
+    [watch out for path separator being invalid ID char]
+
+  + Use <symbol> elements for data symbols?
+
+    - better than <g> solution we currently have because
+      simpler, faster (only one <symbol> then lots of <use>s)
+
+      BUT only if animation of <symbol> works
+      (e.g., animating 'width' of <symbol> does NOT scale 'width'
+       of lines drawn within <symbol>)
+
+      (OR animation of <use> works)
+
+    SEE examples/svg-symbols/point-symbol-test.svg
+
+    Summary:  looks promising
+
+  + Write a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+
+    - simple example to show export
+    - simple javascript to add point relative to plot scales
+    - "simple" manipulate SVG within R (via 'XML' package) to
+      show import 
+
+  + Add 'RJSONIO' as dependency for 'gridSVG'
+
+
+PAUL TODO:
+
+  + Produce example documentation from Simon's .org files
+
+    C-c C-e then, e.g., 'H' for temp HTML buffer
+
+  + Read the vignette draft
+
+
 2012-08-28
 ----------
 
