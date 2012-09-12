@@ -1,4 +1,132 @@
 
+2012-09-12
+----------
+
+DISCUSS:
+
+  + A selection of Keith Ng's data viz efforts
+
+    http://publicaddress.net/who-is-keith-ng-1/
+
+  + NZ Herald's "first online interactive infographic"
+
+    http://www.nzherald.co.nz/crime/news/article.cfm?c_id=30&objectid=10833156
+
+  + Slides for talk on interactive graphics
+
+    http://dl.dropbox.com/u/7586336/RSS2012/googleVis_at_RSS_2012.html
+
+    including list of technologies
+
+    http://dl.dropbox.com/u/7586336/RSS2012/googleVis_at_RSS_2012.html#%287%29
+
+    and mention that Google Viz API includes ability to "edit" plots
+    (similar to dialog boxes for editing Excel charts)
+
+    http://dl.dropbox.com/u/7586336/RSS2012/googleVis_at_RSS_2012.html#%2834%29
+
+  + Article on "Generalized pairs plots"
+
+    http://amstat.tandfonline.com/doi/full/10.1080/10618600.2012.694762
+
+    Mentions "interactive graphics challenges" at the end
+
+
+TODO:
+
+  + For the record:  what happens with NAs ?
+    In particular, what happens with naming of SVG elements ?
+    (if value i is NA then is element (i+1) called "name-i" or "name-(i+1)"?
+     and what should it be?)
+    
+  + gridToSVG() should not have to xmlParse(doctxt), just return
+    svgroot
+
+  + Get the plot y-scale to dynamically update!
+    (without reproducing the entire plot)
+    e.g., generate new scale grobs + coord info
+    (i.e., MODIFY the viewport!)
+
+  + Use <symbol> elements for data symbols
+
+    - implement in gridSVG (animate.R)
+
+  + Keep writing a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + Read Jimmy Oh's LitReview (graphical tools section)
+
+  + Use 'XML' to generate SVG content in 'gridSVG'
+
+    - this should be FASTER
+    - should make code less ugly (svg.R)
+    - generates SVG in memory so have option to not create file
+      AND can just return content as XML objects AND can 
+      easily return just FRAGMENTS of SVG content AND
+      get greater control over structure of SVG content
+      (e.g., can insert nodes anywhere in XML tree at any time)
+      AND will get better and automatic indentation !
+
+  + Started using <symbol> elements for data symbols
+
+
+PAUL DONE:
+
+  + Comments on vignette draft 
+    "Working with the gridSVG Coordinate System"
+
+    - To turn this into an article, we would need a brief
+      review of grid and gridSVG at the start.  I could do that
+      unless you want to have a go.
+
+    - First para, instead of "everything" maybe say "all locations
+      and dimensions of graphical objects", or even more explicitly,
+      "rather than being positioned within a viewport, all drawing
+      is within a single pixel-based coordinate system".  Maybe also
+      mention that this happens because 'grid' viewports do not
+      translate directly to SVG <g> elements with 'transform' 
+      attributes.
+
+    - top of page 2, give an explicit (small) example to show x/y 
+      locations in SVG to show that they are pixel coordinates that
+      are NOT the same as the original x/y values specified in the
+      'grid' calls
+
+    - middle of page 2, also mention that viewport *names* are 
+      recorded (plus last sentence of the same paragraph is a
+      bit awkward => reword somehow)
+
+    - Maybe use JS> as prompt for javascript code and R> as prompt
+      for R code (?)
+
+    - Maybe allow viewportConvertX/Y() to convert to anything 
+      (like viewportConvertWidth/Height()) - even if it is not 
+      used much, if it is possible, someone will want to do it 
+      sometime.
+
+    - end of section page 4, although you have (rightly) focused
+      on a simple example that just requires R, you could foreshadow 
+      later sections that will use this capability to implement
+      interactive image manipulation in browser via javascript.
+      Just a simple sentence that points the reader forward to
+      later sections (to be written).
+
+    - end of section page 6, similar, but this time foreshadow
+      use of this capability to callback to R from browser.
+
+
 2012-09-05
 ----------
 
