@@ -1,0 +1,105 @@
+#+TITLE: Generating SVG using the XML package
+
+The way in which SVG is exported by ~gridSVG~ has been improved. The
+old approach was to open a file, and append concatenated strings to
+the end of the file as it approached each ~grid~ object (i.e. a
+viewport or a grob). This had several disadvantages:
+
++ Indentation is difficult (but possible) to manage
++ No guarantee that the generated SVG was valid
++ No repositioning or removing XML nodes was possible until the entire
+  document had been generated.
++ Because the entire image was built up using concatenated strings,
+  performance was not great.
++ As output was assumed to be written to a file, we needed to read
+  from the file to modify it.
+
+The approach taken to build up the image previously was the following:
+
+1. Start an SVG ~<g>~ (group) element.
+2. Increase indentation level.
+3. Write SVG graphical element(s), if this requires a group, start
+   at 1. again.
+4. Decrease indentation level.
+5. Close the group.
+
+Now the approach is:
+
+1. Start an SVG root element ~<svg>~.
+2. Add a new child node, ~<g>~ to have ~<svg>~ as its parent.
+3. Any time a new group is formed, set the current parent to be the
+   grouping element.
+4. Create SVG elements, assign its parent to be the current parent.
+5. When a group is closed, change the parent node reference to be the
+   parent of the parent node.
+6. Return the SVG root element (i.e. the "parent", once processing is
+   complete).
+
+This new approach, using the ~libxml2~-based ~XML~ package, gives us
+several advantages:
+
++ Faster, C code rather than string concatentation.
++ Indenting and attribute positioning guaranteed to be "nice".
++ XML guaranteed to be valid and well-formed.
++ Able to insert nodes anywhere in the document after it has been
+  generated.
++ Able to generate in memory, so using ~file()~ is not necessary.
++ Allows us to return XML objects after running ~gridToSVG()~ and
+  means that we can use a subset of the generated plot.
++ Able to disable indentation if necessary (to remove empty text nodes).
+
+In particular, this new approach allows us to pull out sub-nodes from
+~gridSVG~ output and gives us the opportunity to insert them together
+into a single plot, or even to insert a plot inline into an HTML5 page
+using a tool like ~brew~. It also affords us the ability to remove
+indentation and thus "compress" the SVG output. This has the
+additional advantage of making it easier to parse in JavaScript due to
+a lack of empty text nodes.
+
+Notably however, the ability to recognise MathML (unicode) entities is
+not present. Thus we cannot insert (for example) non-breaking space
+characters into MathML documents by their unicode entitiy, in this
+case ~&#x00A0;~. This is because the ~XML~ package recognises that the
+~&~ character is a special XML character and substitutes it as its
+corresponding XML entity, ~&amp;~. Therefore in the previous example,
+~&#x00A0;~ would get escaped to ~&amp;#x00A0;~. The result of this
+escaping means that in the MathML output we end up seeing the text
+used to construct the entity reference, rather than the actual entity
+itself.
+
+The source of the issue lies in ~libxml2~, as it *always* escapes XML
+special characters, even if you try protecting them from being
+escaped. To work around this we end up inserting literal unicode
+characters into the document. This requires that the document be
+encoded with at least ~UTF-8~, but this is an extremely common
+character encoding scheme so it is reasonable to ensure the following
+is the case:
+
++ R can write ~UTF-8~.
++ ~libxml2~ can write ~UTF-8~.
++ The web browser can read ~UTF-8~.
+
+These are all reasonable assumptions given the ubiquity of the ~UTF-8~
+character encoding scheme. In particular, the web browser should be
+able to view it because if the browser were not able to view unicode
+characters then we would not be able to see them in MathML
+anyway. This is because when decoding the entity references to unicode
+characters, we need to be able to view unicode characters to do
+this. So rather than inserting ASCII references to unicode characters,
+we just write the unicode characters instead. This has the advantage
+of avoiding any need for special escaping too as ~libxml2~ already
+automatically escapes the characters ~<~ ~>~ ~&~ ~\"~ and ~\'~.
+
+This means that, as an example, instead of writing the following line:
+
+: newXMLTextNode(I("&#x2200;"))
+: # &amp;#x2200;
+
+We write:
+
+: newXMLTextNode("\u2200")
+: # ∀
+
+This provides a means by which we can insert special MathML characters
+into MathML documents. A side effect of this approach is a small
+advantage, the resulting markup is marginally smaller.
