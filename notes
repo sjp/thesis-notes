@@ -1,4 +1,79 @@
 
+2012-09-19
+----------
+
+DISCUSS:
+ 
+  + possible viewport name problem ... ?
+
+pushViewport(viewport(name="A"))
+popViepwort()
+# Viewport with same path, but different coordinates
+pushViewport(viewport(name="A", xscale=c(0, 100)))
+gridToSVG()
+
+    - No problem for <g> IDs 
+    - ONLY problem is matching <g> IDs to coordinate information in JSON
+    - SOLUTION:  brute force = record separate coordinate info for each ID
+      (fancier solution would involve separate coordinate info as needed
+       PLUS more complex coordinate info lookup, but probably not worth it)
+
+
+TODO:
+
+  + Reimplement SVG comments in 'gridSVG' as their own sort of grob
+    (NOT necessarily attached to a existing grob)
+
+  + For the record:  what happens with NAs ?
+    In particular, what happens with naming of SVG elements ?
+    (if value i is NA then is element (i+1) called "name-i" or "name-(i+1)"?
+     and what should it be?)
+    
+  + Get the plot y-scale to dynamically update!
+    (without reproducing the entire plot)
+    e.g., generate new scale grobs + coord info
+    (i.e., MODIFY the viewport!)
+
+  + support for new ggplot2
+
+grobToDev.gtable <- build either a c("gtableParent", "gTree") or 
+                    c("gtableChild", "gtableParent", "gTree")
+
+grobToDev.gtableChild <- enforce wrapvp, NextMethod(), unwind
+
+grobToDev.gtableParent <- enforce layoutvp, same as gTree, unwind
+  
+  + Keep writing a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+
+    - Develop as Dept Tech Report?
+
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + gridToSVG() should not have to xmlParse(doctxt), just return
+    svgroot
+
+  + Use <symbol> elements for data symbols
+
+    - implement in gridSVG (animate.R)
+
+  + Also see updates to 'gridSVG' (inst/doc/changes.txt)
+
+    - raster grobs now produce inline SVG
+    - points grobs now implemented as <symbol>s and <use>s
+      (and the package has shed about 1000 lines of code)
+
+
 2012-09-12
 ----------
 
