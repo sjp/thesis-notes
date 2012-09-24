@@ -1,4 +1,61 @@
 
+2012-09-26
+----------
+
+DISCUSS:
+
+  + Publish gridSVG viewport coordinates vignette as Stats Dept
+    Tech Report ?  With me as co-author ?
+
+  + Need a specific complaint about source() method in 'XML',
+    ideally with nice self-contained example, before I can 
+    email Duncan TL
+
+  + Rook plotting example (check it's just static plots)
+
+     http://r.789695.n4.nabble.com/creating-graphs-using-Rook-tp4643458.html
+
+
+PAUL DONE:
+
+  + Comments on viewport coordinates vignette
+
+    - It is looking REALLY GOOD!
+
+    - page 1, bottom, "retain the original +grid coordinate systems+"
+    - page 2, show the image that is produced by the code
+    - page 2, after first sentence below code, 
+      "The important point is that we want to add new drawing
+       *relative to* the axis coordinate systems"
+    - page 2, above second code, 
+      "(See the "x" and "y" attributes in the <use> elements below"
+      OR
+      page 2, bottom para, shift above the code.
+    - page 3, above section break, mention that javascript functions
+      are also exported to make use of this data "(see next section)"
+    - page 3, bottom, "+This loads the SVG image+"
+    - page 4, first para, "of the viewport" should be "of a grob" ?
+    - page 4, middle, description of viewportConvertX/Y need updating?
+    - page 4, bottom, "main panel" should be "viewport 'panelvp'
+      (the plot region)"
+    - page 5, code, mention that circle radius is just in pixels,
+      but it could also be converted (or even convert it!)
+    - page 5, end of section, I have changed my mind:  I think do NOT
+      refer forward to future sections, just mention that there are
+      more sophisticated applications.  In your thesis, some forward
+      pointers might be useful to tie sections together, but I think
+      we can keep this document stand-alone for now.
+    - page 5, new section, make it clear that this can be a new R
+      session, separate from the R session that created the original
+      image (and not needing any of the code or even packages that
+      were used to create the original image).
+    - page 6, middle, why is the result of gridSVGCoords() not 
+      assigned anywhere?
+    - page 6, bottom, "also available in +R+" ???
+    - page 7, again, having changed my mind, do NOT refer forward,
+      just mention the possible more complex applications.
+    
+
 2012-09-19
 ----------
 
