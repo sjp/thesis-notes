@@ -6,29 +6,13 @@ q <- if (! is.null(get.vars$q)) as.numeric(get.vars$q) else 0
 outFormat <- if (! is.null(get.vars$format)) as.character(get.vars$format) else "SVG"
 
 # In the case where we have been given some coordinate information
-# to use *per request*, set coordsInfo(), also assume for this
+# to use *per request*, set gridSVGCoords(), also assume for this
 # example that the only thing that could be posted is coordinates
 # information
 if (req$post()) {
   cinfo <- Utils$unescape(req$POST()[["coords"]])
 
-  # Update the coordinate information with new information
-  # when present, overwrite if names clash. Do not remove
-  # existing information
-  currCoords <- coordsInfo()
-  if (is.null(currCoords)) {
-    coordsInfo(fromJSON(cinfo))
-  } else {
-    newCoords <- fromJSON(cinfo)
-    keepOldName <- ! names(currCoords) %in% names(newCoords)
-    if (any(keepOldName)) {
-      existingNames <- names(currCoords)[keepOldName]
-      for (i in 1:length(existingNames)) {
-        newCoords[[existingNames[i]]] <- currCoords[[existingNames[i]]]
-      }
-    }
-    coordsInfo(newCoords)
-  }
+  gridSVGCoords(fromJSON(cinfo))
 }
 
 # Make sure the response is XML
@@ -41,9 +25,9 @@ acfSVG <- function(p, q) {
                  plot = FALSE, lag.max = 48)$acf
   xs <- 1:length(heights) / (length(heights) + 1) 
   xs <- c(rbind(xs, xs))
-  xs <- viewportConvertX("acfwindowvp", xs, "npc")
+  xs <- viewportConvertX("acfvp::acfwindowvp.1", xs, "npc")
   ys <- c(rbind(rep(0, length(heights)), heights))
-  ys <- viewportConvertY("acfwindowvp", ys, "native")
+  ys <- viewportConvertY("acfvp::acfwindowvp.1", ys, "native")
   points <- paste(xs, ys, sep = ",")
 
   line.pairs <- character(length(points) / 2)
@@ -59,9 +43,9 @@ pacfSVG <- function(p, q) {
                   plot = FALSE, lag.max = 48)$acf
   xs <- 1:length(heights) / (length(heights) + 1) 
   xs <- c(rbind(xs, xs))
-  xs <- viewportConvertX("pacfwindowvp", xs, "npc")
+  xs <- viewportConvertX("pacfvp::pacfwindowvp.1", xs, "npc")
   ys <- c(rbind(rep(0, length(heights)), heights))
-  ys <- viewportConvertY("pacfwindowvp", ys, "native")
+  ys <- viewportConvertY("pacfvp::pacfwindowvp.1", ys, "native")
   points <- paste(xs, ys, sep = ",")
 
   line.pairs <- character(length(points) / 2)

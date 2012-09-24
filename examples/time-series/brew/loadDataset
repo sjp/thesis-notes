@@ -5,4 +5,29 @@ dataset <- Utils$unescape(dataset$tempfile)
 # Assume it has been read in as a tab delimited text file
 armaDataset(read.table(dataset))
 
+post.vars <- req$GET()
+p <- if (! is.null(post.vars$p)) as.numeric(post.vars$p) else 0
+q <- if (! is.null(post.vars$q)) as.numeric(post.vars$q) else 0
+outFormat <- if (! is.null(post.vars$format)) as.character(post.vars$format) else "SVG"
+
+newSVG <- plotAcfs(df = armaDataset(), p = p, q = q)
+svgdoc <- newSVG$svg
+
+# Establishing the coordinate system
+gridSVGCoords(newSVG$coords)
+
+# Grabbing the important bits
+acfstuff <- getNodeSet(svgdoc, "//svg:g[starts-with(@id, 'acf')]",
+                       c(svg="http://www.w3.org/2000/svg"))[[1]]
+pacfstuff <- getNodeSet(svgdoc, "//svg:g[starts-with(@id, 'pacf')]",
+                        c(svg="http://www.w3.org/2000/svg"))[[1]]
+
+# Make sure the response is XML
+res$header("Content-Type", "image/svg+xml")
+outsvg <- newXMLNode("svg",
+                     namespaceDefinitions = list("http://www.w3.org/2000/svg",
+                                                 xlink = "http://www.w3.org/1999/xlink"))
+addChildren(outsvg, acfstuff, pacfstuff)
+
 %>
+<%= saveXML(outsvg, indent = FALSE) %>

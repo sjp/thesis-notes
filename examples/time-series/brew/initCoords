@@ -1,22 +1,6 @@
 <%
 cinfo <- Utils$unescape(req$POST()[["coords"]])
 
-# Update the coordinate information with new information
-# when present, overwrite if names clash. Do not remove
-# existing information
-currCoords <- coordsInfo()
-if (is.null(currCoords)) {
-  coordsInfo(fromJSON(cinfo))
-} else {
-  newCoords <- fromJSON(cinfo)
-  keepOldName <- ! names(currCoords) %in% names(newCoords)
-  if (any(keepOldName)) {
-    existingNames <- names(currCoords)[keepOldName]
-    for (i in 1:length(existingNames)) {
-      newCoords[[existingNames[i]]] <- currCoords[[existingNames[i]]]
-    }
-  }
-  coordsInfo(newCoords)
-}
+gridSVGCoords(fromJSON(cinfo))
 
 %>

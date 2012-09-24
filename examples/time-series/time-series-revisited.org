@@ -1,0 +1,209 @@
+#+TITLE: Time Series Example -- Revisited
+
+* Introduction
+
+The time series example that was previously produced had a few
+limitations that have since been corrected. These limitations were
+that the following cases were not handled:
+
++ Rescaling and replotting of vertical axes for larger/smaller
+  ACF/PACF ranges.
++ Recalculation and replotting of confidence intervals.
++ Ensuring no plotting occurs outside the range of the main viewports.
+
+These limitations were chiefly due to the fact that ~gridSVG~ would
+produce images that were produced by string concatenation and
+repeatedly appending to a file. ~gridSVG~ has since been rewritten to
+correct this by producing a document composed of SVG nodes, which can
+(optionally) save to an SVG file. This means we can store an image *in
+memory*, avoiding the need to save a file at all. This aids the
+creation of this example by allowing us to produce a ~gridSVG~ plot
+via ~Rook~ and send that either directly to the browser, or,
+optionally manipulate the resulting plot by returning a *subset* of
+the plot to the browser. This is because we can run XPath queries on
+our SVG nodes to collect a subset.
+
+In the revised example the following new features are demonstrated:
+
++ Use of ~gridSVG~ functions
++ Automatic initialisation of coordinate information
++ Loading datasets with scale corrections
++ XPath on SVG documents imported to an HTML document
++ In-browser grob replacement and updating (via several methods)
+
+* Use of ~gridSVG~ functions
+
+In the previous example the coordinate information storage and
+retrieval was implemented via closures. This has since been
+implemented in ~gridSVG~, for example the function ~gridSVGCoords~ now
+handles this task. The ~viewportConvert*~ functions are now also
+exported by ~gridSVG~ so that we can just use them instead of running
+~source~ on a file containing definitions of those functions.
+
+* Automatic initialisation of coordinate information
+
+To make the initialisation of a coordinate system more explicit, an
+HTML button was placed in the document to perform the task. The page
+is always going to be static (excepting JS and SMIL), without this
+initialisation so is now automatically sending the JSON representation
+of the ~gridSVGCoords~ object as soon as the DOM structure is loaded.
+
+The advantage of this is as soon as we can load the page we can start
+changing the ~p~ and ~q~ parameters in the ARMA model, or change the
+dataset.
+
+* Loading datasets
+
+** Server-side
+
+While the mechanism for importing datasets remains the same,
+previously nothing was returned as a result of this operation. This
+means that the limitations mentioned in the introduction are still
+likely to occur (depending on the dataset).
+
+To fix this, as soon as a dataset is imported into ~R~ from the
+browser, the following steps are taken:
+
+1. The original plot is re-drawn with the new data using the ~pdf~
+   device. This is with ~file = NULL~ so it is analogous to the "null"
+   device.
+2. The ~gridToSVG~ function is run on the resulting ~grid~ display
+   list and returns a list containing the image (as a tree of XML
+   nodes) and coordinate information in the form of a list. The
+   ~gridToSVG~ function uses the same resolution as was given to draw
+   the initial plot (in our case 96px).
+3. The coordinate information is simply passed into ~gridSVGCoords~ to
+   update our definitions for viewport locations, dimensions and
+   scales.
+4. XPath queries are run on the resulting image so that we only give
+   back to the browser what will have changed. In our example the only
+   two things that will not have changed are the border rectangle and
+   the ~x~ axes. We store the XPath results in variables.
+5. A wrapper ~svg~ element is produced, and we add all of the XPath
+   results as children to it.
+6. The ~svg~ element is passed into ~saveXML~ and is returned to the
+   browser.
+
+** Client-side
+
+While the mechanism for sending the data to ~R~ has been described
+previously, the way in which we handle the responses, at least so far,
+has been somewhat limited. This is because we were simply grabbing
+everything by its ~id~ and examining a particular attribute, and
+updating existing content by transitioning to these new values.
+
+We can take advantage of two, more powerful methods of selecting nodes
+in JavaScript that were not being properly exploited previously. The
+first of which is using the Selectors API to run queries (via
+~d3~). This has been used in the past but the queries were very
+simple. The next method is that of XPath, which allows us to be able
+to select a set of nodes matching a certain query. This has been used
+in ~R~ using the ~XML~ package, but this time we are performing the
+same task in JavaScript.
+
+When data is sent to ~R~, the response that we get back is an XML
+document. However, the actions we take using this document depend on
+what we want to do with the results. For example, with the ~y~ axes,
+we know that this is likely to change completely (i.e. no transition
+exists) and thus we need to replace the existing axes with the new
+ones. But for something like the horizontal line representing ~0~, we
+know that this can be transitioned, by simply translating it.
+
+In the case of the axes, I attempted to use XPath to perform the
+task. The structure of a typical query is as follows:
+
+: svgdoc.evaluate('//svg:g[@id = "acfyaxis"]', svgdoc, nsr,
+:                 XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null)
+
+This is showing that we call a method on the returned SVG document,
+and it has 5 parameters, each of these will be explained.
+
+1. This is a character string that holds an XPath query. While I won't
+   explain how to write an XPath query, it must be noted that the
+   ~svg~ namespace *must* be used, otherwise the query simply will not
+   work.
+2. The context node that the query is to be applied to (and its
+   sub-tree). In our case because we want to query the entire
+   document, we use the document node.
+3. This parameter refers to a function that resolves namespace
+   prefixes to namespace definitions. In our case ~nsr~ is a variable
+   that refers to a function that does our namespace resolution for
+   us. ~nsr~ is defined as follows:
+
+   : var nsr = function(prefix) {
+   :     return "http://www.w3.org/2000/svg";
+   : };
+
+   In short, this just says that we're going to be applying the query
+   only to SVG nodes.
+4. This parameter specifies how the resulting query is going to be
+   returned to us. In our particular case it means that we are going
+   to have a *copy of results* returned *in order of appearance*.
+5. The ~XPathResult~ object that the query result is going to be
+   stored in. Because we have specified ~null~, a new ~XPathResult~
+   object is going to be returned.
+
+Because our XPath query returns an ~XPathResult~ object and the result
+is "snapshot", we can iterate through each of the nodes that have been
+found and perform any required DOM manipulation with them. However,
+because in our case we are searching for a particular ~id~, which is
+guaranteed to be unique, we can simply grab the first result. For
+example, assume that the result of our previous function call was
+stored in a variable called ~xpr~ (an ~XPathResult~ object), we simply
+do the following:
+
+: var resultNode = xpr.snapshotItem(0);
+
+This gives us our node by grabbing the first item in the collection of
+"snapshots" (zero-indexed).
+
+Now that our node has been collected, we can do what we like with
+it. Where this is used in the example is to replace the ~y~ axes. The
+general approach applied to the node is the following:
+
+1. Set the ~opacity~ attribute to ~0~.
+2. Insert the node into the existing HTML document *before* the node
+   it needs to replace.
+3. Use ~d3~ to "fade out" the existing node that needs to be replaced
+   by transitioning its ~opacity~ attribute to ~0~. Once the
+   transition is complete, the node is removed.
+4. Use ~d3~ to "fade in" the new node, by transitioning to an
+   ~opacity~ of ~1~.
+
+The effect of these steps is that a ~y~ axis appears to have a nice
+transition between the old axis and the new one.
+
+An example where we perform the other methods of querying is when
+transitioning the horizontal lines representing ~y = 0~. The idea here
+is that we already have the correct definition of the line, we just
+know that it needs to be translated by applying new ~points~
+attributes.
+
+: svgdoc.getElementById("acfzeroline")
+:       .childNodes[0]
+:       .getAttribute("points");
+
+This will first find the element we want within the new SVG document
+given back from ~R~. Then we look for the first child, which we know
+is not a text node because we removed all indentation prior to
+sending. This first child is known in advance to be a ~polyline~
+element which has a ~points~ attribute, which we are grabbing.
+
+So now that we have the new points data to translate the horizontal
+line with, we need to apply the translation. The ~d3~ ~select~ query
+uses the Selectors API, an example of this follows:
+
+: d3.select("#acfzeroline polyline")
+
+We are first selecting the element with the ~id~ of ~acfzeroline~,
+then all ~polyline~ elements that are its children (of which we know
+there is only one). With this selection the transition to a new
+~points~ attribute is trivial. It is much the same as the example
+where we look for ~childNodes~ but more flexible. The only thing to
+note about this approach is that certain characters (particularly ~.~
+and ~:~) need escaping.
+
+After all the transitioning is done the last thing we do is set the
+numeric pickers for the ~p~ and ~q~ parameters to ~0~. This is just
+because we assume for a new dataset that we start off with ~p = 0~ and
+~q = 0~.

@@ -1,7 +1,9 @@
-library(RJSONIO)
+library(gridSVG)
 library(Rook)
 
-source("acf-plots.R")
+# fully qualified name because XML package masks 'source'
+# and gives us a whole bunch of warnings
+base::source("acf-plots.R")
 
 armaDatasetGen <- function() {
     dataset <- Nile
@@ -16,18 +18,6 @@ armaDatasetGen <- function() {
 }
 armaDataset <- armaDatasetGen()
 
-coordsInfoGen <- function() { 
-    coords <- NULL
-    function(newCoords = NULL) { 
-        if (is.null(newCoords)) { 
-            coords 
-        } else { 
-            coords <<- newCoords 
-        }
-    } 
-}
-coordsInfo <- coordsInfoGen()
-
 ws <- Rhttpd$new()
 ws$start(quiet = TRUE)
 
@@ -39,4 +29,4 @@ ws$add(name = "arma",
                              root = '.'),
                  Redirect$new("/arma.html")))
 
-ws$browse("arma")
+print(ws)

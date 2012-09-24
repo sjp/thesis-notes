@@ -1,6 +1,3 @@
-library(grid)
-library(gridSVG)
-
 plotAcfs <- function(df = Nile, p = 0, q = 0, lag.max = 48) {
   fitArima <- arima(df, order = c(p, 0, q))
   fitAcf <- acf(residuals(fitArima), lag.max = lag.max, plot = FALSE)
@@ -8,7 +5,10 @@ plotAcfs <- function(df = Nile, p = 0, q = 0, lag.max = 48) {
   ci <- 0.95
   clim <- qnorm((1 + ci)/2)/sqrt(fitAcf$n.used)
 
-  dev.new()
+  acfRangeY <- extendrange(range(c(fitAcf$acf, clim, -clim)))
+  pacfRangeY <- extendrange(range(c(fitPacf$acf, clim, -clim)))
+
+  pdf(file = NULL)
   on.exit(dev.off())
   grid.newpage()
   acfvp <- viewport(x = 0, y = 0.5, height = 0.5,
@@ -16,10 +16,10 @@ plotAcfs <- function(df = Nile, p = 0, q = 0, lag.max = 48) {
   pacfvp <- viewport(x = 0, y = 0, height = 0.5,
                      just = c("left", "bottom"), name = "pacfvp")
   acfwindowvp <- viewport(width = 0.8, height = 0.8,
-                          xscale = c(-1, lag.max + 1), yscale = extendrange(c(-0.2, 1)),
+                          xscale = c(-1, lag.max + 1), yscale = acfRangeY,
                           name = "acfwindowvp")
   pacfwindowvp <- viewport(width = 0.8, height = 0.8,
-                           xscale = c(0, lag.max + 1), yscale = extendrange(c(-0.2, 1)),
+                           xscale = c(0, lag.max + 1), yscale = pacfRangeY,
                            name = "pacfwindowvp")
 
   drawCf <- function(heights, type = c("acf", "pacf"), clim = NULL) {
@@ -33,10 +33,10 @@ plotAcfs <- function(df = Nile, p = 0, q = 0, lag.max = 48) {
       pushViewport(pacfvp)
       pushViewport(pacfwindowvp)
     }
-    grid.xaxis(name = "xaxis")
-    grid.yaxis(name = "yaxis")
-    grid.rect(name = "box")
-    grid.lines(y = unit(c(0, 0), "native"), name = "zeroline")
+    grid.xaxis(name = paste0(type, "xaxis"))
+    grid.yaxis(name = paste0(type, "yaxis"))
+    grid.rect(name = paste0(type, "box"))
+    grid.lines(y = unit(c(0, 0), "native"), name = paste0(type, "zeroline"))
     grid.polyline(x = unit(rep(c(0, 1), 2), "npc"),
                   y = unit(rep(c(clim, -clim), each = 2), "native"),
                   id.lengths = rep(2, 2), gp = gpar(col = "blue", lty = "dashed"),
@@ -50,7 +50,7 @@ plotAcfs <- function(df = Nile, p = 0, q = 0, lag.max = 48) {
   }
   drawCf(fitAcf$acf, type = "acf", clim = clim)
   drawCf(fitPacf$acf, type = "pacf", clim = clim)
-  gridToSVG("acf-demo.svg")
+  gridToSVG("", "none", "none", res = 96)
 }
 
 #plotAcfs()
@@ -97,99 +97,4 @@ pacfSVG <- function(p, q) {
   paste0(c(svg.header,
            paste0('<polyline points="', line.pairs, '" />'),
            svg.footer), collapse = "")
-}
-
-#library(RJSONIO)
-#coordsInfo() <- fromJSON("acf-demo.json")
-
-viewportConvertX <- function(vpname, x, from) {
-  offset <- coordsInfo()[[vpname]]$x
-  width <- viewportConvertWidth(vpname, x, from, "svg")
-  offset + width
-}
-
-viewportConvertY <- function(vpname, x, from) {
-  offset <- coordsInfo()[[vpname]]$y
-  height <- viewportConvertHeight(vpname, x, from, "svg")
-  offset + height
-}
-
-viewportConvertWidth <- function(vpname, x, from, to) {
-  vpCoords <- coordsInfo()[[vpname]]
-  i <- toInches(from, x,
-                vpCoords$width,
-                vpCoords$xscale,
-                vpCoords$inch)
-  u <- toUnit(to, i,
-              vpCoords$width,
-              vpCoords$xscale,
-              vpCoords$inch)
-  round(u, 2)
-}
-
-viewportConvertHeight <- function(vpname, x, from, to) {
-  vpCoords <- coordsInfo()[[vpname]]
-  i <- toInches(from, x,
-                vpCoords$height,
-                vpCoords$yscale,
-                vpCoords$inch)
-  u <- toUnit(to, i,
-              vpCoords$height,
-              vpCoords$yscale,
-              vpCoords$inch)
-  round(u, 2)
-}
-
-toInches <- function(from, unitValue, vpDimSize, nativeScale, dimInchSize) {
-  if (from == "inches")
-    return(unitValue)
-
-  nativeToInches <- function(nativeValue, nativeScale, vpDimSize, dimInchSize) {
-    dist <- nativeValue - nativeScale[1]
-    nativeUnitSize <- vpDimSize / abs(nativeScale[2] - nativeScale[1])
-    dist * nativeUnitSize / dimInchSize
-  }
-  
-  npcToInches <- function(npcValue, vpDimSize, dimInchSize) {
-    (npcValue * vpDimSize) / dimInchSize
-  }
-
-  if (from == "native") {
-    result <- nativeToInches(unitValue, nativeScale, vpDimSize, dimInchSize)
-  } else if (from == "npc") {
-     result <- npcToInches(unitValue, vpDimSize, dimInchSize)
-  } else if (from == "svg") {
-     result <- unitValue / dimInchSize
-  } else {
-    result <- convertUnit(unit(unitValue, from), "inches", valueOnly = TRUE)
-  }
-
-  result
-}
-
-toUnit <- function(to, unitValue, vpDimSize, nativeScale, dimInchSize) {
-  if (to == "inches")
-    return(unitValue)
-
-  inchesToNative <- function(inchesValue, nativeScale, vpDimSize, dimInchSize) {
-    npc <- (inchesValue * dimInchSize) / vpDimSize
-    vpRange <- nativeScale[2] - nativeScale[1]
-    (npc * vpRange) + nativeScale[1]
-  }
-  
-  inchesToNpc <- function(inchesValue, vpDimSize, dimInchSize) {
-    (inchesValue * dimInchSize) / vpDimSize
-  }
-
-  if (to == "native") {
-    result <- inchesToNative(unitValue, nativeScale, vpDimSize, dimInchSize)
-  } else if (to == "npc") {
-    result <- inchesToNpc(unitValue, vpDimSize, dimInchSize)
-  } else if (to == "svg") {
-    result <- unitValue * dimInchSize
-  } else {
-    result <- convertUnit(unit(unitValue, "inches"), to, valueOnly = TRUE)
-  }
-
-  result
 }
