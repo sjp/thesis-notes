@@ -7,6 +7,9 @@ DISCUSS:
   + Publish gridSVG viewport coordinates vignette as Stats Dept
     Tech Report ?  With me as co-author ?
 
+    Maybe use different authoring tech so can easily produce 
+    HTML version (with SVG plots) => remove from package ?
+
   + Need a specific complaint about source() method in 'XML',
     ideally with nice self-contained example, before I can 
     email Duncan TL
@@ -14,6 +17,71 @@ DISCUSS:
   + Rook plotting example (check it's just static plots)
 
      http://r.789695.n4.nabble.com/creating-graphs-using-Rook-tp4643458.html
+
+
+TODO:
+
+  + Redo time series example using 'backbone'
+
+    - Think about what an API might be like for a javascript library 
+      that others could use to combine 'grid' and 'gridSVG' and javascript
+      (via callbacks)
+      
+  + Keep writing a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+
+    - Develop as Dept Tech Report?
+
+  + Tech report for XML-basis for gridSVG ?
+
+  + Summary doc of technologies used (successfully) so far
+
+    - what are they useful for?
+    - how necessary are they?
+    - how do they fit together?
+    - what needs to be done better/easier?
+    - sort of an update to litreview.org
+
+  + Another one for the record:  could we do text justification better?
+
+    - javascript text ?
+    - use svg() output (text as paths) ?
+
+  + For the record:  what happens with NAs ?
+    In particular, what happens with naming of SVG elements ?
+    (if value i is NA then is element (i+1) called "name-i" or "name-(i+1)"?
+     and what should it be?)
+    
+  + Need a more "real" example
+
+    - Stripped down version of one of Chris's simulation movies?
+    - Reimplement some of the googleViz style plots?
+    - Gapminder style plots ?
+
+  + Keep thinking about categorisation of different options
+    (including diagram and glossary)
+
+
+DONE:
+
+  + Reimplement SVG comments in 'gridSVG' as their own sort of grob
+    (NOT necessarily attached to a existing grob)
+
+  + Get the plot y-scale to dynamically update!
+    (without reproducing the entire plot)
+    e.g., generate new scale grobs + coord info
+    (i.e., MODIFY the viewport!)
+
+    - See examples/time-series/rook-ts.R
+
+  + support for new ggplot2
+
+grobToDev.gtable <- build either a c("gtableParent", "gTree") or 
+                    c("gtableChild", "gtableParent", "gTree")
+
+grobToDev.gtableChild <- enforce wrapvp, NextMethod(), unwind
+
+grobToDev.gtableParent <- enforce layoutvp, same as gTree, unwind
 
 
 PAUL DONE:
