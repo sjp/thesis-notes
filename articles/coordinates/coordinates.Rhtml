@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Working with the gridSVG Coordinate System</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Inconsolata" media="screen, print">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" media="screen,projection">
+    <link rel="stylesheet" type="text/css" href="css/main.css" media="screen,projection">
+    <script type="text/javascript" src="js/modernizr.js"></script>
+<!--begin.rcode echo=FALSE
+# Setting knitr options
+options(prompt = "R> ", continue = "R+ ")
+opts_chunk$set(tidy = FALSE, prompt = TRUE, comment = NA)
+end.rcode-->
+  </head>
+  <body>
+    <header>
+      <h1>Working with the gridSVG Coordinate System</h1>
+      <p>Simon Potter <a href="mailto:simon.potter@auckland.ac.nz"><code>simon.potter@auckland.ac.nz</code></a> and Paul Murrell <a href="mailto:p.murrell@auckland.ac.nz"><code>p.murrell@auckland.ac.nz</code></a></p>
+      <p>Department of Statistics, University of Auckland</p>
+      <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
+    </header>
+    <h2>Introduction</h2>
+    <p><em>grid</em> is an alternative graphics system to the traditional base graphics system provided by <em>R</em> <a href="#ref-1">[1]</a>. Two key features of <em>grid</em> distinguish it from the base graphics system, graphics objects (grobs) and viewports.</p>
+    <p>Viewports are how <em>grid</em> defines a drawing context and plotting region. All drawing occurs relative to the coordinate system within a viewport. Viewports have a location and dimension and set scales on the horizontal and vertical axes. Crucially, they also have a name so we know how to refer to them.</p>
+    <p>Graphics objects (grobs) store information necessary to describe how a particular object is to be drawn. For example, a <em>grid</em> <code>circleGrob</code> contains the information used to describe a circle, in particular its location and its radius. As with viewports, graphics objects also have names.</p>
+    <p>The task that <em>gridSVG</em> <a href="#ref-2">[2]</a> performs is to translate viewports and graphics objects into <em><abbr title="Scalable Vector Graphics">SVG</abbr></em> <a href="#ref-3">[3]</a> equivalents. In particular, the exported <em>SVG</em> image retains the naming information on viewports and graphics objects. The advantage of this is we can still refer to the same information in <em>grid</em> and in <em>SVG</em>. In addition, we are able to annotate <em>grid</em> grobs to take advantage of <em>SVG</em> features such as hyperlinking and animation.</p>
+    <h2>The gridSVG Coordinate System</h2>
+    <p>When exporting <em>grid</em> graphics as <em>SVG</em>, instead of positioning within a viewport, all drawing occurs within a single pixel-based coordinate system. This document describes how <em>gridSVG</em> exports additional information during this process to retain the original <em>grid</em> coordinate systems.</p>
+    <p>To demonstrate this, we will show how to add points to an exported plot, both from within <em>R</em> and also, less permanently, within a <em>JavaScript</em> and <em>SVG</em> capable web browser.</p>
+    <p>Firstly, consider the following code which is a simple plot containing two items of interest. Firstly, a viewport is created which has scales defined for each of its axes. Secondly, points are added to the plot using native units. We then write this out to <em>SVG</em> in a file called <code>&quot;pointsPlot.svg&quot;</code> which can be viewed in a web browser.</p>
+<!--begin.rcode pointsPlot, fig.keep="none", message=FALSE, results="hide"
+library(gridSVG)
+
+panelvp <- plotViewport(xscale = c(0, 20),
+                        yscale = c(0, 20),
+                        name = "panelvp")
+pushViewport(panelvp)
+grid.xaxis()
+grid.yaxis()
+grid.points(x = runif(10, 5, 15),
+            y = runif(10, 5, 15),
+            pch = 16,
+            name = "datapoints")
+popViewport()
+gridToSVG("pointsPlot.svg")
+end.rcode-->
+        <figure>
+          <img src="pointsPlot.svg" width="504" height="504" alt="Basic plot produced by gridSVG">
+          <figcaption>A basic plot produced by <em>gridSVG</em>.</figcaption>
+        </figure>
+        <p>The challenge is to now modify this plot so that we can add extra information, such as new data points. The important point is that we want to add new data points relative to the axis coordinate systems. As the <em>SVG</em> file was exported, all of the locations on the plot were transformed into pixels. This means that in our <em>SVG</em> file, none of the axis scales exist, and the locations of points are no longer native coordinates, but absolutely positioned pixels. See the <code>x</code> and <code>y</code> attributes in the <code>&lt;use&gt;</code> elements below as a demonstration of this process.</p>
+<!--begin.rcode showPointsGrob, results="verbatim", echo=FALSE
+svgdoc <- xmlParse("pointsPlot.svg")
+pointsGroup <- getNodeSet(svgdoc,
+                          "//svg:g[@id='datapoints']",
+                          c(svg="http://www.w3.org/2000/svg"))[[1]]
+resultTxt <- saveXML(pointsGroup)
+# Cleaning up so we can show text in HTML, rather than XML nodes
+cat(gsub("<", "&lt;", gsub(">", "&gt;", gsub("\"", "&quot;", resultTxt))))
+end.rcode-->
+    <p>Recent changes in <em>gridSVG</em> have enabled us to keep viewport information by exporting viewport metadata in the form of <em><abbr title="JavaScript Object Notation">JSON</abbr></em> <a href="#ref-4">[4]</a>, a structured data format. This enables us to be able to retain viewport locations and scales so that we can now transform pixel locations to native coordinates, and vice versa.</p>
+    <p>The following fragment shows the coordinates file that is exported by <em>gridSVG</em>. It is exported in the form of a <em>JavaScript</em> statement that assigns an object literal to a variable, <code>gridSVGCoords</code>.</p>
+<!--begin.rcode coordsJSON, echo=FALSE
+jsondata <- readLines("pointsPlot.svg.coords.js")
+jsondata <- paste0(jsondata, collapse = "\n")
+cat(jsondata, "\n")
+end.rcode-->
+    <p>This shows all of the information available to <em>gridSVG</em>. This <em>JavaScript</em> object contains a list of viewport names, with each viewport name associated with its metadata. This metadata includes the viewport location and dimensions in terms of <em>SVG</em> pixels. Also included are the axis scales, along with the resolution that the viewport was exported at. The resolution simply represents the number of pixels that span an inch.</p>
+    <p>This coordinate information is also important for use with <em>JavaScript</em> functions which are also exported by <em>gridSVG</em>. Examples of such functions are shown in the next section.</p>
+    <h2>Browser-based Modification</h2>
+    <p>We can modify the plot using the information described earlier by executing <em>JavaScript</em> code to insert <em>SVG</em> elements representing points into the plot. To start off we first load the image into the browser. This loads the <em>SVG</em> image, and executes any <em>JavaScript</em> code that is referenced or included by the image. By default <em>gridSVG</em> exports coordinate information to a <em>JavaScript</em> file, along with a utility <em>JavaScript</em> file that contains functions useful for working with <em>gridSVG</em> graphics. In particular, the utility code includes functions that enable us to do unit conversion in the browser, e.g. from <code>native</code> to <code>npc</code> or to <code>inches</code>.</p>
+    <p>Because <em>gridSVG</em> must perform some name manipulation to ensure that <em>SVG</em> element <code>id</code>s are unique, a couple of <em>JavaScript</em> utility functions require introduction. Firstly, although not stricly necessary, if we know the name of the grob, we can find out which viewport path it belonged to by calling <code>grobViewport()</code>.</p>
+    <pre class="js">JS> grobViewport("datapoints");
+"panelvp.1"</pre>
+    <p>We see that the viewport name is not exactly what we chose in <em>R</em>, but suffixed with a numeric index. Now that we can query the viewport name, we know which viewport to draw into and the <em>SVG</em> element that we can add elements to. However, the issue remains that we really want to be able to use <code>native</code> units in the browser, rather than <em>SVG</em> pixels. To remedy this, unit conversion functions have been created. These functions are:</p>
+    <ul>
+      <li><code>viewportConvertX</code></li>
+      <li><code>viewportConvertY</code></li>
+      <li><code>viewportConvertWidth</code></li>
+      <li><code>viewportConvertHeight</code></li>
+    </ul>
+    <p>The first two conversion functions take three mandatory parameters, the viewport you want the location of, the size of the unit, and what type of unit it is. Optionally a fourth parameter can be specified to determine what the unit is converted to, by default this is <em>SVG</em> pixels. The value returned from this function is a number representing the location in the new unit.</p>
+    <p>The second two conversion functions are the same but the fourth parameter, the new type of unit, is mandatory. This means we can convert between <code>inches</code>, <code>native</code> and <code>npc</code> in the browser without requiring an instance of <em>R</em> available, so long as we stick to our existing viewports.</p>
+    <p>As an example of how we might use these functions, we can find out where the coordinates (3, 14) are in the viewport <code>panelvp</code> (the main plot region) by running the following code:</p>
+    <pre class="js">JS> viewportConvertX("panelvp.1", 3, "native");
+110.45
+JS> viewportConvertY("panelvp.1", 14, "native");
+283.1</pre>
+    <p>We now know that the location of (3, 14) in <em>SVG</em> pixels is (110.45, 283.1). Using this information we can insert a new point into our plot at that location. We also want the the radius of this point to be 2mm, so we can work out how big the point is going to be in a similar manner. The following code shows that a radius of 2mm will translate to 5.67 <em>SVG</em> pixels.</p>
+    <pre class="js">JS> viewportConvertWidth("panelvp.1", 2, "mm", "svg");
+5.67</pre>
+    <p>To insert this new point this requires some knowledge of <em>JavaScript</em>, and knowledge of the <em>SVG</em> <abbr title="Document Object Model">DOM</abbr>. To demonstrate this, a red <em>SVG</em> circle is going to be inserted into the plot at (3, 14) with a radius of 2mm using <em>JavaScript</em>.</p>
+    <pre class="js">// Getting the element that contains all existing points
+var panel = document.getElementById("panelvp.1");
+
+// Creating an SVG circle element
+var c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+
+// Setting some SVG properties relating to the appearance
+// of the circle
+c.setAttribute("stroke", "rgb(255,0,0)");
+c.setAttribute("fill", "rgb(255,0,0)");
+c.setAttribute("fill-opacity", 1);
+
+// Setting the location and radius of our points
+// via the gridSVG conversion functions
+c.setAttribute("cx", viewportConvertX("panelvp.1", 3, "native"));
+c.setAttribute("cy", viewportConvertY("panelvp.1", 14, "native"));
+c.setAttribute("r", viewportConvertWidth("panelvp.1", 2, "mm", "svg"));
+
+// Adding the point to the same "viewport" as the existing points
+panel.appendChild(c);</pre>
+    <figure>
+<!--begin.rcode showOriginalSVG, echo=FALSE, warning=FALSE, results="asis"
+cat(readLines("pointsPlot.svg")[-1])
+end.rcode-->
+<button id="pointbtn">Click to add point</button> <span class="pars">x = <input id="xval" type="number" min="0" max="20" step="1" value="3"> y = <input id="yval" type="number" min="0", max="20" step="1" value="14"></span>
+            </figure>
+    <p>When running this code in the browser we see the new point. More complex demonstrations and usage of <em>gridSVG</em> utility functions are possible. A <em>JavaScript</em> library of particular significance that can assist greatly in manipulating <em>SVG</em> images in the browser is <a href="http://d3js.org/">d3.js</a>.</p>
+    <p>All changes to an <em>SVG</em> image via <em>JavaScript</em> are lost when the image is reloaded. To modify the image programmatically while also saving the state we need to use a tool other than <em>JavaScript</em>.</p>
+    <h2>Modification via the XML package</h2>
+    <p>In order to reproduce the effect of the <em>JavaScript</em> example earlier, we will be making use of the <em><abbr title="Extensible Markup Language">XML</abbr></em> <a href="#ref-5">[5]</a> package in order to modify our <em>SVG</em> image. As <em>gridSVG</em> automatically loads the <em>XML</em> package, all of the functionality from the <em>XML</em> package is readily available to us.</p>
+    <p>We can run this example in an entirely new <em>R</em> session, even on a different machine. All we need to perform this task are the <em>gridSVG</em> and <em>XML</em> packages. It is not necessary to have the packages that were required to produce the original plot, or indeed any code that was used to produce it.</p>
+    <p>We first need to parse the image, so that it is represented as a document within <em>R</em>.</p>
+<!--begin.rcode parseSVG
+svgdoc <- xmlParse("pointsPlot.svg")
+end.rcode-->
+    <p>We know that the name of the viewport we are looking for has the exported name of <code>&quot;panelvp.1&quot;</code>. An <em>XPath</em> <a href="#ref-6">[6]</a> query can be created to collect this viewport.</p>
+<!--begin.rcode vpGroup
+# Getting the object representing our viewport that contains
+# our data points
+panel <- getNodeSet(svgdoc,
+                    "//svg:g[contains(@id, 'panelvp')]",
+                    c(svg="http://www.w3.org/2000/svg"))[[1]]
+end.rcode-->
+    <p>Now we need to read in the <em>JavaScript</em> file that contains the coordinates information. However, some cleanup is needed because the code is designed to be immediately loaded within a browser, and is thus not simply <em>JSON</em>. We need to clean up the data so that it is able to be parsed by the <code>fromJSON()</code> function.</p>
+<!--begin.rcode cleanJSON
+# Reading in, cleaning up and importing the coordinate system
+jsonData <- readCoordsJS("pointsPlot.svg.coords.js")
+end.rcode-->
+    <p>We now have valid <em>JSON</em> in the form of a character vector. Using this, we can initialise a coordinate system in <em>R</em> by utilising both <code>gridSVGCoords()</code> and <code>fromJSON()</code>. Nothing is returned from <code>gridSVGCoords()</code> because we are setting coordinate information. If we call <code>gridSVGCoords()</code> with no parameters we can get the coordinate information back.</p>
+<!--begin.rcode initCoords
+gridSVGCoords(fromJSON(jsonData))
+end.rcode-->
+    <p>Now that a coordinate system is initialised we are able convert coordinates into <em>SVG</em> pixels. This means we can create a <code>&lt;circle&gt;</code> element and correctly position it using <code>native</code> units at (3, 14).</p>
+<!--begin.rcode createCircle
+# Creating an SVG circle element to insert into our image
+# that is red, and at (3, 14), with a radius of 2mm
+circ <- newXMLNode("circle",
+                   parent = panel,
+                   attrs = list(cx = viewportConvertX("panelvp.1", 3, "native"),
+                                cy = viewportConvertY("panelvp.1", 14, "native"),
+                                r = viewportConvertWidth("panelvp.1", 2, "mm", "svg"),
+                                stroke = "red",
+                                fill = "red",
+                                "fill-opacity" = 1))
+end.rcode-->
+    <p>Note that we have used the <code>viewportConvert*</code> functions to position the circle at the correct location and with the correct radius. This is because the same functions that are available in <em>JavaScript</em> are also available in <em>R</em>.</p>
+    <p>This point has been inserted into the same <em>SVG</em> group as the rest of the points by setting the <code>parent</code> parameter to the object representing the viewport group.</p>
+    <p>The only thing left to do is write out the new <em>XML</em> file with the point added.</p>
+<!--begin.rcode saveXML, results="hide"
+# Saving a new file for the modified image
+saveXML(svgdoc, file = "newPointsPlot.svg")
+end.rcode-->
+    <figure>
+      <img src="newPointsPlot.svg" width="504" height="504" alt="gridSVG plot modified using XML package">
+      <figcaption>A <em>gridSVG</em> plot modified using the <em>XML</em> package.</figcaption>
+    </figure>
+    <p>The new <em>SVG</em> image is located at <code>&quot;newPointsPlot.svg&quot;</code> and when loaded into the browser shows the new point. The appearance of the plot should be identical to the modifications we made using <em>JavaScript</em>, except these modifications are permanent and are able to be distributed to others.</p>
+    <p>An advantage of being able to modify the image, or even to generate the image immediately is that it opens up the possibility of serving dynamic <em>SVG</em> images over the web.</p>
+    <h2>Downloads</h2>
+    <p>The code used within this document is freely available. The version of <em>gridSVG</em> that is capable of producing this content is not yet available on <abbr title="Comprehensive R Archive Network">CRAN</abbr>, but is <a href="https://r-forge.r-project.org/projects/gridsvg/">available on R-Forge</a>.</p>
+    <ul>
+      <li><a href="">Standalone examples</a></li>
+      <li><a href="">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+    </ul>
+    <h2>References</h2>
+    <ol>
+      <li id="ref-1">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+      <li id="ref-2">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">gridSVG: Export grid graphics as SVG</span>. <a href="http://r-forge.r-project.org/projects/gridsvg/">https://r-forge.r-project.org/projects/gridsvg/</a>. R package version 1.0-0.</li>
+      <li id="ref-3">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition) Specification</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
+      <li id="ref-4"><span class="pkg-desc">JSON</span>, <a href="http://json.org/">http://json.org/</a>.</li>
+      <li id="ref-5">Lang, D. T. (2012). <span class="pkg-desc">XML: Tools for parsing and generating XML within R and S-Plus.</span>. <a href="http://www.omegahat.org/RSXML/">http://www.omegahat.org/RSXML/</a>. R package version 3.9-4</li>
+      <li id="ref-6">W3C (1999). <span class="pkg-desc">XML Path Language (XPath) Version 1.0 Specification</span>. <a href="http://www.w3.org/TR/xpath/">http://www.w3.org/TR/xpath/</a>.</li>
+    </ol>
+    <script type="text/javascript" src="coords.js"></script>
+    <script type="text/javascript" src="convert.js"></script>
+    <script type="text/javascript">
+        var btn = document.getElementById("pointbtn");
+        var addPoint = function() {
+            var panel = document.getElementById("panelvp.1");
+
+            // Creating an SVG circle element
+            var c;
+            var np = document.getElementById("newpoint");
+            if (np) {
+                c = np;
+            } else {
+                c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            }
+            
+            c.setAttribute("id", "newpoint");
+            // Setting some SVG properties relating to the appearance
+            // of the circle
+            c.setAttribute("stroke", "rgb(255,0,0)");
+            c.setAttribute("fill", "rgb(255,0,0)");
+            c.setAttribute("fill-opacity", 1);
+            
+            var xv = document.getElementById("xval").value;
+            var yv = document.getElementById("yval").value;
+
+            // Setting the location and radius of our points
+            // via the gridSVG conversion functions
+            c.setAttribute("cx", viewportConvertX("panelvp.1", xv, "native"));
+            c.setAttribute("cy", viewportConvertY("panelvp.1", yv, "native"));
+            c.setAttribute("r", viewportConvertWidth("panelvp.1", 2, "mm", "svg"));
+
+            // Adding the point to the same "viewport" as the existing points
+            if (! np)
+                panel.appendChild(c);
+        };
+
+        btn.addEventListener("click", addPoint);
+    </script>
+    <script type="text/javascript">
+        (function() {
+             if (!(Modernizr.svg && Modernizr.inlinesvg)) {
+                 var warnwrap = document.createElement('div');
+                 warnwrap.className = 'warning';
+                 var firsth2 = document.getElementsByTagName('h2')[0];
+                 // text
+                 var newnode = document.createElement('p');
+                 newnode.innerHTML = '<strong>Warning:<\/strong> Your browser does not appear to support all of the features to display this article correctly. As a result, demonstrations may not work as intended. The latest versions of <a href="http://www.google.com/chrome">Google Chrome<\/a>, <a href="http://www.mozilla.org/firefox/">Mozilla Firefox<\/a> or <a href="http://www.opera.com/browser/">Opera<\/a> should support all of the features required to view this article adequately.';
+                 // button
+                 var compatbtn = document.createElement('button');
+                 compatbtn.className = 'compat-btn';
+                 compatbtn.innerHTML = 'Dismiss warning';
+                 // Click handler
+                 var removeWarning = function() {
+                     warnwrap.parentNode.removeChild(warnwrap);
+                 };
+                 compatbtn.addEventListener("click", removeWarning);
+                 // add to wrapper
+                 warnwrap.appendChild(newnode);
+                 warnwrap.appendChild(compatbtn);
+                 firsth2.parentNode.insertBefore(warnwrap, firsth2);
+             }
+        })(); 
+    </script>
+  </body>
+</html>
