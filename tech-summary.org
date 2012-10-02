@@ -1,0 +1,235 @@
+#+TITLE: Summary of Technologies Used
+
+* HTTP Server Motivation
+
+** HTTP or Websockets?
+
+The motivation for using HTTP as a transport mechanism instead of
+Websockets is because of the lack of structure in using Websockets.
+
+Websockets is simply a protocol that we send data along but it imposes
+no structure, so both the client and the server must be in agreement
+as to the format of the data (most conveniently JSON). The content of
+the JSON being sent must also be something that the server can
+understand to execute the appropriate response.
+
+Even if the data can be parsed and understood by the Websockets
+server, the callback function must work out which function to call to
+perform the task we want. In short, to use the ~websockets~ package we
+would require a lot of boilerplate code to get the necessary structure
+present server-side (and to a lesser extent client-side).
+
+When using HTTP we can send back any kind of response (via POST), and
+request with any parameters we like. In addition, we can also call any
+URL that is exposed by a webserver. Unlike Websockets, we do not need
+to create a routing layer because the URL itself *is* the routing.
+
+We still need to know the parameters that a particular URL takes. If a
+POST is necessary to send data to the server, we do not need to know
+the structure that the data is going take (most of the time
+anyway). The data is most often going to be form encoded data.
+
+One feature that ~websockets~ has that HTTP cannot do is that
+~websockets~ can inform the browser about events, and send it data if
+necessary. However, for our use case it seems unlikely that this is
+going to be necessary.
+
+While it is clear that HTTP is easier and more flexible for us, we
+needed to pick which HTTP daemon and framework would be most
+beneficial for our needs.
+
+** Rook
+
+In order to generate the SVG images dynamically, the ~Rook~ package
+has been used. There are two key reasons why this is being used
+instead of the primary alternatives: ~FastRWeb~ and ~rApache~.
+
+The first reason is simply due to convenience. In order to even get
+started with the alternatives, Apache is required, so it needs to be
+set up and configured correctly. Moreover, in the case of ~FastRWeb~,
+a CGI application that routes requests to the ~Rserve~ daemon needs to
+be installed. While with ~rApache~, the module needs to be installed
+and configured.
+
+~Rook~ has a significant advantage here because it simply runs off
+~R~'s built-in webserver. Thus each installation of ~R~ already has
+the required tools, and all that is needed is the simple installation
+of the ~Rook~ package.
+
+Another area in which ~Rook~ is advantageous is the way in which web
+applications can be created with it. None of the other options provide
+a framework with which to build an application. They simply provide
+convenience functions and give you directories to insert ~R~ scripts
+into.
+
+While not exclusive to ~Rook~, ~Rook~ does include ~brew~. ~brew~ is a
+useful tool because it allows us to build templates and do simple
+variable substitution with them. With the alternatives, you would have
+to create this yourself, rather than defining a ~Brewery~ and using
+that.
+
+To conclude, ~Rook~ is the HTTP daemon of choice because of both its
+convenient installation and configuration, and the web application
+framework it provides.
+
+
+* Communication Mechanism
+
+** Intro
+
+In order to communicate between the browser and ~R~ we can use three
+methods to accomplish this.
+
++ HTTP :: The entire state of the page is defined by the parameters
+          given to a particular URL.
++ Websockets :: Sends data to and from ~R~ directly, with a single URL
+                and no real parameters.
++ HTTP + AJAX :: Make requests asynchronously to receive content in
+                 JavaScript via HTTP, then manipulate the current page
+                 if neccesary.
+
+Websockets was shown earlier to be an unsuitable means of
+communication between the browser and ~R~. However, while we can
+certainly make use of HTTP to first collect a web page, we would like
+to have the option of updating the web page too. This means that AJAX
+is necessary.
+
+** AJAX
+
+The way in which we need our web pages to work is to first load some
+static content, like HTML, CSS, and JavaScript. Once the JS has been
+loaded, we can begin to add some interactivity to a page. The way in
+which this is typically accomplished is by binding event listeners to
+events. An event listener is simply a function that is called when the
+event that it is bound to is triggered. For example, when the value of
+slider is changed, we can trigger a function to be called. If the
+purpose of the slider is to change some parameter so that ~R~ can
+generate an appropriate result, AJAX will be used.
+
+This means that when we want to get the browser to update its content,
+we need to use event listeners, which contain AJAX calls. These AJAX
+calls request content from ~R~ based on provided parameters.
+
+
+* JavaScript libraries
+
+** Intro
+
+In order to simplify common or repetitive tasks in the browser, it is
+common for JS libraries to be used. What we aim to use are libraries
+that make the task of manipulating SVG graphics easier. There are
+several libraries available that automate *creation* of SVG graphics,
+but ~gridSVG~ does this task for us so we only need to *manipulate*
+existing SVG plots. With this in mind there is one library that is
+clearly the best tool for the job, d3.js.
+
+** d3
+
+d3 sets itself apart by manipulating "selections". Each selection can
+be added to, modified or even removed. What is of particular interest
+to us is how it can also transition between different values of
+properties in a selection. For example, we can tell a rectangle to
+transition from x = 1 to x = 10 in 3 seconds very simply and with very
+declarative code.
+
+This makes updating a plot with new content much much easier than if
+the task were to be done using our own JS code. Moreover, it would
+likely be faster, along with being more reliable across different
+browsers. Because this is a widely used library, it seems to be a
+solid option that we can depend upon.
+
+
+* How these are used together
+
+To start off, we start instantiate a ~Rook~ web application. This can
+then be served via the built-in ~R~ web server. Once the browser loads
+the ~Rook~ application, we can begin seeing either a static page, or a
+web page that has been generated on-the-fly by ~R~.
+
+Once this page has been loaded, JS can be executed that sets event
+handlers that trigger upon changes in the state of the page. These
+handlers are able to update content using AJAX. The location that is
+being called to by AJAX is a URL governed by the ~Rook~ application,
+where each URL is often somewhat analogous to a function call. The
+AJAX call to ~Rook~ asks for new information using the updated state
+of the page, perhaps as parameters to the call to ~Rook~. ~Rook~ would
+then generate an appropriate response based on the given parameters.
+
+Once the response is returned from the AJAX call, we then need to
+parse the response so that we can represent it in the form of a d3
+expression. Typically for more complex responses, the parsing is
+applied to SVG responses, though this is not necessarily the case. The
+alternative to SVG would be to use JSON. This is much easier to work
+with on the client, but more difficult to produce via ~Rook~. When
+parsing we can either simply search of element ~id~s or we can search
+using something more flexible like XPath expressions. Further still,
+we can parse using the W3C Selectors API, which allows us to call a
+method on document objects called ~document.querySelectorAll()~.
+
+Once the parsing has been accomplished via adequate methods, we can
+begin to make use of d3. However, we need to first establish whether
+we are replacing content or whether we are updating content, or even
+to insert some new content into the image.
+
+An example where replacing content may be useful is when you are
+attempting to update a complex grob like an axis grob. In this case
+several tick marks and labels need to be drawn. Even if we have the
+same number of tick marks that would allow us to transition their
+positions, the labels would make this difficult. This is because there
+is no "nice" way of transitioning between characters. As a result, in
+these situations replacement is ideal. One approach that looks nice is
+to "fade in" new content, whilst simultaneously "fading out" the old
+content (then removing it).
+
+In the case where transitioning states is possible, for example,
+updating locations of simple grobs and nothing else, d3 is
+particularly useful. By calling ~transition()~ on a d3 selection, we
+can determine the delay and duration present on a transition. We can
+then set the value of the new attributes and d3 will automatically
+determine how the transition will occur. Possible transitions can
+occur on almost every attribute, including:
+
++ locations
++ dimensions
++ transformations
++ colours
+
+The transitioning is useful because it allows us to observe exactly
+how the state is being changed in a web page in response to user
+events.
+
+Once the d3 calls have been completed, the process of manipulating the
+SVG image in the browser is finished.
+
+
+* Improvements?
+
+While the key tools have been demonstrated to achieve the task
+required, the key problem is that much of it relies on a solid
+grounding in JS. This means that a lot of code needs to be written to
+produce something that, when described, seems to be a simple task.
+
+The problem lies not in the actual manipulation of the SVG DOM itself,
+because d3 makes this task easy. The boilerplate that is required for
+manipulation to take place is the problem. In other words, we need to
+make it easier to describe our user interface, along with its
+behaviour, so that we can concisely express changes as a series of d3
+manipulations.
+
+Currently this is being investigated to see whether the use of JS MVC
+frameworks would be beneficial. If we can separate the state of the
+browser (the model) with how it is presented (the view) we can
+hopefully build a more concise and flexible applications.
+
+Frameworks like Backbone allow us to perform actions each time a value
+in a model changes. This means that if we define a property in our
+model, let's say "smooth", which takes a value between 0.1 and 1, we
+can then define that to be viewed as a numeric slider with a label
+next to it. When the value of the slider changes we can update the
+label with the new value of the smooth parameter and begin calling
+~Rook~ to get the new smoothing information.
+
+Whether this is a viable approach or not is yet to be determined, but
+it is clear that a structured approach to developing a JS application
+is required. The JS code would simply be too disorganised and fragile
+otherwise.
