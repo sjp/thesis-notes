@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>A Structured Approach for Generating SVG</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Inconsolata" media="screen, print">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" media="screen,projection">
+    <link rel="stylesheet" type="text/css" href="css/main.css" media="screen,projection">
+    <script type="text/javascript" src="js/modernizr.js"></script>
+<!--begin.rcode echo=FALSE
+# Setting knitr options
+options(prompt = "R> ", continue = "R+ ")
+opts_chunk$set(tidy = FALSE, prompt = TRUE, comment = NA)
+end.rcode-->
+  </head>
+  <body>
+    <header>
+      <h1>A Structured Approach for Generating SVG</h1>
+      <p>Simon Potter <a href="mailto:simon.potter@auckland.ac.nz"><code>simon.potter@auckland.ac.nz</code></a> and Paul Murrell <a href="mailto:p.murrell@auckland.ac.nz"><code>p.murrell@auckland.ac.nz</code></a></p>
+      <p>Department of Statistics, University of Auckland</p>
+      <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
+    </header>
+    <h2>Introduction</h2>
+    <p><em>grid</em> is an alternative graphics system to the traditional base graphics system provided by <em>R</em> <a href="#ref-1">[1]</a>. Two key features of <em>grid</em> distinguish it from the base graphics system, graphics objects (grobs) and viewports.</p>
+    <p>Viewports are how <em>grid</em> defines a drawing context and plotting region. All drawing occurs relative to the coordinate system within a viewport. Viewports have a location and dimension and set scales on the horizontal and vertical axes. Crucially, they also have a name so we know how to refer to them.</p>
+    <p>Graphics objects (grobs) store information necessary to describe how a particular object is to be drawn. For example, a <em>grid</em> <code>circleGrob</code> contains the information used to describe a circle, in particular its location and its radius. As with viewports, graphics objects also have names.</p>
+    <p>The task that <em>gridSVG</em> <a href="#ref-2">[2]</a> performs is to translate viewports and graphics objects into <em><abbr title="Scalable Vector Graphics">SVG</abbr></em> <a href="#ref-3">[3]</a> equivalents. In particular, the exported <em>SVG</em> image retains the naming information on viewports and graphics objects. The advantage of this is we can still refer to the same information in <em>grid</em> and in <em>SVG</em>. In addition, we are able to annotate <em>grid</em> grobs to take advantage of <em>SVG</em> features such as hyperlinking and animation.</p>
+    <p>This document describes the approach that <em>gridSVG</em> used to take when generating <em>SVG</em> content. The new method of generating <em>SVG</em> is also discussed, along with the reasons why it was necessary to use it.</p>
+    <h2>The Old Method of Creating SVG</h2>
+    <p>In order to aid our explanation, a simple <em>grid</em> plot will be drawn using the code below.
+<!--begin.rcode message=FALSE
+library(grid)
+grid.rect(width = unit(0.5, "npc"),
+          height = unit(0.5, "npc"),
+          name = "example-rect")
+grid.ls()
+end.rcode-->
+<p>The output from <code>grid.ls()</code> shows the <em>grid</em> display list. This is represents the list of grobs that have been plotted on the current graphics device. The display list shows that the rectangle has been drawn and we can see that it is named <code>example-rect</code>. When <em>gridSVG</em> translates <code>example-rect</code> into SVG, the rectangle translates into the following markup:</p>
+<!--begin.rcode echo=FALSE, message=FALSE, results="verbatim", fig.keep="none"
+library(gridSVG)
+grid.rect(width = unit(0.5, "npc"),
+          height = unit(0.5, "npc"),
+          name = "example-rect")
+svgdoc <- gridToSVG(NULL, "none", "none")$svg
+pointsGroup <- getNodeSet(svgdoc,
+                          "//svg:g[@id='example-rect']",
+                          c(svg="http://www.w3.org/2000/svg"))[[1]]
+resultTxt <- saveXML(pointsGroup)
+# Cleaning up so we can show text in HTML, rather than XML nodes
+cat(gsub("<", "&lt;", gsub(">", "&gt;", gsub("\"", "&quot;", resultTxt))))
+end.rcode-->
+    <p>How <em>gridSVG</em> used to go about creating this markup was it would first start an <em>SVG</em> group (<code>g</code>). This group needs to have all of its appropriate attributes inserted. These always include an <code>id</code> attribute, but can also include attributes related to animation, hyperlinking, or custom attributes by &ldquo;garnishing&rdquo; attributes. These attributes were added to the added to the <em>SVG</em> group by concatenating character strings together, because it is not known in advance which attributes are to be added. In <em>R</em>, string concatenation is accomplished using the <code>paste()</code> function. A fragment of pseudo-code follows, which would generate the <em>SVG</em> group markup.</p>
+<!--begin.rcode results="hide", error=FALSE
+groupID <- "example-rect"
+paste("<g",
+      ' id="', groupID, '"',
+      " ... ",
+      ">\n", sep = "")
+increaseIndent()
+end.rcode-->
+<!--begin.rcode echo=FALSE
+cat(paste("&lt;g ",
+          'id=\"', groupID, '\"',
+          " ... ",
+          "&gt;", sep = ""))
+end.rcode-->
+    <p>In this case the <code>...</code> represents the optional attributes applied to a group, e.g. hyperlinking. We can see already that the code to produce the <em>SVG</em> markup is reasonably complex compared to the markup itself. This is because <code>paste()</code> knows about the structure of <em>SVG</em>, so we need to apply it ourselves. Note that we have also increased the level of indentation so that children of this group are clearly observed to be children of this particular group.</p>
+    <p>The next step is to add a child <code>&lt;rect /&gt;</code> element to this <em>SVG</em> group. We need to first indent to the correct position on a new line, and then draw the rectangle. The code that would be used to produce the rectangle is shown below.</p>
+<!--begin.rcode results="hide", error=FALSE, echo=-1
+rectID <- paste("example-rect", 1, sep = ".")
+paste(indent(),
+      "<rect",
+      ' id="', rectID, '"',
+      ' x="', rectX, '"',
+      ' y="', rectY, '"',
+      ' width="', rectWidth, '"',
+      ' height="', rectHeight, '"',
+      ...,
+      " />\n", sep = "")
+end.rcode-->
+<!--begin.rcode echo=FALSE
+rectX <- rectY <- 126
+rectWidth <- rectHeight <- 252
+cat(paste("&lt;rect",
+          ' id="', rectID, '"',
+          ' x="', rectX, '"',
+          ' y="', rectY, '"',
+          ' width="', rectWidth, '"',
+          ' height="', rectHeight, '"',
+          " ...",
+          " /&gt;", sep = ""))
+end.rcode-->
+    <p>We can clearly see how attribute values are inserted into the <em>SVG</em> output, in particular with our location and dimension attributes. Again, the <code>...</code> represents other attributes that may be inserted (though not demonstrated). What is also being shown here is how we are applying the indentation. This is done by calling a function that returns a vector character with the correct number of spaces to indent our <code>&lt;rect /&gt;</code> element.</p>
+    <p>Once all children have been added to the <em>SVG</em> group, we can close the group so that all <code>&lt;rect /&gt;</code> elements are contained with it. Because we are closing an element, we need to decrease the level of indentation to preserve the heirarchical structure of the <em>SVG</em> markup. This means when closing any element, we need to do something similar to the following code which closes an <em>SVG</em> group.</p>
+<!--begin.rcode error=FALSE, echo=-3
+decreaseIndent()
+paste(indent(),
+      "</g>\n", sep = "")
+cat("&lt;/g&gt;\n")
+end.rcode-->
+    <p>We have shown how <em>SVG</em> images are built using a series of concatenated strings. It is important to note that these strings are written directly to a file (specified when calling <code>gridToSVG()</code>. This means each time an <em>SVG</em> fragment is created using <code>paste()</code>, it is appended to a specified file name.</p>
+    <p>This approach has a few limitations. For instance, we cannot guarantee that the output that is produced is valid <em>SVG</em> markup. We are also writing directly to a file, which means that we need to read the file to observe its contents. Finally, because the resulting output is simply text, it is very difficult to manipulate the image in any way once it has been created. Finally, but less importantly, performance is a concern when generating output using repeated string concatenation as it is known to be a slow operation.</p>
+    <p>To remedy the aforementioned limitations, a rewrite of the markup generating layer of <em>gridSVG</em> was undertaken.</p>
+    <h2>Structured Output with the <em>XML</em> package</h2>
+    <h3>Image Construction</h3>
+    <p>The rewrite of part of the <em>gridSVG</em> package was achieved by utilising the <em>XML</em> package. The <em>XML</em> package is an <em>R</em> wrapper for the <em>libxml2</em> <a href="#ref-4">[4]</a> <em>XML</em> parser and generator. The key feature that the <em>XML</em> package provides us with is a way of representing an <em>SVG</em> image as a collection of <em>SVG</em> nodes (elements), instead of a long character vector. We simply need to define the structure of the document, the <em>XML</em> package will take care of how this will be exported to text.</p>
+    <p>To define the structure of an <em>SVG</em> image, we need to establish how elements relate to each other. In the case of <em>gridSVG</em>, the only relationship that is of importance is the parent/child relationship. Because we have a root element for our image (<code>&lt;svg&gt;</code>), all other elements are descendents of this element. The earlier example with the rectangle will be recreated using the <em>XML</em> package to demonstrate the differences between the two approaches.</p>
+<!--begin.rcode echo=-1, error=FALSE, results="hide"
+svgWidth <- svgHeight <- "504px"
+svgroot <- newXMLNode("svg", namespaceDefinitions = 
+                        list("http://www.w3.org/2000/svg",
+                             xlink = "http://www.w3.org/1999/xlink"),
+                      attrs = list(width = svgWidth,
+                                   height = svgHeight,
+                                   version = "1.1"))
+setParentNode(svgroot)
+svgroot
+end.rcode-->
+<!--begin.rcode echo=FALSE
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(svgroot, file = NULL)))))
+end.rcode-->
+    <p>There are a few things going on here that require explanation. Firstly, a new <em>XML</em> node is created that is an <code>svg</code> element. It defines two namespaces, both of which are required for our <em>SVG</em> content to be valid. We also add a list of attributes to the <code>svg</code> node, representing the width, height and version of the <em>SVG</em> image. The next function call, to <code>setParentNode()</code> sets this new node to be set as a parent node that we can refer to later. Lastly, we show that when we print out the node itself, the markup is generated for us by the <em>XML</em> package.</p>
+    <p>Now that the root element has been created, we need to add children to it so that</p>
+    <p></p>
+<!--begin.rcode error=FALSE, results="hide"
+g <- newXMLNode("g", parent = getParentNode(),
+                attrs = list(id = "example-rect"))
+setParentNode(g)
+g
+svgroot
+end.rcode-->
+<!--begin.rcode echo=FALSE
+g <- newXMLNode("g", parent = svgroot,
+                attrs = list(id = "example-rect"))
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(g, file = NULL)))))
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(svgroot, file = NULL)))))
+end.rcode-->
+    <p>The previous code fragment creates a new <em>SVG</em> group. This group is given the name of the grob that it is going to be representing. What is important to note is that the <code>parent</code> parameter is given as an argument the result of the function call <code>getParentNode()</code>. Earlier we set the current parent node to be that of the root <code>svg</code> element. This means that the <code>g</code> element is a child of the <code>svg</code> element. Because we wish to add children to this <code>g</code> element, we set it as the new parent node.</p>
+    <p>The two <em>SVG</em> nodes have been printed out, first the <code>g</code> node, then the root <code>svg</code> node. The <code>g</code> node is just as we would expect, but the <code>svg</code> node curiously has the <code>g</code> element included within it. This is particularly useful because it shows how relationships between the nodes are implemented. When we add a child to a parent, the parent node now includes the child. To continue with this example, the rectangle itself now needs to be added to the group.</p>
+<!--begin.rcode, results="hide", echo=-(1:4), error=FALSE
+getParentNode <- function() NULL
+rectID <- "example-rect.1"
+rectX <- rectY <- 126
+rectWidth <- rectHeight <- 252
+svgrect <- newXMLNode("rect", parent = getParentNode(),
+                      attrs = list(id = rectID,
+                                   x = rectX,
+                                   y = rectY,
+                                   width = rectWidth,
+                                   height = rectHeight))
+svgrect
+g
+svgroot
+end.rcode-->
+<!--begin.rcode echo=FALSE
+rectID <- "example-rect.1"
+rectX <- rectY <- 126
+rectWidth <- rectHeight <- 252
+svgrect <- newXMLNode("rect", parent = g,
+                      attrs = list(id = rectID,
+                                   x = rectX,
+                                   y = rectY,
+                                   width = rectWidth,
+                                   height = rectHeight, fill="none", stroke="black"))
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(svgrect, file = NULL)))))
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(g, file = NULL)))))
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(svgroot, file = NULL)))))
+end.rcode-->
+    <p>We can now see how the document is beginning to build up as the <code>rect</code> is added to the <code>g</code>. Because the <code>g</code> also relates to the root <code>svg</code> element, the <code>svg</code> element now contains the new <code>rect</code> element.</p>
+    <p>Now that we have added all children to the <em>SVG</em> group, we need to set the current parent node reference to the grandparent instead.</p>
+<!--begin.rcode error=FALSE, results="hide"
+currentParent <- getParentNode()
+grandParent <- xmlParent(currentParent)
+setParentNode(grandParent)
+end.rcode-->
+    <p>This means we know that the current &ldquo;parent&rdquo; is the root <code>svg</code> node, as it is the parent of our <code>g</code> node. We can then write out the root <em>SVG</em> node. This will also be inserted directly into this document.</p>
+<!--begin.rcode error=FALSE, results="hide"
+saveXML(getParentNode(), file = NULL)
+end.rcode-->
+<!--begin.rcode echo=FALSE, results="asis"
+cat(saveXML(svgroot, file = NULL))
+end.rcode-->
+    <p>This demonstrates how <em>SVG</em> images can be built up in a more reliable way than with simple string concatenation. It is clear that the way in which we define our <em>SVG</em> image is less prone to error in creating markup, and it also ensures that images are both well-formed and valid.</p>
+    <h3>In-Memory Images</h3>
+    <p>The node-based approach to <em>SVG</em> creation offers more advantages than the cleaner way of building up an image. We are saving the root node (and thus its descendents) after the image has been created. This means we can keep the image in memory until we want to save to disk, or some other output. An example where this is useful is for producing this article, plots are written out directly within the <em><abbr title="HyperText Markup Language">HTML</abbr></em> document as inline <em>SVG</em>.</p>
+    <h3>XPath</h3>
+    <p>Another advantage is that because we are dealing with <em>XML</em> nodes, we can also run <em>XPath</em> queries on them. This allows us to be able to manipulate, retrieve and add subsets within the <em>SVG</em> image. For example, consider the following <em>ggplot2</em> plot.</p>
+<!--begin.rcode echo=-3, fig.keep="none", results="asis"
+library(ggplot2)
+qplot(mpg, wt, data=mtcars, colour=cyl)
+cat(saveXML(gridToSVG(name=NULL, "none", "none")$svg, file=NULL))
+end.rcode-->
+    <p>We can reduce this image so that only the legend is shown.</p>
+<!--begin.rcode fig.keep="none", results="hide", echo=-1, warning=FALSE
+qplot(mpg, wt, data=mtcars, colour=cyl)
+svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
+legendNode <- getNodeSet(svgdoc,
+                         "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+                         c(svg="http://www.w3.org/2000/svg"))[[1]]
+rootGroup <- getNodeSet(svgdoc,
+                        "//svg:g[@id='gridSVG']",
+                        c(svg="http://www.w3.org/2000/svg"))[[1]]
+removeChildren(rootGroup, "g")
+addChildren(rootGroup, legendNode)
+saveXML(svgdoc, file = NULL)
+end.rcode-->
+<!--begin.rcode results="asis", echo=FALSE
+cat(saveXML(svgdoc, file = NULL))
+end.rcode-->
+    <p>The way in which this is achieved is by first collecting the <em>SVG</em> document itself from <code>gridToSVG()</code>. This gives us a node reference that allows us to manipulate a document. The next step is to retrieve the references to our nodes of interest. In this case it is known in advance that the <em>XPath</em> queries are going to give us the right nodes. We then remove all children from our &ldquo;root&rdquo; group, and add in our legend node that we collected. We can then save our modified document to get the reduced image.</p>
+    <p>Although this particular example is not useful, it demonstrates the possibility of combining the contents of two or more plots together. It also allows us to reduce the exported <em>SVG</em> to only what is strictly necessary.</p>
+    <h3>Modification Post-Creation</h3>
+    <p>A case where modifying the image is useful is within <em>gridSVG</em> itself. When <code>gridToSVG()</code> is called, there are three parameters of particular interest: the filename, <code>export.coords</code> and <code>export.js</code>. The latter two parameters determine how <em>JavaScript</em> code is to be included within an <em>SVG</em> image, if at all. If we are going to be including <em>JavaScript</em> code, the <em>SVG</em> image must first be generated. Once the image is created we append new <code>&lt;script&gt;</code> node(s) to the root <code>&lt;svg&gt;</code> element.</p>
+    <h3>Tree Simplification</h3>
+    <p>One particular case where the <em>XML</em> package gives us some advantages is when saving an <em>XML</em> document. The function <code>saveXML()</code> provides a boolean option, <code>indent</code>. This determines whether there is going to be any visual structure in the form of indentation and line breaks or none at all. An example of its effect is shown below.</p>   
+<!--begin.rcode results="hide"
+a <- newXMLNode("a")
+b <- newXMLNode("b", parent = a)
+saveXML(a, file = NULL, indent = TRUE)
+saveXML(a, file = NULL, indent = FALSE)
+end.rcode-->
+<!--begin.rcode echo=FALSE
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(a, file = NULL)))))
+cat(gsub("<", "&lt;",
+    gsub(">", "&gt;",
+    gsub('&', "&amp;",
+    saveXML(a, file = NULL, indent = FALSE)))))
+end.rcode-->
+    <p>We can see that the output without indentation present is much more compact. In complex <em>SVG</em> images, particularly those with deep heirarchical structure, this could reduce the size of the resulting file greatly. This would improve the delivery speed of <em>gridSVG</em> plots being sent over the web by reducing the amount of data that needs to be transferred.</p>
+    <p>Another case where removing indentation is useful is when manipulating the <em>SVG</em> image in the browser using <em>JavaScript</em>. When parsing the <em>SVG</em> <em><abbr title="Document Object Model">DOM</abbr></em> with indentation present, the whitespace used for indentation is counted as a &ldquo;node&rdquo;. This makes it difficult to traverse the <em>DOM</em> as it forces us to check whether the node that we have encountered is simply whitespace text or not. When indentation is removed, we no longer have this problem and can be certain that all nodes are either elements, or actual content within them.</p>
+    <h2>Conclusion</h2>
+    <p>We have demonstrated the differing approaches to constructing an <em>SVG</em> image, using examples from <em>gridSVG</em>. By applying the new approach to building <em>SVG</em> plots, we gain several benefits but at no obvious cost.</p>
+    <h2>Downloads</h2>
+    <p>The code used within this document is freely available. The version of <em>gridSVG</em> that is capable of producing this content is not yet available on <abbr title="Comprehensive R Archive Network">CRAN</abbr>, but is <a href="https://r-forge.r-project.org/projects/gridsvg/">available on R-Forge</a>.</p>
+    <ul>
+      <li><a href="">Standalone examples</a></li>
+      <li><a href="">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+    </ul>
+    <h2>References</h2>
+    <ol>
+      <li id="ref-1">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+      <li id="ref-2">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">gridSVG: Export grid graphics as SVG</span>. <a href="http://r-forge.r-project.org/projects/gridsvg/">https://r-forge.r-project.org/projects/gridsvg/</a>. R package version 1.0-0.</li>
+      <li id="ref-3">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition) Specification</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
+      <li id="ref-4"><span class="pkg-desc">JSON</span>, <a href="http://json.org/">http://json.org/</a>.</li>
+      <li id="ref-5">Lang, D. T. (2012). <span class="pkg-desc">XML: Tools for parsing and generating XML within R and S-Plus.</span>. <a href="http://www.omegahat.org/RSXML/">http://www.omegahat.org/RSXML/</a>. R package version 3.9-4</li>
+      <li id="ref-6">W3C (1999). <span class="pkg-desc">XML Path Language (XPath) Version 1.0 Specification</span>. <a href="http://www.w3.org/TR/xpath/">http://www.w3.org/TR/xpath/</a>.</li>
+    </ol>
+  </body>
+</html>
