@@ -1,4 +1,66 @@
 
+2012-10-03
+----------
+
+DISCUSS:
+
+  + Bioc-devel thread may contain useful information on making
+    knitr document a package vignette
+
+    https://stat.ethz.ch/pipermail/bioc-devel/2012-September/003696.html
+
+    particularly the pointer to ...
+
+    http://yihui.name/knitr/demo/vignette/
+
+    ... which actually argues AGAINST making a doc a vignette !
+
+  + 'Rook' should be back on CRAN;  some functionality has been
+    disabled so need to check that this does not affect us.
+
+
+TODO:
+
+  + Redo time series example using 'backbone'
+
+    - Think about what an API might be like for a javascript library 
+      that others could use to combine 'grid' and 'gridSVG' and javascript
+      (via callbacks)
+      
+  + VIT example next ?
+
+
+DONE:
+
+  + Redo time series example using 'backbone'
+
+    Start made on understanding how to use the js libraries properly
+
+  + Keep writing a vignette for 'gridSVG' for the viewport coordinate
+    export/import/use in javascript
+    as HTML + SVG (ready for tech report?)
+
+    - Develop as Dept Tech Report?
+    - some example images are interactive
+    - includes warnings if browser doesn't cut the mustard
+
+    - see articles/coordinates/
+
+  + Tech report for XML-basis for gridSVG 
+    - draft
+    - see articles/generating-svg/
+
+  + Summary doc of technologies used (successfully) so far
+
+    - what are they useful for?
+    - how necessary are they?
+    - how do they fit together?
+    - what needs to be done better/easier?
+    - sort of an update to litreview.org
+
+    - see tech-summary.org
+
+
 2012-09-26
 ----------
 
