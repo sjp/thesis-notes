@@ -137,9 +137,7 @@ end.rcode-->
       In this case the <code>...</code> represents the optional
       attributes applied to a group, e.g. hyperlinking. We can see
       already that the code to produce the <em>SVG</em> markup is
-      reasonably complex compared to the markup itself. This is
-      because <code>paste()</code> knows about the structure
-      of <em>SVG</em>, so we need to apply it ourselves. Note that we
+      reasonably complex compared to the markup itself. Note that we
       have also increased the level of indentation so that children of
       this group are clearly observed to be children of this
       particular group.
@@ -483,19 +481,31 @@ end.rcode-->
       together. It also allows us to reduce the exported <em>SVG</em>
       to only what is strictly necessary.
     </p>
-    <h3>Modification Post-Creation</h3>
+    <h3>Inserting Nodes</h3>
     <p>
-      A case where modifying the image is useful is
-      within <em>gridSVG</em> itself. When <code>gridToSVG()</code> is
-      called, there are three parameters of particular interest: the
+      Another advantage of new approach is that when we create
+      an <em>XML</em> node, it can then be inserted into
+      the <em>SVG</em> document at any location. Previously, with the
+      string concatenation approach we were forced to simply append to
+      the document. Now we have the option of inserting nodes at any
+      point in the document.
+    </p>
+    <p>
+      A case where this is useful is within <em>gridSVG</em>
+      itself. When <code>gridToSVG()</code> is called, there are three
+      parameters of particular interest: the
       filename, <code>export.coords</code>
       and <code>export.js</code>. The latter two parameters determine
       how <em>JavaScript</em> code is to be included within
       an <em>SVG</em> image, if at all. If we are going to be
-      including <em>JavaScript</em> code, the <em>SVG</em> image must
-      first be generated. Once the image is created we append
+      including <em>JavaScript</em> code, the <em>SVG</em> image is
+      first generated. Once the image is created we insert
       new <code>&lt;script&gt;</code> node(s) to the
-      root <code>&lt;svg&gt;</code> element.
+      root <code>&lt;svg&gt;</code> element. This demonstrates the
+      ability to insert nodes at any location because rather than
+      being forced to append to the document, we are able to add the
+      nodes to be children of the root <code>&lt;svg&gt;</code>
+      element.
     </p>
     <h3>Tree Simplification</h3>
     <p>
