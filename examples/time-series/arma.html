@@ -2,14 +2,14 @@
 <head><title>ARMA Models</title></head>
 <body>
 <h1>Interactive ARMA Models</h1>
-<div style="clear: both;">
-<input id="dataset" type="file" value="Load Dataset">
-<select id="req-format">
+<div id="user-input" style="clear: both;">
+  <input id="dataset" type="file" value="Load Dataset">
+  <select id="req-format">
     <option>SVG</option>
     <option>JSON</option>
-</select>
-<input id="arma-p" type="number" min="0" max="5" step="1" value="0" />
-<input id="arma-q" type="number" min="0" max="5" step="1" value="0" />
+  </select>
+  <input id="arma-p" type="number" min="0" max="5" step="1" value="0" />
+  <input id="arma-q" type="number" min="0" max="5" step="1" value="0" />
 </div>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="672px" height="672px" version="1.1">
   <g transform="translate(0, 672) scale(1, -1)">
@@ -382,253 +382,233 @@
     </g>
   </g>
 </svg>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+<script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
 <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript" src="/custom/arma/coords.js"></script>
 <script type="text/javascript">
-  var updateHeights = function() {
-      var acfheights = document.getElementById("acfheights");
-      var pacfheights = document.getElementById("pacfheights");
-      var reqFormat = document.getElementById("req-format");
-      // Getting the selected *value* of the combobox
-      reqFormat = reqFormat.options[reqFormat.selectedIndex].text;
-      if (window.XMLHttpRequest) {
-          var transitionHeights = function() {
-              // Only execute the rest of the function when we have
-              // received data from the server, not any intermediary states
-              if (xhr.readyState !== 4)
-                  return;
-              if (reqFormat === "SVG") {
-                  // Because the response is text/xml, we can use responseXML to parse
-                  // automatically for us
-                  var newdoc = xhr.responseXML;
-                  var newnode = document.importNode(newdoc.documentElement, true);
-                  var acfgroup = newnode.childNodes[0];
-                  var pacfgroup = newnode.childNodes[1];
-                  d3.select(acfheights)
-                      .selectAll("polyline")
-                      .transition()
-                      .duration(1000)
-                      .attr("points", function(d, i) {
-                          var currLine = acfgroup.childNodes[i];
-                          return currLine.getAttribute("points");
-                      });
-                  d3.select(pacfheights)
-                      .selectAll("polyline")
-                      .transition()
-                      .duration(1000)
-                      .attr("points", function(d, i) {
-                          var currLine = pacfgroup.childNodes[i];
-                          return currLine.getAttribute("points");
-                      });
-              } else if (reqFormat == "JSON") {
-                  var linesData = JSON.parse(xhr.responseText);
-                  var acfData = linesData.acf;
-                  var pacfData = linesData.pacf;
-                  d3.select(acfheights)
-                      .selectAll("polyline")
-                      .data(acfData)
-                      .transition()
-                      .duration(1000)
-                      .attr("points", function(d) {
-                          return d;
-                      });
-                  d3.select(pacfheights)
-                      .selectAll("polyline")
-                      .data(pacfData)
-                      .transition()
-                      .duration(1000)
-                      .attr("points", function(d) {
-                          return d;
-                      });
-              }
-          };
-          var xhr = new XMLHttpRequest();
-          xhr.onreadystatechange = transitionHeights;
-          // Here we send a GET request assuming that the coords
-          // have already been loaded in R.
-          xhr.open("GET", "/custom/arma/brew/acf?p=" + armap.value +
-                          "&q=" + armaq.value +
-                          "&format=" + reqFormat);
-          xhr.send();
-          // Uncomment the following lines to send coordinate information
-          // on a *per request* basis
-          //
-          // var fd = new FormData();
-          // fd.append("coords", JSON.stringify(gridSVGCoords));
-          // xhr.open("POST", "/custom/arma/brew/acf?p=" + armap.value + 
-          //                  "&q=" + armaq.value +
-          //                  "&format=" + reqFormat);
-          // xhr.send(fd);
-      }
-  };
+    var TsModel = Backbone.Model.extend({
+        defaults: {
+            p: 0,
+            q: 0,
+            format: "SVG",
+            file: null
+        }
+    });
 
-  var armap = document.getElementById("arma-p");
-  var armaq = document.getElementById("arma-q");
-  armap.addEventListener("change", updateHeights);
-  armaq.addEventListener("change", updateHeights);
+    var ts = new TsModel();
 
-  // The following allows us to be able to initialise a coordinate
-  // system *in R* that we already know about because we have loaded
-  // a coordinates file via a <script> tag into the gridSVGCoords var.
-  var sendCoordsInfo = function() {
-      var fd = new FormData();
-      fd.append("coords", JSON.stringify(gridSVGCoords));
-      var confirmSent = function() {
-          if (xhr.readyState !== 4)
-              return;
-          console.log("coords info successfully sent");
-      };
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = confirmSent;
-      xhr.open("POST", "/custom/arma/brew/initCoords");
-      xhr.send(fd);
-  };
+    var TsView = Backbone.View.extend({
+        el: $("#user-input"),
 
-  // The following allows us to be able to load a dataset into
-  // R from some location on our hard disk.
-  var sendDataset = function() {
-      var acfheights = document.getElementById("acfheights");
-      var pacfheights = document.getElementById("pacfheights");
-      var reqFormat = document.getElementById("req-format");
-      var fd = new FormData();
-      fd.append("dataset", dataLoader.files[0]);
-      var confirmSent = function() {
-          if (xhr.readyState !== 4) {
-              return;
-          }
+        events: {
+            "change #dataset": "changeDataset",
+            "change #arma-p": "updateParams",
+            "change #arma-q": "updateParams",
+        },
+    
+        updateParams: function() {
+            this.model.set({p: $("#arma-p").val(),
+                            q: $("#arma-q").val(),
+                            format: $("#req-format").val()});
+    
+            var dt;
+            if (this.model.get("format") === "JSON") {
+                dt = "json";
+            } else {
+                dt = "xml";
+            }
+    
+            $.ajax({
+                url: "/custom/arma/brew/acf?" + $.param({
+                    p: this.model.get("p"),
+                    q: this.model.get("q"),
+                    format: this.model.get("format")
+                }),
+                context: this,
+                dataType: dt,
+                success: this.drawParams
+            });
+        },
+    
+        drawParams: function(resp) {
+            if (this.model.get("format") === "JSON") {
+                this.drawParamsJSON(resp);
+            } else {
+                this.drawParamsSVG(resp);
+            }
+        },
+    
+        drawParamsJSON: function(obj) {
+            var acf = obj.acf;
+            var pacf = obj.pacf;
+            d3.selectAll("#acfheights polyline")
+                .data(acf)
+                .transition()
+                .duration(1000)
+                .attr("points", function(d) {
+                  return d;
+                });
+            d3.selectAll("#pacfheights polyline")
+                .data(pacf)
+                .transition()
+                .duration(1000)
+                .attr("points", function(d) {
+                  return d;
+                });
+        },
+    
+        drawParamsSVG: function(svgdoc) {
+            var acf = $(svgdoc).find("g").get(0);
+            var pacf = $(svgdoc).find("g").get(1);
+            d3.selectAll("#acfheights polyline")
+                .transition()
+                .duration(1000)
+                .attr("points", function(d, i) {
+                  return $(acf).find("polyline")
+                               .get(i).getAttribute("points");
+                });
+            d3.selectAll("#pacfheights polyline")
+                .transition()
+                .duration(1000)
+                .attr("points", function(d, i) {
+                  return $(pacf).find("polyline")
+                                .get(i).getAttribute("points");
+                });
+        },
+    
+        changeDataset: function() {
+            this.model.set({file: $("#dataset").prop("files")[0]});
+            var fd = new FormData();
+            fd.append("dataset", this.model.get("file"));
+            $.ajax({
+                url: "/custom/arma/brew/loadDataset?p=0&q=0&format=SVG",
+                type: "POST",
+                data: fd,
+                contentType: false,
+                processData: false,
+                context: this,
+                success: this.drawUpdatedDataset
+            });
+        },
+    
+        drawUpdatedDataset: function(svgdoc) {
+            // Setting acf y-axis
+            var oldacfyaxis = $("#acfyaxis").get(0);
+            var newacfyaxis = $(svgdoc).find("#acfyaxis").get(0);
+            d3.select(newacfyaxis).attr("opacity", 0); // Make it invisible first
+            $(newacfyaxis).insertBefore(oldacfyaxis);
+    
+            // Fade out
+            d3.select(oldacfyaxis)
+                .transition()
+                .duration(1000)
+                .attr("opacity", 0)
+                .remove();
+            // Fade in
+            d3.select(newacfyaxis)
+                .transition()
+                .duration(1000)
+                .attr("opacity", 1);
+    
+            var oldpacfyaxis = $("#pacfyaxis").get(0);
+            var newpacfyaxis = $(svgdoc).find("#pacfyaxis").get(0);
+            d3.select(newpacfyaxis).attr("opacity", 0); // Make it invisible first
+            $(newpacfyaxis).insertBefore(oldpacfyaxis);
+    
+            // Fade out
+            d3.select(oldpacfyaxis)
+                .transition()
+                .duration(1000)
+                .attr("opacity", 0)
+                .remove();
+            // Fade in
+            d3.select(newpacfyaxis)
+                .transition()
+                .duration(1000)
+                .attr("opacity", 1);
+    
+            // Note that the following values can just be transitioned towards.
+            // This is because we are not *replacing*, merely *transforming*.
+            // This gives us a nice smooth transition rather than a fade in/out.
+    
+            // Setting the horizontal lines at y = 0 for both plots
+            var acfzerovalue = $(svgdoc).find("#acfzeroline polyline").attr("points");
+            var pacfzerovalue = $(svgdoc).find("#pacfzeroline polyline").attr("points");
+            d3.select("#acfzeroline polyline")
+                .transition()
+                .duration(1000)
+                .attr("points", acfzerovalue);
+            d3.select("#pacfzeroline polyline")
+                .transition()
+                .duration(1000)
+                .attr("points", pacfzerovalue);
+    
+            // Setting the confidence intervals
+            var acfclim1value = $(svgdoc).find("#acfclims\\.1").attr("points");
+            var acfclim2value = $(svgdoc).find("#acfclims\\.2").attr("points");
+            var pacfclim1value = $(svgdoc).find("#pacfclims\\.1").attr("points");
+            var pacfclim2value = $(svgdoc).find("#pacfclims\\.2").attr("points");
+    
+            // Annoyingly '.'s need to be escaped
+            d3.select("#acfclims\\.1")
+                .transition()
+                .duration(1000)
+                .attr("points", acfclim1value);
+            d3.select("#acfclims\\.2")
+                .transition()
+                .duration(1000)
+                .attr("points", acfclim2value);
+            d3.select("#pacfclims\\.1")
+                .transition()
+                .duration(1000)
+                .attr("points", pacfclim1value);
+            d3.select("#pacfclims\\.2")
+                .transition()
+                .duration(1000)
+                .attr("points", pacfclim2value);
+    
+            // Finally setting the line heights
+            var acflinegroup = $(svgdoc).find("#acfheights").get(0);
+            var pacflinegroup = $(svgdoc).find("#pacfheights").get(0);
+            d3.selectAll("#acfheights polyline")
+                .transition()
+                .duration(1000)
+                .attr("points", function(d, i) {
+                    return $(acflinegroup).find("polyline")
+                                          .get(i).getAttribute("points");
+                });
+            d3.selectAll("#pacfheights polyline")
+                .transition()
+                .duration(1000)
+                .attr("points", function(d, i) {
+                    return $(pacflinegroup).find("polyline")
+                                           .get(i).getAttribute("points");
+                });
+    
+            // Do last
+            $("#arma-p").val(0);
+            $("#arma-q").val(0);
+        }
+    });
 
-          var svgdoc = xhr.responseXML;
-          var oldacfyaxis = document.getElementById("acfyaxis");
+    var tsv = new TsView({model: ts});
 
-          // To properly run the XPath we need to search through the namespace.
-          // We first have the query explicity search through the 'svg' namespace.
-          // Next we create a namespace resolver that will return the SVG namespace
-          // when we have a prefix of SVG, or null, the default, which in our
-          // context is HTML.
-          var nsr = function (prefix) {
-              return "http://www.w3.org/2000/svg";
-          };
-
-          // Setting acf y-axis
-          var newacfyaxis = svgdoc.evaluate('//svg:g[@id = "acfyaxis"]', svgdoc, nsr,
-                  XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(0); 
-          d3.select(newacfyaxis).attr("opacity", 0); // Make it invisible first
-          newacfyaxis = oldacfyaxis.parentNode.insertBefore(newacfyaxis, oldacfyaxis);
-
-          // Fade out
-          d3.select(oldacfyaxis)
-              .transition()
-              .duration(1000)
-              .attr("opacity", 0)
-              .remove();
-          // Fade in
-          d3.select(newacfyaxis)
-              .transition()
-              .duration(1000)
-              .attr("opacity", 1);
-
-          // Setting pacf y-axis
-          var oldpacfyaxis = document.getElementById("pacfyaxis");
-          var newpacfyaxis = svgdoc.evaluate('//svg:g[@id = "pacfyaxis"]', svgdoc, nsr,
-                  XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotItem(0); 
-          d3.select(newpacfyaxis).attr("opacity", 0); // Make it invisible first
-          newpacfyaxis = oldpacfyaxis.parentNode.insertBefore(newpacfyaxis, oldpacfyaxis);
-
-          // Fade out
-          d3.select(oldpacfyaxis)
-              .transition()
-              .duration(1000)
-              .attr("opacity", 0)
-              .remove();
-          // Fade in
-          d3.select(newpacfyaxis)
-              .transition()
-              .duration(1000)
-              .attr("opacity", 1);
-
-          // Note that the following values can just be transitioned towards.
-          // This is because we are not *replacing*, merely *transforming.
-          // This gives us a nice smooth transition rather than a fade in/out.
-
-          // Setting the horizontal lines at y = 0 for both plots
-          var acfzerovalue = svgdoc.getElementById("acfzeroline")
-                                   .childNodes[0]
-                                   .getAttribute("points");
-          var pacfzerovalue = svgdoc.getElementById("pacfzeroline")
-                                    .childNodes[0]
-                                    .getAttribute("points");
-          d3.select("#acfzeroline polyline")
-              .transition()
-              .duration(1000)
-              .attr("points", acfzerovalue);
-          d3.select("#pacfzeroline polyline")
-              .transition()
-              .duration(1000)
-              .attr("points", pacfzerovalue);
-
-          // Setting the confidence intervals
-          var acfclim1value = svgdoc.getElementById("acfclims.1").getAttribute("points");
-          var acfclim2value = svgdoc.getElementById("acfclims.2").getAttribute("points");
-          var pacfclim1value = svgdoc.getElementById("pacfclims.1").getAttribute("points");
-          var pacfclim2value = svgdoc.getElementById("pacfclims.2").getAttribute("points");
-
-          // Annoyingly '.'s need to be escaped
-          d3.select("#acfclims\\.1")
-              .transition()
-              .duration(1000)
-              .attr("points", acfclim1value);
-          d3.select("#acfclims\\.2")
-              .transition()
-              .duration(1000)
-              .attr("points", acfclim2value);
-          d3.select("#pacfclims\\.1")
-              .transition()
-              .duration(1000)
-              .attr("points", pacfclim1value);
-          d3.select("#pacfclims\\.2")
-              .transition()
-              .duration(1000)
-              .attr("points", pacfclim2value);
-
-          // Finally setting the line heights
-          var acflinegroup = svgdoc.getElementById("acfheights");
-          var pacflinegroup = svgdoc.getElementById("pacfheights");
-          d3.select("#acfheights")
-              .selectAll("polyline")
-              .transition()
-              .duration(1000)
-              .attr("points", function(d, i) {
-                  return acflinegroup.childNodes[i]
-                                     .getAttribute("points");
-              });
-          d3.select("#pacfheights")
-              .selectAll("polyline")
-              .transition()
-              .duration(1000)
-              .attr("points", function(d, i) {
-                  return pacflinegroup.childNodes[i]
-                                      .getAttribute("points");
-              });
-
-          // Do last
-          armap.value = 0;
-          armaq.value = 0;
-      }
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = confirmSent;
-      // Assume p=0, q=0 and always respond with SVG because
-      // we have to do a lot of modification to use JSON.
-      // Params are 0 because that will give us the largest range
-      xhr.open("POST", "/custom/arma/brew/loadDataset?p=0&q=0&format=SVG");
-      xhr.send(fd);
-  };
-  var dataLoader = document.getElementById("dataset");
-  dataLoader.addEventListener("change", sendDataset);
-
-
-  // Finally, inform R of the coordinate system in use.
-  // This is triggered when the page has (almost) loaded
-  document.addEventListener("DOMContentLoaded", sendCoordsInfo, false);
+    $(document).ready(function() {
+        var fd = new FormData();
+        fd.append("coords", JSON.stringify(gridSVGCoords));
+        $.ajax({
+            url: "/custom/arma/brew/initCoords",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fd,
+            success: function() {
+              console.log("coords info successfully sent");
+            }
+        });
+    });
 </script>
 </body>
 </html>

@@ -1,9 +1,7 @@
 library(gridSVG)
 library(Rook)
 
-# fully qualified name because XML package masks 'source'
-# and gives us a whole bunch of warnings
-base::source("acf-plots.R")
+source("acf-plots.R")
 
 armaDatasetGen <- function() {
     dataset <- Nile

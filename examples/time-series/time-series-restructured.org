@@ -1,0 +1,129 @@
+#+TITLE: Time Series Example -- Restructured
+
+* Introduction
+
+A rewrite of the ARMA example was performed. The motivation for this
+was the lack of structure in the code. While it was reasonably
+straightforward to write, it was difficult to follow for someone not
+well-versed in JS. The reasons for this included the verbosity of the
+code (excluding ~d3~ segments), that the code was not sufficiently
+declarative, and the lack of structure in the code itself.
+
+To remedy these issues, the following JS libraries were introduced:
+
++ [[http://jquery.com/][jQuery]]
++ [[http://underscorejs.org/][Underscore.js]]
++ [[http://backbonejs.org/][Backbone.js]]
+
+The purposes of each of these libraries will be described later. What
+will also be described is how the code is now structured to support
+the goals of the rewrite.
+
+* Structured JavaScript Code
+
+** Intro
+
+Prior to the rewrite, all of the code that was written was done using
+a collection of global functions and variables. While this was
+sufficient for the purposes of the demonstration, it does not make it
+clear in the code how the application is structured. What is meant by
+this is we cannot clearly tell what is the data of interest, and how
+we're acting upon it. In our example, the data of interest is the user
+input, i.e. the following:
+
++ our dataset (uploadable)
++ the request format (SVG/JSON)
++ the AR(p) and MA(q) parameters
+
+Our goal is to make our code clearly express that our plot should
+change in response to these particular changes in user input. The
+library that provides the required structure is Backbone. While it is
+not strictly necessary, it is widely used and makes the task of
+building applications easier. Backbone also depends on Underscore, a
+very useful utility library for JS that we may end up using
+(explicitly) later for more complex examples.
+
+The other JS library that we're now using is jQuery. It reduces the
+task of DOM manipulation to a single, chainable line of code. The
+useful thing about jQuery is that although we can easily write the
+same code ourselves, the jQuery equivalent is both more terse and more
+declarative.
+
+** The Backbone to our Application
+
+Backbone provides structure primarily in the form of models and
+views. These are two complementary components to our application that
+separate concerns between what the data is (the model) and how it is
+to be acted upon (the view).
+
+The model in our application simply defines JS variables for our
+views. In our case there are the 4 items of interest, as listed
+earlier. Our model is simple, and thus the code used to produce the
+model is also simple and concise.
+
+With this model we need to define how the data is /viewed/ and how
+users /interact/ with it. This is defined in the *view*. We need to
+establish which element defines the content of the view. Typically
+with web applications we would also define how everything is going to
+be rendered but because we know that this is fixed, we already have
+the HTML provided. This means our view is pre-rendered and our
+Backbone view does not need to define how our model is being drawn.
+
+Our view is most concerned with is the response to user events. This
+is simply defined in an *events* object, which has keys in the form of
+the type of event, followed by the CSS selector to match for the
+event. For example, the key that is used to describe when the AR(p)
+parameter changes is ~"change #arma-p"~. The value associated with the
+key is a string which is the name of a method in the /view/. To
+continue the AR(p) example, we use ~"updateParams"~ as the method to
+call when the AR(p) parameter changes.
+
+Now that the events have been described, all we really need to do is
+create the methods that will be called in response to these
+events. These are simply functions associated with keys in the /view/
+object. When the methods have been implemented we have a more coherent
+and clear way of building our JS applications. Backbone is not
+strictly necessary in all of this, but if we were to build a more
+JS-reliant application that creates DOM objects rather than simply
+updating them, we can use the same structure to build an application.
+
+** Using jQuery
+
+The JS code that was previously written was essentially just low-level
+JS. Rather than having to do all of the work involved in performing
+every task, we can use jQuery. It provides us with a more declarative
+way of representing our code without necessarily getting in the
+way. For example, consider the following two implementations which
+grab the second ~<g>~ element from an SVG document.
+
+: // Assume the document is in the following form (with no whitespace text nodes)
+: <svg>
+:   <g>...</g>
+:   <g>...</g>
+: </svg>
+:
+: // Plain JS
+: var svgdoc = xhr.responseXML;
+: var svgroot = document.importNode(svgdoc.documentElement, true);
+: var pacfgroup = newnode.childNodes[1];
+:
+: // jQuery implementation
+: var pacfgroup = $(svgdoc).find("g").get(1);
+
+The nice thing about jQuery is the ease with which we can utilise the
+W3C Selectors API (previously seen in d3 with ~d3.select~ and
+~d3.selectAll~). We can read out what is going on with the jQuery
+example without exactly knowing how it is doing it and it closely
+matches our intentions. For example, we know that we simply want to
+grab the second ~<g>~ under the root ~<svg>~ element, and the way in
+which this is done in jQuery is the following: "With the SVG document
+given to us from an AJAX call, find all of the ~<g>~ elements, and
+give us the second node (index 1)."
+
+In summary, the use of jQuery gives us several advantages:
+
++ Our code is more portable across browsers (jQuery handles
+  edge-cases)
++ The code is more declarative
++ We can achieve the same result using less code
++ Easier use of the selectors API
