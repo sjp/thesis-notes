@@ -74,6 +74,12 @@ header h1, header p {
   text-align: center;
 }
 
+header p.abstract {
+  text-align: justify;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
 .output, .js {
   background-color: #F7F7F7;
 }

@@ -19,8 +19,8 @@ end.rcode-->
       <p>Simon Potter <a href="mailto:simon.potter@auckland.ac.nz"><code>simon.potter@auckland.ac.nz</code></a> and Paul Murrell <a href="mailto:p.murrell@auckland.ac.nz"><code>p.murrell@auckland.ac.nz</code></a></p>
       <p>Department of Statistics, University of Auckland</p>
       <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
-      <p>
-        <b>Abstract:</b>
+      <p class="abstract">
+        <strong>Abstract:</strong>
         The <em>gridSVG</em> package exports <em>grid</em> images
         to an <em>SVG</em> format for viewing on the web.
         This article describes new features in <em>gridSVG</em>
@@ -168,7 +168,7 @@ end.rcode-->
       viewed in a web browser.
     </p>
 
-<!--begin.rcode 
+<!--begin.rcode message=FALSE
 library(gridSVG)
 end.rcode-->
 
@@ -179,7 +179,7 @@ end.rcode-->
 gridToSVG("pointsPlot.svg")
 end.rcode-->
 
-<!--begin.rcode fig.keep="none", message=FALSE, results="hide"
+<!--begin.rcode fig.keep="none", message=FALSE, results="hide", echo=FALSE
 run_chunk("gridPlot")
 run_chunk("pointsPlot")
 end.rcode-->
@@ -561,7 +561,7 @@ end.rcode-->
       manipulate the <em>SVG</em> image within <em>R</em> (using the
       <em>XML</em> package).  These features significantly 
       enhance the framework that
-      <em>gridVSG</em> provides for
+      <em>gridSVG</em> provides for
       developing dynamic and interactive graphics for the web.
     </p>
 
