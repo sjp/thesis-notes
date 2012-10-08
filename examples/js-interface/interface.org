@@ -1,0 +1,43 @@
+#+TITLE: A JS Interface For Calling R
+
+The provided example demonstrates a means by which we can call
+~R~. The interface to the function is very similar to the AJAX
+interface provided by jQuery, but *does not require* jQuery. The
+function ~callR~ takes as its sole argument an object, ~args~. This
+args object is described as follows:
+
++ url :: String. The URL to request. If this is a ~Rook~-backed
+         application we would expect the url to look something like
+         ~/custom/appname/*~. The URL can have parameters added to it
+         easily using the ~queryBuilder~ function that is exported
+         from ~gridSVG~.
++ type :: String. Default ~"GET"~. Which HTTP request method are we
+          using? ~"GET"~ or ~"POST"~.
++ data :: We can supply data to send to ~R~. If this is set, and
+          ~type~ is ~"GET"~, it will be changed to ~"POST"~. This will
+          be serialised to a JSON string by default.
++ processData :: Boolean. Determines whether we "stringify" ~data~. If
+                 this is ~false~, serialisation is not
+                 performed. Useful in the case where we might be
+                 uploading a dataset to ~R~ or something that does not
+                 warrant serialisation.
++ dataType :: String. Default ~"text"~. Determines the type of
+              response that is passed into our ~callback~ function. If
+              ~"text"~ the ~callback~ function is given a string as
+              its argument. If ~"json"~ the reponse from ~R~ is parsed
+              to an object, which is then given to the ~callback~
+              function. If ~"xml"~, an XML document object is passed
+              into the ~callback~ function.
++ callback :: The function to execute once a response has been
+              received from ~R~.
++ context :: The ~context~ that the function resides in. If the
+             function is a method, the ~context~ should be the object
+             that the function is a method of. The default value is
+             ~this~, i.e. the same scope that the function is being
+             called from (probably ~window~).
+
+Usage:
+
+: python -m SimpleHTTPServer
+
+Visit http://0.0.0.0:80000/test.html
