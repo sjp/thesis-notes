@@ -60,7 +60,9 @@ end.rcode-->
       specific x- and y-scales, then axes are drawn
       on the bottom and left edges of this viewport,
       and a set of data symbols are drawn within the viewport,
-      relative to the scales.
+      relative to the scales.  The viewport is given the name
+      <code>panelvp</code> and the data symbols are given the
+      name <code>datapoints</code>.
     </p>
 
 <!--begin.rcode gridsetup
@@ -148,7 +150,7 @@ end.rcode-->
 
 
     <p>
-      To demonstrate this, we will show how to add points to a plot
+      To demonstrate this, we will show how to add a new data symbol to a plot
       that has been drawn with <em>grid</em> and then exported with
       <em>gridSVG</em>.  This is similar to the task performed in the
       previous section, but the difference is that we will add 
@@ -543,8 +545,8 @@ end.rcode-->
       only by the amount and complexity of the <em>R</em> code that is
       required.
       One possibility with great potential involves 
-      using <em>R</em> on the server to generate dynamic <em>SVG</em>
-      images for the web.
+      using <em>R</em> on the server to 
+      dynamically manipulate <em>SVG</em> content within a web page on-the-fly.
     </p>
 
     <h2>Conclusion</h2>
@@ -552,9 +554,10 @@ end.rcode-->
       This article describes several new features of the <em>gridSVG</em>
       package.  The main idea is that <em>grid</em> coordinate system
       information is now exported, in a <em>JSON</em> format, along
-      with the image, in an <em>SVG</em> format.  In addition,
-      <em>JavaScript</em> functions are also exported to support
-      the manipulation of the <em>SVG</em> image within a web browser.
+      with the image (in an <em>SVG</em> format).  In addition,
+      <em>JavaScript</em> functions are exported to support
+      the manipulation of the <em>SVG</em> image within a web browser,
+      using this coordinate system information.
       Furthermore, new <em>R</em> functions are provided so that
       the <em>SVG</em> image, and its associated coordinate information, can
       be loaded back into a different <em>R</em> session to 
@@ -562,7 +565,7 @@ end.rcode-->
       <em>XML</em> package).  These features significantly 
       enhance the framework that
       <em>gridSVG</em> provides for
-      developing dynamic and interactive graphics for the web.
+      developing dynamic and interactive R graphics for the web.
     </p>
 
     <h2>Downloads</h2>
@@ -573,16 +576,18 @@ end.rcode-->
         Attribution 3.0 New Zealand License
       </a>.
       <img src="http://i.creativecommons.org/l/by/3.0/nz/88x31.png"/>
-      The code is freely available under the GPL. The
-      version of <em>gridSVG</em> that is capable of producing this
-      content is not yet available on <abbr title="Comprehensive R
-      Archive Network">CRAN</abbr>, but
+      The code is freely available under the 
+      <a href="../gpl.txt">GPL</a>. The features
+      described in this article were added to
+      version 1.0-0 of <em>gridSVG</em>, which 
       is <a href="https://r-forge.r-project.org/projects/gridsvg/">available
-      on R-Forge</a>.
+      on R-Forge</a> (if not on 
+      <abbr title="Comprehensive R
+      Archive Network">CRAN</abbr>).
     </p>
     <ul>
       <li><a href="">Standalone examples</a></li>
-      <li><a href="">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+      <li><a href="coordinates.Rhtml">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
     </ul>
     <h2>References</h2>
     <ol>
