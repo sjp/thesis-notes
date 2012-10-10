@@ -1,4 +1,60 @@
 
+2012-10-11
+----------
+
+DISCUSS:
+  
+  + gridSVG coordinates article
+
+    - "published" as tech report?
+
+  + An example high-level convenience function ... ?
+  
+    linkHighlight(gPath1, gPath2, grep=FALSE, global=FALSE)
+
+  + Exporting metadata
+  
+    Possible to export something like dput() output for each
+    viewport and grob that gets exported?
+
+    Then possible to recreate original grid scene from SVG document ?
+    (or at least an equivalent)
+
+
+TODO:
+
+  + continue VIT example
+
+  + Update 'gridSVG' changes.txt to NEWS.Rd
+
+  + Thinking about APIs/libraries
+
+    - function to call R (from browser) to generate SVG content
+      and place it within ID element in page
+
+      or generate SVG fragment
+
+      or place within ID within existing SVG conent in page
+
+      ... ?
+
+
+PAUL TODO:
+
+  + Generating SVG doc 
+
+    See articles/generating-svg/
+
+
+DONE:
+  
+  + Restructure examples/time-series (again)
+
+    See examples/time-series/time-series-restructured.org
+
+  + Working on VIT example
+
+
 2012-10-03
 ----------
 
