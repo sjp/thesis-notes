@@ -20,7 +20,17 @@ end.rcode-->
       <p>Department of Statistics, University of Auckland</p>
       <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
       <p class="abstract">
-        <strong>Abstract:</strong> ...
+        <strong>Abstract:</strong>
+        The <em>gridSVG</em> package exports <em>grid</em> images
+        to an <em>SVG</em> format for viewing on the web.
+        This article describes a new development in the
+        way that <em>gridSVG</em> produces the <em>SVG</em> output.
+        The result is  greater flexibility in how the 
+        <em>SVG</em> output is produced and increased opportunities to
+        manipulate the <em>SVG</em> output, which creates new possibilities
+        for generating
+        more complex and sophisticated dynamic and interactive <em>R</em>
+        graphics for the web.
       </p>
     </header>
     <h2>Introduction</h2>
@@ -59,10 +69,10 @@ end.rcode-->
       of <em>SVG</em> features such as hyperlinking and animation.
     </p>
     <p>
-      This document describes the approach that <em>gridSVG</em> used
-      to take when generating <em>SVG</em> content. The new method of
-      generating <em>SVG</em> is also discussed, along with the
-      reasons why it was necessary to use it.
+      This document describes 
+      a new development in <em>gridSVG</em> that changes the
+      mechanism used to convert <em>grid</em> grobs and viewports
+      to an <em>SVG</em> representation.
     </p>
     <h2>The Old Method of Creating SVG</h2>
     <p>
@@ -103,16 +113,15 @@ cat(gsub("<", "&lt;", gsub(">", "&gt;", gsub("\"", "&quot;", resultTxt))))
 end.rcode-->
 
     <p>
-      How <em>gridSVG</em> used to go about creating this markup was
-      it would first start an <em>SVG</em> group
+      Prior to the recent development,
+      <em>gridSVG</em> would create this by concatenating
+      strings.
+      The first step involved creating an <em>SVG</em> group
       (<code>g</code>). This group needs to have all of its
-      appropriate attributes inserted. These always include
+      appropriate attributes inserted, which always include
       an <code>id</code> attribute, but can also include attributes
       related to animation, hyperlinking, or custom attributes by
-      &ldquo;garnishing&rdquo; attributes. These attributes were added
-      to the added to the <em>SVG</em> group by concatenating
-      character strings together, because it is not known in advance
-      which attributes are going to be added. In <em>R</em>, string
+      &ldquo;garnishing&rdquo; attributes. In <em>R</em>, string
       concatenation is accomplished using the <code>paste()</code>
       function. A fragment of pseudo-code follows, which would
       generate the <em>SVG</em> group markup.
@@ -215,12 +224,13 @@ end.rcode-->
       This approach has a few limitations. For instance, we cannot
       guarantee that the output that is produced is valid <em>SVG</em>
       markup. We are also writing directly to a file, which means that
-      we need to read the file to observe its contents. Finally,
-      because the resulting output is simply text, it is very
-      difficult to manipulate the image in any way once it has been
-      created. Finally, but less importantly, performance is a concern
+      we need to read the file to observe its contents;  we do not
+      retain the <em>SVG</em> content in memory. 
+      Finally, but less importantly, performance is a concern
       when generating output using repeated string concatenation as it
-      is known to be a slow operation.
+      is known to be a slow operation (this is less important because
+      the drawing of the original image by <em>grid</em>, before
+      export, is also slow).
     </p>
     <p>
       To remedy these limitations a rewrite of the markup generating
@@ -270,7 +280,7 @@ cat(gsub("<", "&lt;",
 end.rcode-->
 
     <p>
-      There are a few things going on here that require
+      Some important features of this code deserve further
       explanation. Firstly, a new <em>XML</em> node is created that is
       an <code>&lt;svg&gt;</code> element. It defines two namespaces,
       both of which are required for our <em>SVG</em> content to be
@@ -292,8 +302,8 @@ g <- newXMLNode("g", parent = getParentNode(),
                 attrs = list(id = "example-rect"))
 setParentNode(g)
 g
-svgroot
 end.rcode-->
+
 <!--begin.rcode escapedGroupNode, echo=FALSE
 g <- newXMLNode("g", parent = svgroot,
                 attrs = list(id = "example-rect"))
@@ -301,6 +311,13 @@ cat(gsub("<", "&lt;",
     gsub(">", "&gt;",
     gsub('&', "&amp;",
     saveXML(g, file = NULL)))))
+end.rcode-->
+
+<!--begin.rcode showRootNode, error=FALSE, results="hide"
+svgroot
+end.rcode-->
+
+<!--begin.rcode escapedRootNode, echo=FALSE
 cat(gsub("<", "&lt;",
     gsub(">", "&gt;",
     gsub('&', "&amp;",
@@ -325,7 +342,7 @@ end.rcode-->
       the <code>&lt;g&gt;</code> node, then the
       root <code>&lt;svg&gt;</code> node. The <code>&lt;g&gt;</code>
       node is just as we would expect, but
-      the <code>&lt;svg&gt;</code> node curiously has
+      the <code>&lt;svg&gt;</code> node now has
       the <code>&lt;g&gt;</code> element included within it. This is
       particularly useful because it shows how relationships between
       the nodes are implemented. When we add a child to a parent, the
@@ -346,9 +363,8 @@ svgrect <- newXMLNode("rect", parent = getParentNode(),
                                    width = rectWidth,
                                    height = rectHeight))
 svgrect
-g
-svgroot
 end.rcode-->
+
 <!--begin.rcode escapedRectNode, echo=FALSE
 rectID <- "example-rect.1"
 rectX <- rectY <- 126
@@ -363,10 +379,24 @@ cat(gsub("<", "&lt;",
     gsub(">", "&gt;",
     gsub('&', "&amp;",
     saveXML(svgrect, file = NULL)))))
+end.rcode-->
+
+<!--begin.rcode showGroupNode, results="hide", error=FALSE
+g
+end.rcode-->
+
+<!--begin.rcode escapedGroupNode2, echo=FALSE
 cat(gsub("<", "&lt;",
     gsub(">", "&gt;",
     gsub('&', "&amp;",
     saveXML(g, file = NULL)))))
+end.rcode-->
+
+<!--begin.rcode showRootNode2, results="hide", error=FALSE
+svgroot
+end.rcode-->
+
+<!--begin.rcode escapedRootNode2, echo=FALSE
 cat(gsub("<", "&lt;",
     gsub(">", "&gt;",
     gsub('&', "&amp;",
@@ -413,7 +443,8 @@ end.rcode-->
       more reliable way than with simple string concatenation. It is
       clear that the way in which we define our <em>SVG</em> image is
       less prone to error in creating markup, and it also ensures that
-      images are both well-formed and valid.
+      images are both well-formed (conform to <em>XML</em> syntax) and 
+      valid (conform to <em>SVG</em> syntax).
     </p>
     <h3>In-Memory Images</h3>
     <p>
@@ -425,15 +456,22 @@ end.rcode-->
       where this is useful is for producing this article, plots are
       written out directly within the <em><abbr title="HyperText
       Markup Language">HTML</abbr></em> document as
-      inline <em>SVG</em>.
+      inline <em>SVG</em> (rather than having to create an external
+      file and then link to that file from the <em>HTML</em> document).
     </p>
     <h3>XPath</h3>
     <p>
       Another advantage is that because we are dealing
-      with <em>XML</em> nodes, we can also run <em>XPath</em> queries
-      on them. This allows us to be able to manipulate, retrieve and
-      add subsets within the <em>SVG</em> image. For example, consider
-      the following <em>ggplot2</em> plot.
+      with <em>XML</em> nodes, we can 
+      manipulate those nodes using other powerful <em>XML</em> tools such as
+      <em>XPath</em>.  For example, we can retrieve and
+      add subsets within the <em>SVG</em> image. 
+    </P>
+    <p>
+      We will demonstrate this idea using a  <em>ggplot2</em> plot
+      (the <em>ggplot2</em> package uses <em>grid</em> for rendering
+      so a <em>ggplot2</em> plot consists of a large number of
+      <em>grid</em> viewports and grobs).
     </p>
 
 <!--begin.rcode ggplotEx, echo=-3, fig.keep="none", results="asis"
@@ -443,7 +481,26 @@ cat(saveXML(gridToSVG(name=NULL, "none", "none")$svg, file=NULL))
 end.rcode-->
 
     <p>
-      We can reduce this image so that only the legend is shown.
+      We can reduce this image by removing the legend, 
+      so that only the plot is shown.
+    </p>
+
+<!--begin.rcode qplotPlotOnly, fig.keep="none", results="hide", echo=-1, warning=FALSE
+qplot(mpg, wt, data=mtcars, colour=cyl)
+svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
+legendNode <- getNodeSet(svgdoc,
+                         "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+                         c(svg="http://www.w3.org/2000/svg"))[[1]]
+removeChildren(xmlParent(legendNode), legendNode)
+saveXML(svgdoc, file = NULL)
+end.rcode-->
+
+<!--begin.rcode showQplot, results="asis", echo=FALSE
+cat(saveXML(svgdoc, file = NULL))
+end.rcode-->
+
+    <p>
+      Alternatively, we could reduce the image to just the legend.
     </p>
 
 <!--begin.rcode qplotLegendOnly, fig.keep="none", results="hide", echo=-1, warning=FALSE
@@ -452,13 +509,15 @@ svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
 legendNode <- getNodeSet(svgdoc,
                          "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
                          c(svg="http://www.w3.org/2000/svg"))[[1]]
-rootGroup <- getNodeSet(svgdoc,
-                        "//svg:g[@id='gridSVG']",
-                        c(svg="http://www.w3.org/2000/svg"))[[1]]
-removeChildren(rootGroup, "g")
-addChildren(rootGroup, legendNode)
+rootNode <- getNodeSet(svgdoc,
+                       "/svg:svg/svg:g",
+                       c(svg="http://www.w3.org/2000/svg"))[[1]]
+removeChildren(rootNode, "g")
+addChildren(rootNode, legendNode)
+xmlAttrs(svgdoc) <- c(viewBox="610 150 50 450")
 saveXML(svgdoc, file = NULL)
 end.rcode-->
+
 <!--begin.rcode showLegendQplot, results="asis", echo=FALSE
 cat(saveXML(svgdoc, file = NULL))
 end.rcode-->
@@ -470,13 +529,13 @@ end.rcode-->
       that allows us to manipulate a document. The next step is to
       retrieve the references to our nodes of interest. In this case
       it is known in advance that the <em>XPath</em> queries are going
-      to give us the right nodes. We then remove all children from our
-      &ldquo;root&rdquo; group, and add in our legend node that we
-      collected. We can then save our modified document to get the
+      to give us the right nodes. We then remove existing children
+      and/or add new
+      children as we desire, then save our modified document to get the
       reduced image.
     </p>
     <p>
-      Although this particular example is not useful, it demonstrates
+      This simple example demonstrates
       the possibility of combining the contents of two or more plots
       together. It also allows us to reduce the exported <em>SVG</em>
       to only what is strictly necessary.
@@ -539,7 +598,7 @@ end.rcode-->
       We can see that the output without indentation present is much
       more compact. In complex <em>SVG</em> images, particularly those
       with deep heirarchical structure, this could reduce the size of
-      the resulting file greatly. This would improve the delivery
+      the resulting file greatly, which would improve the delivery
       speed of <em>gridSVG</em> plots being sent over the web by
       reducing the amount of data that needs to be transferred.
     </p>
@@ -558,23 +617,50 @@ end.rcode-->
     </p>
     <h2>Conclusion</h2>
     <p>
-      We have demonstrated the differing approaches to constructing
-      an <em>SVG</em> image, using examples from <em>gridSVG</em>. By
-      applying the new approach to building <em>SVG</em> plots, we
-      gain several benefits but at no obvious cost.
+      This article describes changes to the mechanism used by the
+      <em>gridSVG</em> package to convert <em>grid</em> viewports
+      and grobs to <em>SVG</em> representations.  Instead of
+      pasting strings together to generate <em>SVG</em> code as
+      text within an external file, 
+      the <em>gridSVG</em> package now uses the <em>XML</em>
+      package to create <em>XML</em> nodes in resident memory.
+      The advantages of this approach include: 
+      guaranteed validity of the <em>SVG</em> representation;
+      greater flexibility in the
+      production of the <em>SVG</em> representation;  
+      improved access to the <em>SVG</em> representation;
+      and greater flexibility
+      in the formatting of the <em>SVG</em> code.
+      There are also possible speed benefits from these changes.
+    </p>
+    <p>
+      These advantages have been demonstrated through simple examples,
+      but they also have an impact on much more complex scenarios.
+      For example, if R is being used to serve web content to a browser,
+      it is now possible for <em>gridSVG</em> to provide <em>SVG</em> 
+      fragments (rather than complete plots) and to supply 
+      them directly from resident memory (rather than having to generate
+      an external file as an intermediate step).
     </p>
     <h2>Downloads</h2>
     <p>
-      The code used within this document is freely available. The
-      version of <em>gridSVG</em> that is capable of producing this
-      content is not yet available on <abbr title="Comprehensive R
-      Archive Network">CRAN</abbr>, but
+      This document is licensed under a 
+      <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/nz/">
+        Creative Commons
+        Attribution 3.0 New Zealand License
+      </a>.
+      <img src="http://i.creativecommons.org/l/by/3.0/nz/88x31.png"/>
+      The code is freely available under the 
+      <a href="../gpl.txt">GPL</a>. The features
+      described in this article were added to
+      version 1.0-0 of <em>gridSVG</em>, which 
       is <a href="https://r-forge.r-project.org/projects/gridsvg/">available
-      on R-Forge</a>.
+      on R-Forge</a> (if not on 
+      <abbr title="Comprehensive R
+      Archive Network">CRAN</abbr>).
     </p>
     <ul>
-      <li><a href="">Standalone examples</a></li>
-      <li><a href="">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+      <li><a href="generating-svg.Rhtml">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
     </ul>
     <h2>References</h2>
     <ol>
