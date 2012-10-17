@@ -1,0 +1,191 @@
+#+TITLE: Sampling Variation Example -- Complex Animation
+
+* Introduction
+
+The Visual Inference Tools (VIT) package for R is a tool used to demonstrate
+statistical concepts by drawing intuitive animations. One of the
+modules within the package is the 'Sampling Variation' module, which
+aims to show how variations in samples change as sample sizes increase
+or decrease. In particular the aim is to demonstrate that the larger a
+sample is, the more concentrated each of the samples will be around
+the population mean.
+
+The way in which VIT teaches this concept is to first show a plot
+featuring 3 panels as shown below:
+
+: +-------------------------------+
+: |                               |
+: |             DATA              |
+: |                               |
+: +-------------------------------+
+: |                               |
+: |            SAMPLE             |
+: |                               |
+: +-------------------------------+
+: |                               |
+: |          STATISTIC            |
+: |                               |
+: +-------------------------------+
+
+It then uses this template to generate an animation that performs the
+following steps:
+
++ Highlight the current sample in the population
++ Pull the selected points into the 'Sample' panel
++ Generate a statistic from the sample (e.g. mean, median, LQ, UQ...)
+  and show it as a vertical bar
++ Drop the statistic bar to the statistic panel and transform into a
+  point
++ Begin next sample
+
+Because each step is dependent on the previous one and many things are
+being shown over time, a re-implementation has been undertaken to see
+how our implementation compares.
+
+* The Implementation
+
+As per usual, a Rook web application is created. The main script is
+first sourced, which pulls in source files needed to generate
+components of plots. Much of the content of these scripts have been
+borrowed and slightly re-written to produce the same or adequately
+similar content.
+
+The data that will be used has been randomly generated from a normal
+distribution and has been saved to a CSV file, ~data.csv~.
+
+** Server-side
+
+The first plot is first generated and inserted into an HTML file. This
+is the base image that our animation is going to be working from.
+
+Next, we need to know in advance what we are going to be sending to
+the browser. In order to reduce the size of the response we deliver to
+the client, and perhaps to also reduce the complexity, we are going to
+be returning a JSON object. This JSON object features both data
+(i.e. arrays and objects of numbers/strings) and SVG documents (as
+strings). The JSON response structure is the following:
+
++ sampInds :: A matrix of indices (one-based), describing which data
+              points are being selected (without replacement) for a
+              given sample. This is used for knowing which population
+              points are going to be highlighted and dropped.
++ sampLocs :: An object featuring two keys, ~x~ and ~y~, that are
+              arrays of the locations that sample points are to be
+              located at. Used for knowing where points are going to
+              be dropped to.
++ statPoints :: An SVG document that holds all of the statistic
+                points.
++ sampLines :: An object that has 5 keys.
+  + lineXs :: An array describing the ~x~ locations for each of the
+              sample statistics.
+  + lineYs :: An array that holds only two values, the upper and lower
+              ~y~ locations of the sample statistic lines.
+  + ghostLineYs :: An array that holds only two values, the upper and
+                   lower ~y~ locations of the "ghosted"
+                   (i.e. retained) sample statistic lines.
+  + ghostsTpl :: An SVG document as a string, that holds a single
+                 grob, which is a template to be modified later to add
+                 as a "ghosted" sample statistic.
+  + lineTpl :: Another SVG document as a string, that holds a single
+               grob, a template to be modified later for adding as a
+               single sample statistic.
+
+This is all created up-front and returned to the browser. The key here
+is that we try to minimise the amount of information sent to the
+browser. Furthermore, because it is possible to generate the data
+needed for the animation in advance, and that R is fast enough at
+performing this task, we can return all of this information in a
+single response.
+
+** Client-side
+
+After triggerring and receiving a response from R that holds all of
+the information necessary to generate an information, we need to
+actually create the animation itself. However, this was not
+implemented without issues that required consideration.
+
+*** Iteration
+
+Because each set of animations must be created on a per-sample basis,
+iterating over the length of the samples was required. However,
+because in JavaScript, variables are scoped by the function they
+reside in, rather than at block level.
+
+This affects us because when we need to get the ~i~th sample statistic
+or the ~i~th sample indices, we cannot simply use the value that is
+iterating over the length of the sample. This is because when we are
+delaying the execution of some code, the value of the variable will be
+checked as it is being executed. Because the loop completes almost
+immediately, the value of the loop will be the last value of ~i~,
+which will be the number of samples, less 1.
+
+To correct this, we create a function at each step of the iteration
+that captures the current value of the iterator variable. The function
+is then immediately executed. This is how we can properly track
+indices within the loop.
+
+*** D3 behaviour
+
+With D3, the major new behaviour is regarding the chaining of
+animations. Generally, there are two approaches:
+
++ Create a selection, transition to a new state after a given
+  duration, then call a function once complete.
++ Create a selection, transition to a new state. Simultaneously,
+  another selection is made, with a transition, but the delay is the
+  length of the first animation.
+
+The advantage of the first approach is that we only need to keep track
+of the *relative* timing from the previous transition to the current
+one. For example if the first transition delays 2 seconds and lasts 1
+second, while the second transition executes immediately afterwards
+and lasts one second, we simply need to say that the second transition
+lasts one second.
+
+The advantage of the second approach is that the transitions can
+happen at any point in time, including overlapping other
+transitions. This comes at the cost of having to track the time it
+takes for transitions to occur, and when they need to occur at.
+
+It is clearly dependent on the situation which is the more
+advantageous approach, but it seems like using the first approach
+should be used where possible.
+
+*** Cloning and Filtering
+
+D3 is designed to map data to graphical elements. In our example, this
+is not strictly the case. This is because we already have the data but
+want to use only a subset of it. The subset is the sample that we are
+selecting from the population. We will examine what happens when the
+sample is first selected from the population and is then dragged down
+to the sample panel.
+
+First, the data points need to be selected. These are then "filtered",
+based on the sample indices that have been received from R. This
+reduces the selection to only the data points that have been selected
+in the sample.
+
+Next, we need to clone the selection. The reason for this is that we
+don't want to modify the data, merely a copy of the data. The
+selection has already been reduced to the selected sample. So what we
+do is modify the selection to now refer to a *copy* of the data. This
+is then modified. Unfortunately this is very "un-D3" so the code is
+not clean, but at least is possible.
+
+*** Selection calling and each
+
+Sometimes we would like to simply modify or append children to a node,
+rather than applying a function to an entire set of elements. In this
+case, we can select the element that we want to add children to. Then
+we can use ~call()~ on it to call a function. However, the ~this~
+reference in the called function is now the selected element. This
+gives us a means by which we can use DOM manipulation to add children
+(which D3 can't do without creating elements explicitly). For example,
+we can now do something like ~this.appendChild(newNode)~.
+
+In the case here we would like to perform a task, like node cloning,
+we need to use "each". This applies a function on each element in the
+selection, and is useful during transitions as they can be used when a
+transition starts or ends. When we clone nodes, the cloning occurs
+when the transition *starts*, to minimise the amount of SVG nodes in
+the DOM.

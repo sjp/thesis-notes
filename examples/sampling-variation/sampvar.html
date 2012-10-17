@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<head><title>Sampling Variation</title></head>
+<body>
+<h1>Sampling Variation</h1>
+<div id="user-input" style="clear: both;">
+  <button id="go-btn">Start!</button>
+</div>
+<div id="empty"></div>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="672px" height="672px" version="1.1">
+  <g transform="translate(0, 672) scale(1, -1)">
+    <g id="gridSVG" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1.33px" font-size="16px" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0" font-weight="normal" font-style="normal">
+      <g id="image">
+        <g id="wrapper::animation.field::data.1">
+          <g id="wrapper::animation.field::data.2">
+            <g id="wrapper::animation.field::data.3">
+              <g id="data-xaxis">
+                <g id="data-xaxis.major">
+                  <polyline fill="none" id="data-xaxis.major.1" points="120.96,467.2 608.72,467.2"/>
+                </g>
+                <g id="data-xaxis.ticks">
+                  <polyline fill="none" id="data-xaxis.ticks.1" points="120.96,467.2 120.96,457.6"/>
+                  <polyline fill="none" id="data-xaxis.ticks.2" points="242.9,467.2 242.9,457.6"/>
+                  <polyline fill="none" id="data-xaxis.ticks.3" points="364.84,467.2 364.84,457.6"/>
+                  <polyline fill="none" id="data-xaxis.ticks.4" points="486.78,467.2 486.78,457.6"/>
+                  <polyline fill="none" id="data-xaxis.ticks.5" points="608.72,467.2 608.72,457.6"/>
+                </g>
+                <g id="data-xaxis.labels">
+                  <g transform="translate(120.96, 438.4)" stroke-width="0.1px" id="data-xaxis.labels.1">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">80</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(242.9, 438.4)" stroke-width="0.1px" id="data-xaxis.labels.2">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">100</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(364.84, 438.4)" stroke-width="0.1px" id="data-xaxis.labels.3">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">120</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(486.78, 438.4)" stroke-width="0.1px" id="data-xaxis.labels.4">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">140</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(608.72, 438.4)" stroke-width="0.1px" id="data-xaxis.labels.5">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">160</tspan>
+                      </text>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="wrapper::animation.field.1">
+          <g id="wrapper::animation.field.2">
+            <g id="v-data-stat">
+              <polyline stroke="rgb(153,153,153)" stroke-dasharray="5.33px,5.33px" stroke-opacity="1" fill="none" id="v-data-stat.1" points="350.19,57.6 350.19,672"/>
+            </g>
+          </g>
+        </g>
+        <g id="wrapper::animation.field::data.4">
+          <g id="wrapper::animation.field::data.5">
+            <g id="wrapper::animation.field::data.6">
+              <g id="data-points">
+                <defs>
+                  <symbol id="gridSVG.pch1" viewBox="-5 -5 10 10" overflow="visible">
+                    <circle cx="0" cy="0" r="3.75"/>
+                  </symbol>
+                </defs>
+                <use id="data-points.1" xlink:href="#gridSVG.pch1" x="429.62" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.2" xlink:href="#gridSVG.pch1" x="285.7" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.3" xlink:href="#gridSVG.pch1" x="253.66" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.4" xlink:href="#gridSVG.pch1" x="158.6" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.5" xlink:href="#gridSVG.pch1" x="337.02" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.6" xlink:href="#gridSVG.pch1" x="443.95" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.7" xlink:href="#gridSVG.pch1" x="191.42" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.8" xlink:href="#gridSVG.pch1" x="258.72" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.9" xlink:href="#gridSVG.pch1" x="82.76" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.10" xlink:href="#gridSVG.pch1" x="131.7" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.11" xlink:href="#gridSVG.pch1" x="475.36" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.12" xlink:href="#gridSVG.pch1" x="279.06" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.13" xlink:href="#gridSVG.pch1" x="236.44" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.14" xlink:href="#gridSVG.pch1" x="605.16" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.15" xlink:href="#gridSVG.pch1" x="561.74" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.16" xlink:href="#gridSVG.pch1" x="473.23" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.17" xlink:href="#gridSVG.pch1" x="403.75" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.18" xlink:href="#gridSVG.pch1" x="448.44" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.19" xlink:href="#gridSVG.pch1" x="236.31" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.20" xlink:href="#gridSVG.pch1" x="303.03" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.21" xlink:href="#gridSVG.pch1" x="216.85" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.22" xlink:href="#gridSVG.pch1" x="416.07" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.23" xlink:href="#gridSVG.pch1" x="251.28" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.24" xlink:href="#gridSVG.pch1" x="466.35" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.25" xlink:href="#gridSVG.pch1" x="320.03" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.26" xlink:href="#gridSVG.pch1" x="272.99" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.27" xlink:href="#gridSVG.pch1" x="187.35" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.28" xlink:href="#gridSVG.pch1" x="348.23" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.29" xlink:href="#gridSVG.pch1" x="411.3" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.30" xlink:href="#gridSVG.pch1" x="98.48" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.31" xlink:href="#gridSVG.pch1" x="371.76" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.32" xlink:href="#gridSVG.pch1" x="194.04" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.33" xlink:href="#gridSVG.pch1" x="231.92" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.34" xlink:href="#gridSVG.pch1" x="526.58" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.35" xlink:href="#gridSVG.pch1" x="362.34" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.36" xlink:href="#gridSVG.pch1" x="317.28" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.37" xlink:href="#gridSVG.pch1" x="87.62" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.38" xlink:href="#gridSVG.pch1" x="410.14" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.39" xlink:href="#gridSVG.pch1" x="471.58" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.40" xlink:href="#gridSVG.pch1" x="319.47" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.41" xlink:href="#gridSVG.pch1" x="337.38" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.42" xlink:href="#gridSVG.pch1" x="218.15" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.43" xlink:href="#gridSVG.pch1" x="585.92" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.44" xlink:href="#gridSVG.pch1" x="115.47" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.45" xlink:href="#gridSVG.pch1" x="549.21" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.46" xlink:href="#gridSVG.pch1" x="512.89" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.47" xlink:href="#gridSVG.pch1" x="377.88" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.48" xlink:href="#gridSVG.pch1" x="410.6" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.49" xlink:href="#gridSVG.pch1" x="127.55" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.50" xlink:href="#gridSVG.pch1" x="328.54" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.51" xlink:href="#gridSVG.pch1" x="214.89" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.52" xlink:href="#gridSVG.pch1" x="478.13" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.53" xlink:href="#gridSVG.pch1" x="397.05" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.54" xlink:href="#gridSVG.pch1" x="652.8" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.55" xlink:href="#gridSVG.pch1" x="242.21" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.56" xlink:href="#gridSVG.pch1" x="354.81" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.57" xlink:href="#gridSVG.pch1" x="414.71" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.58" xlink:href="#gridSVG.pch1" x="452.27" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.59" xlink:href="#gridSVG.pch1" x="432.89" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.60" xlink:href="#gridSVG.pch1" x="544.53" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.61" xlink:href="#gridSVG.pch1" x="287.23" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.62" xlink:href="#gridSVG.pch1" x="585.68" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.63" xlink:href="#gridSVG.pch1" x="230.99" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.64" xlink:href="#gridSVG.pch1" x="279.36" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.65" xlink:href="#gridSVG.pch1" x="19.2" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.66" xlink:href="#gridSVG.pch1" x="533.46" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.67" xlink:href="#gridSVG.pch1" x="416.18" y="592.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.68" xlink:href="#gridSVG.pch1" x="401.5" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.69" xlink:href="#gridSVG.pch1" x="162.35" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.70" xlink:href="#gridSVG.pch1" x="214.41" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.71" xlink:href="#gridSVG.pch1" x="315.05" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.72" xlink:href="#gridSVG.pch1" x="366.66" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.73" xlink:href="#gridSVG.pch1" x="430.1" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.74" xlink:href="#gridSVG.pch1" x="383.3" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.75" xlink:href="#gridSVG.pch1" x="280.3" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.76" xlink:href="#gridSVG.pch1" x="403.07" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.77" xlink:href="#gridSVG.pch1" x="531.45" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.78" xlink:href="#gridSVG.pch1" x="476.72" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.79" xlink:href="#gridSVG.pch1" x="262.32" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.80" xlink:href="#gridSVG.pch1" x="393.63" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.81" xlink:href="#gridSVG.pch1" x="181.52" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.82" xlink:href="#gridSVG.pch1" x="338.55" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.83" xlink:href="#gridSVG.pch1" x="382.5" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.84" xlink:href="#gridSVG.pch1" x="180.24" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.85" xlink:href="#gridSVG.pch1" x="363.19" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.86" xlink:href="#gridSVG.pch1" x="340.9" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.87" xlink:href="#gridSVG.pch1" x="314.43" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.88" xlink:href="#gridSVG.pch1" x="235.18" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.89" xlink:href="#gridSVG.pch1" x="347.69" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.90" xlink:href="#gridSVG.pch1" x="530.86" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.91" xlink:href="#gridSVG.pch1" x="437.4" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.92" xlink:href="#gridSVG.pch1" x="455.84" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.93" xlink:href="#gridSVG.pch1" x="274.01" y="592.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.94" xlink:href="#gridSVG.pch1" x="553.74" y="541.44" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.95" xlink:href="#gridSVG.pch1" x="561.6" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.96" xlink:href="#gridSVG.pch1" x="438.34" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.97" xlink:href="#gridSVG.pch1" x="381.05" y="579.84" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.98" xlink:href="#gridSVG.pch1" x="286.85" y="554.24" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.99" xlink:href="#gridSVG.pch1" x="492.64" y="528.64" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+                <use id="data-points.100" xlink:href="#gridSVG.pch1" x="324.1" y="567.04" width="11.49" height="11.49" stroke="rgb(153,153,153)" stroke-width="2.32px" fill="none" stroke-opacity="1" fill-opacity="0" transform="translate(-5.74,-5.74)"/>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="wrapper::animation.field::sample.1">
+          <g id="wrapper::animation.field::sample.2">
+            <g id="wrapper::animation.field::sample.3">
+              <g id="sample-xaxis">
+                <g id="sample-xaxis.major">
+                  <polyline fill="none" id="sample-xaxis.major.1" points="120.96,262.4 608.72,262.4"/>
+                </g>
+                <g id="sample-xaxis.ticks">
+                  <polyline fill="none" id="sample-xaxis.ticks.1" points="120.96,262.4 120.96,252.8"/>
+                  <polyline fill="none" id="sample-xaxis.ticks.2" points="242.9,262.4 242.9,252.8"/>
+                  <polyline fill="none" id="sample-xaxis.ticks.3" points="364.84,262.4 364.84,252.8"/>
+                  <polyline fill="none" id="sample-xaxis.ticks.4" points="486.78,262.4 486.78,252.8"/>
+                  <polyline fill="none" id="sample-xaxis.ticks.5" points="608.72,262.4 608.72,252.8"/>
+                </g>
+                <g id="sample-xaxis.labels">
+                  <g transform="translate(120.96, 233.6)" stroke-width="0.1px" id="sample-xaxis.labels.1">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">80</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(242.9, 233.6)" stroke-width="0.1px" id="sample-xaxis.labels.2">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">100</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(364.84, 233.6)" stroke-width="0.1px" id="sample-xaxis.labels.3">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">120</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(486.78, 233.6)" stroke-width="0.1px" id="sample-xaxis.labels.4">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">140</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(608.72, 233.6)" stroke-width="0.1px" id="sample-xaxis.labels.5">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">160</tspan>
+                      </text>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+        <g id="wrapper::animation.field::stat.1">
+          <g id="wrapper::animation.field::stat.2">
+            <g id="wrapper::animation.field::stat.3">
+              <g id="stat-xaxis">
+                <g id="stat-xaxis.major">
+                  <polyline fill="none" id="stat-xaxis.major.1" points="120.96,57.6 608.72,57.6"/>
+                </g>
+                <g id="stat-xaxis.ticks">
+                  <polyline fill="none" id="stat-xaxis.ticks.1" points="120.96,57.6 120.96,48"/>
+                  <polyline fill="none" id="stat-xaxis.ticks.2" points="242.9,57.6 242.9,48"/>
+                  <polyline fill="none" id="stat-xaxis.ticks.3" points="364.84,57.6 364.84,48"/>
+                  <polyline fill="none" id="stat-xaxis.ticks.4" points="486.78,57.6 486.78,48"/>
+                  <polyline fill="none" id="stat-xaxis.ticks.5" points="608.72,57.6 608.72,48"/>
+                </g>
+                <g id="stat-xaxis.labels">
+                  <g transform="translate(120.96, 28.8)" stroke-width="0.1px" id="stat-xaxis.labels.1">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">80</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(242.9, 28.8)" stroke-width="0.1px" id="stat-xaxis.labels.2">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">100</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(364.84, 28.8)" stroke-width="0.1px" id="stat-xaxis.labels.3">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">120</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(486.78, 28.8)" stroke-width="0.1px" id="stat-xaxis.labels.4">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">140</tspan>
+                      </text>
+                    </g>
+                  </g>
+                  <g transform="translate(608.72, 28.8)" stroke-width="0.1px" id="stat-xaxis.labels.5">
+                    <g transform="scale(1, -1)">
+                      <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                        <tspan dy="5.74" x="0">160</tspan>
+                      </text>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+<script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
+<script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+<script type="text/javascript" src="/custom/sampvar/coords.js"></script>
+<script type="text/javascript">
+    var SampvarView = Backbone.View.extend({
+        el: $("#user-input"),
+
+        events: {
+            "click #go-btn": "startAnimation",
+        },
+    
+        startAnimation: function() {
+            $.ajax({
+                url: "/custom/sampvar/brew/anim",
+                context: this,
+                dataType: "json",
+                success: this.showAnimation
+            });
+        },
+
+        showAnimation: function(obj) {
+            var sampInds = obj.sampInds;
+            var sampLocs = obj.sampLocs;
+            var statPoints = new DOMParser()
+                                 .parseFromString(obj.statPoints, "image/svg+xml")
+                                 .documentElement
+                                 .firstChild;
+            var ghostsTpl = new DOMParser()
+                                .parseFromString(obj.sampLines.ghostsTpl, "image/svg+xml")
+                                .documentElement
+                                .firstChild;
+            var lineTpl = new DOMParser()
+                              .parseFromString(obj.sampLines.lineTpl, "image/svg+xml")
+                              .documentElement
+                              .firstChild;
+
+            for (var j = 0; j < 20; j++) {
+                (function(ind) {
+                    var beginClone = function(d, i) {
+                        var newNode = this.cloneNode(true);
+                        var cloneSel = d3.select(this.parentNode.appendChild(newNode));
+                        cloneSel
+                            .attr({ stroke: "black",
+                                    fill: "black",
+                                    opacity: 1,
+                                    "fill-opacity": 1 });
+                        cloneSel
+                            .transition()
+                            .delay(1500)
+                            .duration(1500)
+                            .attr("y", sampLocs.y[ind][i]);
+                        cloneSel
+                            .transition()
+                            .delay(3000)
+                            .duration(4000)
+                            .remove();
+                    };
+
+                    d3.selectAll("#data-points use")
+                        .filter(function(d, i) {
+                            if (_.contains(sampInds[ind], i + 1)) {
+                                return this;
+                            }
+                        })
+                        .transition()
+                        .delay(ind * 7000)
+                        .duration(0)
+                        .each("start", beginClone);
+
+                    // Adding the sample statistic point
+                    d3.select("#wrapper\\:\\:animation\\.field\\:\\:stat\\.3")
+                        .call(function() {
+                            var addPoint = function() {
+                                var newPoint = $(statPoints).find("use").get(ind);
+                                newPoint = newPoint.cloneNode(true);
+
+                                // Let's add a cool "bubble pop" effect, just using d3
+                                d3.select(this)
+                                    .append("circle")
+                                    .attr({ cx: $(newPoint).attr("x"),
+                                            cy: $(newPoint).attr("y"),
+                                            r: 0,
+                                            stroke: "none",
+                                            fill: "steelblue",
+                                            "fill-opacity": 0.5 })
+                                    .transition()
+                                    .duration(500)
+                                    .attr({ r: 250,
+                                            "fill-opacity": 0 })
+                                    .remove();
+
+                                // Add the point *after* the "bubble" because otherwise
+                                // the point might be obscured for a brief moment
+                                this.appendChild(newPoint);
+                            };
+
+                            this
+                               .transition()
+                               .delay((ind * 7000) + 5500)
+                               .duration(0)
+                               .each("end", addPoint);
+                        });
+                    // At the same time, also draw a sample stat line and ghosting
+                    d3.select("#wrapper\\:\\:animation\\.field\\:\\:sample\\.3")
+                        .call(function() {
+                            var addLines = function() {
+                                var newGhost = $(ghostsTpl).find("polyline").get(0);
+                                newGhost = newGhost.cloneNode(true);
+                                var newLine = $(lineTpl).find("polyline").get(0);
+                                newLine = newLine.cloneNode(true);
+
+                                // Modifying the ghost
+                                newGhost.id = "ghost" + (ind + 1);
+                                var gd = [obj.sampLines.lineXs[ind],
+                                          obj.sampLines.ghostLineYs[0],
+                                          obj.sampLines.ghostLineYs[1]];
+                                var gp = gd[0] + "," + gd[1] + " " + gd[0] + "," + gd[2];
+                                newGhost.setAttribute("points", gp);
+                                this.appendChild(newGhost);
+
+                                // Modifying the line
+                                newLine.id = "sampLine";
+                                var ld = [obj.sampLines.lineXs[ind],
+                                          obj.sampLines.lineYs[0],
+                                          obj.sampLines.lineYs[1]]
+                                var lp = ld[0] + "," + ld[1] + " " + ld[0] + "," + ld[2];
+                                newLine.setAttribute("points", lp);
+                                this.appendChild(newLine);
+
+                                // Moving the stat line down
+                                var currStatPoint = $(statPoints).find("use").get(ind);
+                                currStatPoint = currStatPoint.cloneNode(true);
+                                var cspy = currStatPoint.y.baseVal.value;
+                                var newPoints = ld[0] + "," + cspy + " " +
+                                                ld[0] + "," + cspy;
+                                d3.select("#sampLine")
+                                    .transition()
+                                    .delay(1000)
+                                    .duration(1500)
+                                    .attr("points", newPoints)
+                                    .remove();
+
+                            };
+                                
+                            this
+                                .transition()
+                                .delay((ind * 7000) + 3000)
+                                .duration(0)
+                                .each("end", addLines);
+                        });
+                })(j);
+            }
+        }
+    });
+
+    var svv = new SampvarView();
+
+    $(document).ready(function() {
+        var fd = new FormData();
+        fd.append("coords", JSON.stringify(gridSVGCoords));
+        $.ajax({
+            url: "/custom/sampvar/brew/initCoords",
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: fd,
+            success: function() {
+              console.log("coords info successfully sent");
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<%
+cinfo <- Utils$unescape(req$POST()[["coords"]])
+
+gridSVGCoords(fromJSON(cinfo))
+
+%>

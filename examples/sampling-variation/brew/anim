@@ -1,0 +1,50 @@
+<%
+
+get.vars <- req$GET()
+p <- if (! is.null(get.vars$n)) as.numeric(get.vars$n) else 30
+
+# In the case where we have been given some coordinate information
+# to use *per request*, set gridSVGCoords(), also assume for this
+# example that the only thing that could be posted is coordinates
+# information
+if (req$post()) {
+  cinfo <- Utils$unescape(req$POST()[["coords"]])
+
+  gridSVGCoords(fromJSON(cinfo))
+}
+
+# Make sure the response is obviously JSON
+res$header("Content-Type", "application/json")
+
+svg.header <- '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="3" height="3">'
+svg.footer <- '</svg>'
+
+# We need to return the following information:
+#
+# sample indices: so we know which population points to highlight and drop
+# sample locations: so we know where points are going to drop to
+# statistic locations: so stat stacking builds up
+#
+# As a result, we should return this in the form of a single JSON object.
+# Each key should be of the following form.
+#
+# sample indices: 2d array
+# sample locations: array of objects:
+#                       - each object has two keys:
+#                           - "x" (an array of locations)
+#                           - "y" (an array of locations)
+# statistic locations: an SVG blob
+
+sampInds <- genNewSamples(dataset())
+allSamples <- sampleFromPop(dataset(), sampInds)
+sampLocs <- genSampleLocs(allSamples)
+allStats <- genNewStats(allSamples)
+sampleStatLines <- genSampleStatData(allStats)
+statPoints <- paste0(svg.header,
+                     genStatPoints(allStats),
+                     svg.footer)
+appData <- list(sampInds = sampInds, sampLocs = sampLocs,
+                sampLines = sampleStatLines, statPoints = statPoints)
+
+%>
+<%= toJSON(appData) %>
