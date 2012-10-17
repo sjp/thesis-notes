@@ -1,4 +1,51 @@
 
+2012-10-17
+----------
+
+DISCUSS:
+
+  + Did we already know about iWebplots package?
+
+  + Did we already know about aplpack package (with its "slider functions")
+
+
+TODO:
+
+  + Is there a javascript library that allows "storyboarding" an
+    animation (high-level, declarative specification of animation timeline) ?
+
+    IF NOT, what would one look like ?
+    What do the movie/game maker guys do (conceptually) ?
+    What did Xlisp-Stat allow you to do ?
+    What does Flash (et al) let you do ?
+
+  + Reinstall 'XML' package to avoid segfaults (?)
+
+R CMD INSTALL --configure-args='--enable-nodegc=no' XML_3.9-4.tar.gz 
+
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + VIT example complete!
+
+  + Update 'gridSVG' changes.txt to NEWS.Rd
+
+
 2012-10-11
 ----------
 
