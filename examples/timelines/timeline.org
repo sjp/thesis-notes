@@ -1,0 +1,198 @@
+#+TITLE: Timelines -- Producing Structured Animation
+
+* Introduction
+
+When creating the VIT Sampling Variation example, difficulties were
+encountered in managing the several animations that were
+occurring. This is because each animation needed to track where it was
+being inserted relative to which iteration it was occurring within
+*and* when other animations were occurring. It quickly clear that for
+any non-trivial amount of animations, the work required to correctly
+place animations over time was going to be burdensome.
+
+Many solutions already exist that solve this problem. They mostly
+appear to follow the following structure:
+
++ Timeline :: An entity which manages the time domain, i.e. playback,
+              pausing, seeking. All events and animations are managed
+              by a timeline.
++ Track :: A logical entity which contains events and animations that
+           are related to one another, or are concerned with a
+           particular task.
++ Event/Animation :: A task that is executed at a certain period of
+     time, that lasts for a defined duration.
+
+An example where this structure is used is in an audio editor or a
+video editor. In such examples the timeline covers the length of the
+entire audio/video. A track might be concerned with the playback of a
+particular instrument. An event could be the time period that an
+instrument was played or a sound clip.
+
+* Mozilla Popcorn
+
+The only JavaScript library that appears to do something like what we
+want is Mozilla's Popcorn library. It aims to produce rich media,
+primarily focused on garnishing videos. A simple case where it might
+need to manage state over time is showing subtitles when playing a
+video.
+
+Popcorn also offers a Popcorn Maker
+(http://maker.mozillapopcorn.org/#chooser). This examples demonstrate
+more complicated examples of Popcorn's functionality where it uses a
+timeline, with tracks and a series of events.
+
+How Popcorn manages to implement this is by first tracking the current
+time through the timeline. When it reaches an event in a track, it
+triggers an "enter" action which calls a function. This function might
+perform a task like show a subtitle or a picture. When the time
+reaches the end of the event it calls the "end" action which might do
+something like remove the subtitle or picture that was displayed.
+
+In other words, Popcorn uses custom events to perform start and end
+tasks but is not concerned about what happens *during* the time
+range. Because it usually uses HTML5 ~<video>~ and ~<audio>~ tags,
+state can be easily managed if we wish to pause or resume. In fact,
+Popcorn does provide custom events to handle these cases so an
+event/animation knows how to react when the timeline is paused,
+resumed or seeked to.
+
+The particular implementation of Popcorn's state management is at the
+following GitHub repository:
+https://github.com/rwldrn/popcorn.sequence
+
+What is lacking from Popcorn's implementation is any management of
+serial dependence. In other words, each of the events added to a track
+and managed by the timeline is not affected by the time at which it is
+placed. In the VIT Sampling Variation example, the animation is
+heavily serially dependent because each sample that is animated leaves
+behind two objects, a "ghosted" sample statistic in the sample panel
+and a stacked point representing the same statistic in the statistic
+panel. We cannot rearrange the order in which the animations occur as
+a result of this constraint.
+
+Another limitation is that there is no notion of
+repetition/iteration. With the VIT Sampling Variation example, it is
+clear that the same task is being repeated multiple times but with
+only slight changes between them. In fact, the only things that is
+changing over time are the following two things: the delay imposed on
+the animation (so that it occurs after the previous cycle), and the
+iteration index.
+
+* The Timeline Implementation
+
+In order to work around the limitations in Popcorn's timeline
+implementation, a new one was created that similarly focuses on three
+aspects:
+
++ The Timeline
++ Tracks
++ Animations
+
+We will examine each component of the timeline implementation by
+looking at the most specific information first.
+
+** Animations
+
+Each animation object (created from ~Animation()~) is given a
+descriptive name to make it easier to track. It is then given *three*
+functions as additional parameters. These will be examined in more
+detail later. It must first be described that the arguments given to
+the animation generating function (besides the name) are highly
+dependent on the notion of iterations. Each animation may occur
+multiple times, and each time an animation occurs is related to the
+previous time the animation occurred. For example, in the VIT Sampling
+Variation example the sample points lighted up and dropped down every
+iteration, but the points that were selected were dependent on the
+iteration. By noting that the behaviour and occurrence of an animation
+is dependent on the iteration, we require that each argument is a
+function that takes the iteration number as a parameter.
+
+The animation function parameter is a function that takes a single
+parameter, the iteration number, and returns a function. The returned
+function is going to be performing the required animation for the
+given iteration. The returned function expects two arguments, the
+duration of the animation (in milliseconds) and the iteration number,
+respectively. A case where this might be useful is when you might
+perform a particular task for few iterations, but a different one for
+later iterations. In VIT this occurs when we do the first iterations
+slowly and more detailed, while later iterations are less detailed and
+much faster. How you might do this is via the following animation
+function:
+
+: var animfn = function(i) {
+:     if (i <=5) {
+:         return slowAnimationFunction;
+:     } else {
+:         return fastAnimationFunction;
+:     }
+: };
+
+Much like the animation function argument, the following arguments of
+the duration function and the starting function are similar in that
+they both take as a single parameter the current iteration number. The
+difference is that these return a number representing milliseconds
+that may or may not be dependent on the iteration number. Why this is
+useful is when speeding up the animations as the iteration number
+increases. What is also important to note is that delays are
+*cumulative*, i.e. they are relative to the previous iteration's start
+time.
+
+: var durationfn = function(i) {
+:     return 2000 / i;
+: };
+:
+: var delayfn = function(i) {
+:     if (i === 1) {
+:         return 0;
+:     } else {
+:         return 3000 / (i - 1);
+:     }
+: };
+
+Evaluating these for the first three iterations:
+
+| Delay | Duration |  Gap |
+|-------+----------+------|
+|     0 |     2000 |    - |
+|  3000 |     1000 | 1000 |
+|  1500 |      667 |  500 |
+
+This shows that the animations we'll be calling will be both faster
+and closer together as the number of iterations increase.
+
+** Tracks
+
+Each track object (created from ~Track()~), like animation objects, is
+given a descriptive name to make it easier to manage. Importantly it
+is also given a parameter which refers to the number of iterations it
+will be handling.
+
+We add animations to a track by calling the ~addAnimation()~ method on
+a track object. This method takes two parameters, an animation object,
+and a location string. The location refers to an animation name which
+is useful because it allows us to place all start times of an
+animation *relative to* the start time of an existing animation. If
+the location is ~null~ then the starting times are considered to be
+absolute.
+
+** The Timeline
+
+Currently this is implemented as a single object (so there can only be
+only timeline), with relevant properties and methods.
+
+The only things that the Timeline is particularly concerned with is
+the addition, removal and playing of tracks. It is the object
+responsible for triggering the execution of animation functions.
+
+When playing all of the tracks, it iterates through every track, and
+every animation. For each animation it calls for each iteration the
+animation function after the required delay time, and passes in the
+duration and iteration number. This is how the entire set of
+animations is started.
+
+** Example
+
+For an example of how the implementation of a timeline system is to be
+used, see the files ~timeline-test.html~ (and observe the console) and
+~tests.js~ (for usage). This example simply prints to the console some
+information relevant to what is occurring per iteration.
