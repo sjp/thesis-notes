@@ -1,4 +1,46 @@
 
+2012-10-24
+----------
+
+TODO:
+
+  + Tidy and polish timelines code
+
+  + Try to use timelines code to redo VIT example?
+
+  + Consider whether timelines can be composed of other timelines?
+    (not just composed of animations;  i.e., recursive, arbitrary-depth,
+     hierarchical structure rather than fixed 3-depth structure)
+
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Is there a javascript library that allows "storyboarding" an
+    animation (high-level, declarative specification of animation timeline) ?
+
+    See examples/timelines/
+    including examples/timelines/timeline.org
+
+  + Reinstall 'XML' package to avoid segfaults (?)
+
+R CMD INSTALL --configure-args='--enable-nodegc=no' XML_3.9-4.tar.gz 
+
+
 2012-10-17
 ----------
 
