@@ -1,4 +1,67 @@
 
+2012-10-31
+----------
+
+FOR NOTING:
+
+  + Simon's project talk (May/June 2013) could be a dept seminar!?
+    - normal 2 paper project => 20min talk
+      so 6 paper project => 1 hr talk?
+
+    
+DISCUSS:
+
+  + Paul wants to commit changes to gridSVG, but they will require
+    a bump to R dependency R >= 2.16.0
+
+    If Paul does this, that will mean that lots of Simon's stuff 
+    only becomes available with r-devel (until next April or something)
+
+    What to do?  (commit Simon's stuff so far as separate version?)
+
+
+TODO:
+
+  + Tidy and polish timelines code
+    
+  + Try to use timelines code to redo VIT example?
+  
+  + Consider whether timelines can be composed of other timelines?
+    (not just composed of animations;  i.e., recursive, arbitrary-depth,
+     hierarchical structure rather than fixed 3-depth structure)
+    -
+
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Started R package to convert CSS selectors to XPaths
+    (so can specify selections of SVG elements in R just like you
+     would in SVG with D3)
+
+  + Tidy and polish timelines code
+    - can spec constants rather than functions
+    
+  + Consider whether timelines can be composed of other timelines?
+    (not just composed of animations;  i.e., recursive, arbitrary-depth,
+     hierarchical structure rather than fixed 3-depth structure)
+    - can have timelines within timelines
+
+
 2012-10-24
 ----------
 
@@ -11,6 +74,8 @@ TODO:
   + Consider whether timelines can be composed of other timelines?
     (not just composed of animations;  i.e., recursive, arbitrary-depth,
      hierarchical structure rather than fixed 3-depth structure)
+    - yes, timelines should be able to be interchangeable with tracks
+      (e.g., should be able to repeat a timeline [within a timeline])
 
   + sampvar (VIT) reflection:
     - already have examples/sampling-variation/sampling-variation.org
