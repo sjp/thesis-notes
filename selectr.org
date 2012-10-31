@@ -1,0 +1,27 @@
+#+TITLE: The ~selectr~ Package
+
+* Introduction
+
+The ~selectr~ package is a work-in-progress package that aims to
+translate CSS selectors into equivalent XPath expressions. This is
+based off an existing, comprehensive Python package, ~cssselect~. The
+port aims to be a very literal translation of Python to R code in
+order to reduce any errors in the translation process.
+
+The reason why this is used is because when manipulating nodes in the
+browser using ~document.querySelectorAll()~ (as used in jQuery and
+D3), we just use a CSS selector for two reasons. Firstly, CSS
+selectors are concise enough to write in a quick expression. Secondly,
+XPath in JS is awkward.
+
+The ~selectr~ package allows us to be able to generate the XPath
+expressions needed for use in ~XML~ package functions such as
+~getNodeSet()~. A typical use case would be simply using the result of
+~css_to_xpath()~ as the first argument to ~getNodeSet()~.
+
+In addition, we could add a couple of convenience functions such as
+~querySelector()~ and ~querySelectorAll()~ in order to mirror their
+browser equivalents. These functions would simply be wrappers over
+~getNodeSet()~. Both functions would take two arguments, the CSS
+expression to search with, and the XMLNode that the search is being
+performed on.
