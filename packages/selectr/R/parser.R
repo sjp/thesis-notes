@@ -1,5 +1,6 @@
 escape <- paste0("([0-9a-f]{1,6})(\r\n|[ \n\r\t\f])?", "|[^\n\r\f0-9a-f]")
 nonascii <- "[^\1-\177]"
+hash_re <- "([_a-z0-9-]|([0-9a-f]{1,6})(\r\n|[ \n\r\t\f])?|[^\1-\177])"
 
 TokenMacros <- list(unicode_escape = "\\([0-9a-f]{1,6})(?:\r\n|[ \n\r\t\f])?",
                     escape = escape,
@@ -15,15 +16,16 @@ Selector <- setRefClass("Selector",
         parsed_tree <<- tree
         if (! is.null(pseudo_element))
             pseudo_element <<- tolower(pseudo_element)
+        else
+            pseudo_element <<- pseudo_element
     },
     repr = function() {
         pseudo_el <-
-            if (is.null(.self$pseudo_element))
+            if (is.null(pseudo_element))
                 ""
             else
-                sprintf("::%s", .self$pseudo_element)
-        sprintf("%s [%s%s]",
-                class(.self),
+                sprintf("::%s", pseudo_element)
+        sprintf("%s%s",
                 parsed_tree$repr(),
                 pseudo_el)
     },
@@ -42,7 +44,7 @@ Class <- setRefClass("Class",
         class_name <<- class_name
     },
     repr = function() {
-        sprintf("%s [%s.%s]",
+        sprintf("%s[%s.%s]",
                 class(.self),
                 selector$repr(),
                 class_name)
@@ -217,7 +219,7 @@ CombinedSelector <- setRefClass("CombinedSelector",
 
 #### Parser
 
-#foo
+# foo
 el_re <- '^[ \t\r\n\f]*([a-zA-Z]+)[ \t\r\n\f]*$'
 
 # foo#bar or #bar
@@ -227,25 +229,24 @@ id_re <- '^[ \t\r\n\f]*([a-zA-Z]*)#([a-zA-Z0-9_-]+)[ \t\r\n\f]*$'
 class_re <- '^[ \t\r\n\f]*([a-zA-Z]*)\\.([a-zA-Z][a-zA-Z0-9_-]*)[ \t\r\n\f]*$'
 
 parse <- function(css) {
-    el_matches <- str_match(css, el_re)
-    if (! is.na(el_matches[1]))
-        return(Selector$new(Element$new(el_matches[2])))
-    id_matches <- str_match(css, id_re)
-    if (! is.na(id_matches[1]))
+    nc <- nchar(css)
+    el_match <- str_match(css, el_re)[1, 2]
+    if (! is.na(el_match))
+        return(Selector$new(Element$new(el_match)))
+    id_match <- str_match(css, id_re)[1, 2:3]
+    if (! is.na(id_match[2]))
         return(Selector$new(
                    Hash$new(
-                       Element$new(element = ifelse(is.na(id_matches[2]),
-                                                    NULL,
-                                                    id_matches[2])),
-                       id_matches[3])))
-    class_matches <- str_match(css, class_re)
-    if (! is.na(class_matches[1]))
+                       Element$new(element = if (nchar(id_match[1]) == 0) NULL else id_match[1]),
+                       id_match[2])))
+    class_match <- str_match(css, class_re)[1, 2:3]
+    if (! is.na(class_match[3]))
         return(Selector$new(
                    Class$new(
-                       Element$new(element = ifelse(is.na(class_matches[2]), NULL, class_matches[2])),
-                       class_matches[3])))
+                       Element$new(element = if (is.na(class_match[2])) NULL else class_match[2]),
+                       class_match[3])))
     stream <- TokenStream$new(tokenize(css))
-    stream$source <- css
+    stream$source_text <- css
     parse_selector_group(stream)
 }
 
@@ -254,9 +255,9 @@ parse_selector_group <- function(stream) {
     i <- 1
     results <- list()
     while (TRUE) {
-        results[[i]] <- Selector(parse_selector(stream))
+        results[[i]] <- Selector$new(parse_selector(stream))
         i <- i + 1
-        if (all(stream$peek() == c("DELIM", ","))) {
+        if (token_equality(stream$peek(), "DELIM", ",")) {
             stream$nxt()
             stream$skip_whitespace()
         } else {
@@ -266,23 +267,36 @@ parse_selector_group <- function(stream) {
     results
 }
 
+token_equality <- function(token, t, val) {
+    if (token$type != t)
+       return(FALSE)
+    # val can be NULL or (maybe) NA
+    if (is.null(val) && is.null(token$value))
+        return(TRUE)
+    if (is.na(val) && is.na(token$value))
+        return(TRUE)
+    # Should be OK with regular equality
+    token$value == val
+}
+
 parse_selector <- function(stream) {
     results <- parse_simple_selector(stream)
     result <- results$result
     pseudo_element <- results$pseudo_element
+
     while (TRUE) {
         stream$skip_whitespace()
         peek <- stream$peek()
-        if (all(peek == c("EOF", NA)) || all(peek == c("DELIM", ""))) {
+        if (token_equality(peek, "EOF", NULL) || token_equality(peek, "DELIM", ",")) {
             break
         }
-        if (nchar(pseudo_element)) {
+        if (! is.null(pseudo_element) && nchar(pseudo_element)) {
             stop(sprintf("Got pseudo-element ::%s not at the end of a selector",
                          pseudo_element))
         }
         if (peek$is_delim(c("+", ">", "~"))) {
             # A combinator
-            combinator <- stream$nxt_$value
+            combinator <- stream$nxt$value
             stream$skip_whitespace()
         } else {
             # By exclusion, the last parse_simple_selector() ended
@@ -292,21 +306,21 @@ parse_selector <- function(stream) {
         stuff <- parse_simple_selector(stream)
         result <- CombinedSelector$new(result, combinator, stuff$next_selector)
     }
-    list(result, pseudo_element)
+    list(result = result, pseudo_element = pseudo_element)
 }
 
-parse_simple_selector <- function(stream, inside_negation) {
+parse_simple_selector <- function(stream, inside_negation = FALSE) {
     stream$skip_whitespace()
     selector_start <- length(stream$used)
     peek <- stream$peek()
-    if (peek$type == "IDENT" || all(peek$value == c("DELIM", "*"))) {
+    if (peek$type == "IDENT" || token_equality(peek, "DELIM", "*")) {
         if (peek$type == "IDENT") {
             namespace <- stream$nxt()$value
         } else {
             stream$nxt()
             namespace <- NULL
         }
-        if (all(stream$peek() == c("DELIM", "|"))) {
+        if (token_equality(stream$peek(), "DELIM", "|")) {
             stream$nxt()
             element <- stream$next_ident_or_star()
         } else {
@@ -322,7 +336,7 @@ parse_simple_selector <- function(stream, inside_negation) {
         peek <- stream$peek()
         if (any(peek$type == c("S", "EOF")) ||
             peek$is_delim(c(",", "+", ">", "~")) || 
-            inside_negation && peek$value == c("DELIM", ")")) {
+            (inside_negation && token_equality(peek, "DELIM", ")"))) {
             break
         }
         if (! is.null(pseudo_element)) {
@@ -331,15 +345,15 @@ parse_simple_selector <- function(stream, inside_negation) {
         }
         if (peek$type == "HASH") {
             result <- Hash$new(result, stream$nxt()$value)
-        } else if (all(peek$value == c("DELIM", "."))) {
+        } else if (token_equality(peek, "DELIM", ".")) {
             stream$nxt()
             result <- Class$new(result, stream$next_ident())
-        } else if (all(peek$value == c("DELIM", "["))) {
+        } else if (token_equality(peek, "DELIM", "[")) {
             stream$nxt()
             result <- parse_attrib(result, stream)
-        } else if (all(peek$value == c("DELIM", ":"))) {
+        } else if (token_equality(peek, "DELIM", ":")) {
             stream$nxt()
-            if (all(stream$peek()$value == c("DELIM", ":"))) {
+            if (token_equality(stream$peek(), "DELIM", ":")) {
                 stream$nxt()
                 pseudo_element <- stream$next_ident()
                 next
@@ -351,7 +365,7 @@ parse_simple_selector <- function(stream, inside_negation) {
                 pseudo_element <- ident
                 next
             }
-            if (! all(stream$peek()$value == c("DELIM", "("))) {
+            if (! token_equality(stream$peek(), "DELIM", "(")) {
                 result <- Pseudo$new(result, ident)
                 next
             }
@@ -369,8 +383,8 @@ parse_simple_selector <- function(stream, inside_negation) {
                     stop(sprintf("Got pseudo-element ::%s inside :not() at %s",
                                  argument_pseudo_element, nt$pos)) 
                 }
-                if (! all(nt$value == c("DELIM", ")"))) {
-                    stop(sprintf("Expected ')', got %s", nt$value[1]))
+                if (! token_equality(nt, "DELIM", ")")) {
+                    stop(sprintf("Expected ')', got %s", nt$value))
                 }
                 result <- Negation$new(result, argument)
             } else {
@@ -379,17 +393,17 @@ parse_simple_selector <- function(stream, inside_negation) {
                 while (TRUE) {
                     nt <- stream$nxt()
                     if (nt$type %in% c("IDENT", "STRING", "NUMBER") ||
-                        (all(nt$value == c("DELIM", "+")) || all(nt$value == c("DELIM", "-")))) {
+                        (token_equality(nt ,"DELIM", "+") || token_equality(nt, "DELIM", "-"))) {
                         arguments[[i]] <- nt
                         i <- i + 1
-                    } else if (all(nt$value == c("DELIM", ")"))) {
+                    } else if (token_equality(nt, "DELIM", ")")) {
                         break
                     } else {
-                        stop(sprintf("Expected an argument, got %s", nt$value[1]))
+                        stop(sprintf("Expected an argument, got %s", nt$value))
                     }
                 }
                 if (length(arguments) == 0) {
-                    stop(sprintf("Expected at least one argument, got %s", nt$value[1]))
+                    stop(sprintf("Expected at least one argument, got %s", nt$value))
                 }
                 result <- Function$new(result, ident, arguments)
             }
@@ -398,9 +412,9 @@ parse_simple_selector <- function(stream, inside_negation) {
         }
     }
     if (length(stream$used) == selector_start) {
-        stop(sprintf("Expected selector, got %s", stream$peek()$value[1]))
+        stop(sprintf("Expected selector, got %s", stream$peek()$value))
     }
-    list(result, pseudo_element)
+    list(result = result, pseudo_element = pseudo_element)
 }
 
 parse_attrib <- function(selector, stream) {
@@ -408,9 +422,9 @@ parse_attrib <- function(selector, stream) {
     attrib <- stream$next_ident_or_star()
     if (is.null(attrib) && any(stream$peek() != c("DELIM", "|")))
         stop(sprintf("Expected '|', got %s", stream$peek()))
-    if (all(stream$peek() == c("DELIM", "|"))) {
+    if (token_equality(stream$peek(), "DELIM", "|")) {
         stream$nxt()
-        if (all(stream$peek() == c("DELIM", "="))) {
+        if (token_equality(stream$peek(), "DELIM", "=")) {
             namespace <- NULL
             stream$nxt()
             op <- "|="
@@ -425,26 +439,27 @@ parse_attrib <- function(selector, stream) {
     if (is.null(op)) {
         stream$skip_whitespace()
         nt <- stream$nxt()
-        if (all(nt$value == c("DELIM", "]"))) {
+        if (token_equality(nt, "DELIM", "]")) {
             return(Attrib$new(selector, namespace, attrib, "exists", NULL))
-        } else if (all(nt$value == c("DELIM", "="))) {
+        } else if (token_equality(nt, "DELIM", "=")) {
             op <- "="
-        } else if (nt$is_delim(c("^", "$", "*", "~", "|", "!")) && all(stream$peek()$value == c("DELIM", "="))) {
+        } else if (nt$is_delim(c("^", "$", "*", "~", "|", "!")) &&
+                   token_equality(stream$peek(), "DELIM", "=")) {
             op <- paste0(nt$value, "=")
             stream$nxt()
         } else {
-            stop(sprintf("Operator expected, got %s"), nt$value[1])
+            stop(sprintf("Operator expected, got %s"), nt$value)
         }
     }
     stream$skip_whitespace()
     value <- stream$nxt()
     if (! value$type %in% c("IDENT", "STRING")) {
-        stop(sprintf("Operator expected, got %s", nt$value[1]))
+        stop(sprintf("Operator expected, got %s", nt$value))
     }
     stream$skip_whitespace()
     nt <- stream$nxt()
-    if (! all(nt$value == c("DELIM", "]"))) {
-        stop(sprintf("Expected ']', got %s", nt$value[1]))
+    if (! token_equality(nt, "DELIM", "]")) {
+        stop(sprintf("Expected ']', got %s", nt$value))
     }
     Attrib$new(selector, namespace, attrib, op, value$value)
 }
@@ -517,7 +532,7 @@ compile_ <- function(pattern) {
 
 match_whitespace <- compile_('[ \t\r\n\f]+')
 match_number <- compile_('[+-]?(?:[0-9]*\\.[0-9]+|[0-9]+)')
-match_hash <- compile_(sprintf('#(?:%s)+', TokenMacros$nmchar))
+match_hash <- compile_(sprintf("#%s+", hash_re))#sprintf('#(?:%s)+', TokenMacros$nmchar))
 match_ident <- compile_("^\\w+")
 #match_ident <- compile_(sprintf('-?%s|%s*',
 #                                TokenMacros$nmstart, TokenMacros$nmchar))
@@ -543,7 +558,37 @@ tokenize <- function(s) {
             i <- i + 1
             next
         }
-
+        match <- match_number(ss)
+        if (! is.na(match) && match[1] == 1) {
+            match_start <- match[1]
+            match_end <- max(match[1], match[2])
+            value <- substring(ss, match_start, match_end)
+            results[[i]] <- Token$new("NUMBER", value, pos)
+            pos <- pos + match_end
+            i <- i + 1
+            next
+        }
+        match <- match_ident(ss)
+        if (! is.na(match) && match[1] == 1) {
+            match_start <- match[1]
+            match_end <- max(match[1], match[2])
+            value <- substring(ss, match_start, match_end)
+            results[[i]] <- Token$new("IDENT", value, pos)
+            pos <- pos + match_end
+            i <- i + 1
+            next
+        }
+        match <- match_hash(ss)
+        if (! is.na(match) && match[1] == 1) {
+            match_start <- match[1]
+            match_end <- max(match[1], match[2])
+            value <- substring(ss, match_start, match_end)
+            hash_id <- substring(value, 2)
+            results[[i]] <- Token$new("HASH", hash_id, pos)
+            pos <- pos + match_end
+            i <- i + 1
+            next
+        }
         # Testing presence of two char delims
         nc_inds <- 1:nchar(ss)
         if (length(nc_inds) %% 2 == 1)
@@ -569,49 +614,39 @@ tokenize <- function(s) {
             i <- i + 1
             next
         }
-
-        match <- match_ident(ss)
-        if (! is.na(match) && match[1] == 1) {
-            match_start <- match[1]
-            match_end <- max(match[1], match[2])
-            value <- substring(ss, match_start, match_end)
-            results[[i]] <- Token$new("IDENT", value, pos)
-            pos <- pos + match_end
-            i <- i + 1
-            next
-        }
-        match <- match_hash(ss)
-        if (! is.na(match) && match[1] == 1) {
-            match_start <- match[1]
-            match_end <- max(match[1], match[2] - 1)
-            value <- substring(ss, match_start, match_end)
-            results[[i]] <- Token$new("HASH", value, pos)
-            pos <- pos + match_end
-            i <- i + 1
-            next
-        }
         quote <- substring(s, pos, pos)
-        if (quote %in% names(match_string_by_quote)) {
-            
+        if (quote %in% c("'", '"')) {
+            split_chars <- substring(s, (pos + 1):nchar(s), (pos + 1):nchar(s))
+            matching_quotes <- which(split_chars == quote)
+            is_escaped <- logical(length(matching_quotes))
+            if (length(matching_quotes)) {
+                for (j in 1:length(matching_quotes)) {
+                    end_quote <- matching_quotes[j]
+                    if (end_quote > 1) {
+                        is_escaped[j] <- split_chars[end_quote - 1] == "\\"
+                    }
+                }
+                if (all(is_escaped)) {
+                    stop(sprintf("Unclosed string at %d", pos))
+                }
+                end_quote <- matching_quotes[min(which(! is_escaped))]
+                value <- substring(s, pos + 1, pos + end_quote - 1)
+                results[[i]] <- Token$new("STRING", value, pos)
+                pos <- pos + end_quote + 1 # one for each quote char
+                i <- i + 1
+            } else {
+                stop(sprintf("Unclosed string at %d", pos))
+            }
         }
-        match <- match_number(ss)
-        if (! is.na(match) && match[1] == 1) {
-            match_start <- match[1]
-            match_end <- max(match[1], match[2])
-            value <- substring(ss, match_start, match_end)
-            results[[i]] <-  Token$new("NUMBER", value, pos)
-            pos <- pos + match_end
-            i <- i + 1
-            next
-        }
-        pos2 <- pos + 2
-        if (substring(s, pos, pos2) == "/*") {
-            pos <- str_locate(ss, "\\*/")
+        # Remove comments
+        pos1 <- pos + 1
+        if (substring(s, pos, pos1) == "/*") {
+            rel_pos <- str_locate(ss, "\\*/")[1]
             pos <- 
                 if (is.na(pos)) {
                     len_s
                 } else {
-                    pos + 2
+                    pos + rel_pos + 1
                 }
             next
         }
@@ -625,26 +660,27 @@ TokenStream <- setRefClass("TokenStream",
                            methods = list(
     initialize = function(tokens, source_text = NULL) {
         pos <<- 1
+        tokens <<- tokens
         ntokens <<- length(tokens)
-        used <<- character(0)
+        used <<- list()
         source_text <<- source_text
-        peeked <<- character(0)
+        peeked <<- list()
         peeking <<- FALSE
     },
     nxt = function() {
         if (peeking) {
             peeking <<- FALSE
-            used[pos] <<- peeked
+            used[[pos]] <<- peeked
             peeked
         } else {
             nt <- next_token()
-            used[pos] <<- nt
+            used[[pos]] <<- nt
             nt
         }
     },
     next_token = function() {
         pos <<- pos + 1
-        tokens[pos]
+        tokens[[pos]]
     },
     peek = function() {
         if (! peeking) {
