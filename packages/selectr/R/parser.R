@@ -393,7 +393,7 @@ parse_simple_selector <- function(stream, inside_negation = FALSE) {
                 if (length(argument_pseudo_element) &&
                     nchar(argument_pseudo_element)) {
                     stop(sprintf("Got pseudo-element ::%s inside :not() at %s",
-                                 argument_pseudo_element$value, nt$pos)) 
+                                 argument_pseudo_element, nt$pos)) 
                 }
                 if (! token_equality(nt, "DELIM", ")")) {
                     stop(sprintf("Expected ')', got %s", nt$value))
@@ -413,20 +413,20 @@ parse_simple_selector <- function(stream, inside_negation = FALSE) {
                     } else if (token_equality(nt, "DELIM", ")")) {
                         break
                     } else {
-                        stop(sprintf("Expected an argument, got %s", nt$value))
+                        stop(sprintf("Expected an argument, got %s", nt$repr()))
                     }
                 }
                 if (length(arguments) == 0) {
-                    stop(sprintf("Expected at least one argument, got %s", nt$value))
+                    stop(sprintf("Expected at least one argument, got %s", nt$repr()))
                 }
                 result <- Function$new(result, ident, arguments)
             }
         } else {
-            stop(sprintf("Expected selector, got %s", stream$peek()))
+            stop(sprintf("Expected selector, got %s", stream$peek()$repr()))
         }
     }
     if (length(stream$used) == selector_start) {
-        stop(sprintf("Expected selector, got %s", stream$peek()$value))
+        stop(sprintf("Expected selector, got %s", stream$peek()$repr()))
     }
     list(result = result, pseudo_element = pseudo_element)
 }
@@ -434,8 +434,8 @@ parse_simple_selector <- function(stream, inside_negation = FALSE) {
 parse_attrib <- function(selector, stream) {
     stream$skip_whitespace()
     attrib <- stream$next_ident_or_star()
-    if (is.null(attrib) && any(stream$peek() != c("DELIM", "|")))
-        stop(sprintf("Expected '|', got %s", stream$peek()))
+    if (is.null(attrib) && ! token_equality(stream$peek(), "DELIM", "|"))
+        stop(sprintf("Expected '|', got %s", stream$peek()$repr()))
     if (token_equality(stream$peek(), "DELIM", "|")) {
         stream$nxt()
         if (token_equality(stream$peek(), "DELIM", "=")) {
@@ -460,18 +460,18 @@ parse_attrib <- function(selector, stream) {
         } else if (nt$is_delim(c("^=", "$=", "*=", "~=", "|=", "!="))) {# &&
             op <- nt$value
         } else {
-            stop(sprintf("Operator expected, got %s"), nt$value)
+            stop(sprintf("Operator expected, got %s", nt$repr()))
         }
     }
     stream$skip_whitespace()
     value <- stream$nxt()
     if (! value$type %in% c("IDENT", "STRING")) {
-        stop(sprintf("Operator expected, got %s", nt$value))
+        stop(sprintf("Expected string or ident, got %s", value$repr()))
     }
     stream$skip_whitespace()
     nt <- stream$nxt()
     if (! token_equality(nt, "DELIM", "]")) {
-        stop(sprintf("Expected ']', got %s", nt$value))
+        stop(sprintf("Expected ']', got %s", nt$repr()))
     }
     Attrib$new(selector, namespace, attrib, op, value$value)
 }
@@ -673,6 +673,13 @@ tokenize <- function(s) {
                 }
             next
         }
+        # Because we always call 'next', if we're here there must have
+        # been an error
+        tmp <- substring(ss, 1, 1)
+        if (! tmp %in% c(delims_1ch, '"', "'")) {
+            stop(sprintf("Unexpected character '%s' found at position %d",
+                         tmp, pos))
+        }
     }
     results[[i]] <- EOFToken$new(pos)
     results
@@ -716,7 +723,7 @@ TokenStream <- setRefClass("TokenStream",
     next_ident = function() {
         nt <- .self$nxt()
         if (nt$type != "IDENT")
-            stop(sprintf("Expected ident, got %s", nt$type))
+            stop(sprintf("Expected ident, got %s", nt$repr()))
         nt$value
     },
     next_ident_or_star = function() {
@@ -726,7 +733,7 @@ TokenStream <- setRefClass("TokenStream",
         else if (token_equality(nt, "DELIM", "*"))
             return(NULL)
         else
-            stop(sprintf("Expected ident or '*', got %s", nt$type))
+            stop(sprintf("Expected ident or '*', got %s", nt$repr()))
     },
     skip_whitespace = function() {
         peek <- .self$peek()
