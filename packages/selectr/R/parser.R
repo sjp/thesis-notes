@@ -408,6 +408,8 @@ parse_simple_selector <- function(stream, inside_negation = FALSE) {
                         (token_equality(nt ,"DELIM", "+") || token_equality(nt, "DELIM", "-"))) {
                         arguments[[i]] <- nt
                         i <- i + 1
+                    } else if (nt$type == "S") {
+                        next
                     } else if (token_equality(nt, "DELIM", ")")) {
                         break
                     } else {
@@ -475,7 +477,7 @@ parse_attrib <- function(selector, stream) {
 }
 
 str_int <- function(s) {
-    as.numeric(charToRaw(s))
+    suppressWarnings(as.integer(s))
 }
 
 parse_series <- function(tokens) {
@@ -483,18 +485,29 @@ parse_series <- function(tokens) {
         if (token$type == "STRING")
             stop("String tokens not allowed in series.")
     }
-    s <- paste0(str_trim(tokens), collapse = "")
+    s <- paste0(sapply(tokens, function(x) x$value), collapse = "")
     if (s == "odd")
         return(2:1)
     else if (s == "even")
         return(c(2, 0))
     else if (s == "n")
         return(1:0)
-    if (is.na(str_locate(s, "n")[1, 1]))
-        return(c(0, str_int(s)))
+    if (is.na(str_locate(s, "n")[1, 1])) {
+        result <- str_int(s)
+        if (is.na(result)) {
+            return(NULL)
+        } else {
+            return(c(0, result))
+        }
+    }
     ab <- str_split_fixed(s, "n", 2)[1,]
-    a <- ab[1]
-    b <- ab[2]
+    a <- str_trim(ab[1])
+    b <- str_trim(ab[2])
+
+    intb <- str_int(b)
+    if (! nzchar(a) && is.na(intb))
+        return(NULL)
+
     if (! nzchar(a))
         a <- 1
     else if (a == "-" || a == "+")
