@@ -65,9 +65,10 @@ Function <- setRefClass("Function",
     },
     repr = function() {
         token_values <- lapply(arguments, function(token) {
-            token$value
+            paste0("'", token$value, "'")
         })
-        token_values <- unlist(token_values)
+        token_values <- paste0(unlist(token_values), collapse = ", ")
+        token_values <- paste0("[", token_values, "]")
         sprintf("%s[%s:%s(%s)]",
                 class(.self),
                 selector$repr(),
@@ -141,7 +142,7 @@ Attrib <- setRefClass("Attrib",
             sprintf("%s[%s[%s]]",
                     class(.self), selector$repr(), attr)
         else
-            sprintf("%s[%s[%s %s %s]]",
+            sprintf("%s[%s[%s %s '%s']]",
                     class(.self), selector$repr(), attr, operator, value)
     },
     specificity = function() {
@@ -255,7 +256,9 @@ parse_selector_group <- function(stream) {
     i <- 1
     results <- list()
     while (TRUE) {
-        results[[i]] <- Selector$new(parse_selector(stream))
+        parsed_selector <- parse_selector(stream)
+        results[[i]] <- Selector$new(parsed_selector$result,
+                                     parsed_selector$pseudo_element)
         i <- i + 1
         if (token_equality(stream$peek(), "DELIM", ",")) {
             stream$nxt()
@@ -296,7 +299,7 @@ parse_selector <- function(stream) {
         }
         if (peek$is_delim(c("+", ">", "~"))) {
             # A combinator
-            combinator <- stream$nxt$value
+            combinator <- stream$nxt()$value
             stream$skip_whitespace()
         } else {
             # By exclusion, the last parse_simple_selector() ended
@@ -304,7 +307,7 @@ parse_selector <- function(stream) {
             combinator <- ' '
         }
         stuff <- parse_simple_selector(stream)
-        result <- CombinedSelector$new(result, combinator, stuff$next_selector)
+        result <- CombinedSelector$new(result, combinator, stuff$result)
     }
     list(result = result, pseudo_element = pseudo_element)
 }
@@ -376,12 +379,13 @@ parse_simple_selector <- function(stream, inside_negation = FALSE) {
                     stop("Got nested :not()")
                 }
                 res <- parse_simple_selector(stream, inside_negation = TRUE)
-                argument <- res[[1]]
-                argument_pseudo_element <- res[[2]]
+                argument <- res$result
+                argument_pseudo_element <- res$pseudo_element
                 nt <- stream$nxt()
-                if (nchar(argument_pseudo_element)) {
+                if (length(argument_pseudo_element) &&
+                    nchar(argument_pseudo_element)) {
                     stop(sprintf("Got pseudo-element ::%s inside :not() at %s",
-                                 argument_pseudo_element, nt$pos)) 
+                                 argument_pseudo_element$value, nt$pos)) 
                 }
                 if (! token_equality(nt, "DELIM", ")")) {
                     stop(sprintf("Expected ')', got %s", nt$value))
@@ -443,10 +447,8 @@ parse_attrib <- function(selector, stream) {
             return(Attrib$new(selector, namespace, attrib, "exists", NULL))
         } else if (token_equality(nt, "DELIM", "=")) {
             op <- "="
-        } else if (nt$is_delim(c("^", "$", "*", "~", "|", "!")) &&
-                   token_equality(stream$peek(), "DELIM", "=")) {
-            op <- paste0(nt$value, "=")
-            stream$nxt()
+        } else if (nt$is_delim(c("^=", "$=", "*=", "~=", "|=", "!="))) {# &&
+            op <- nt$value
         } else {
             stop(sprintf("Operator expected, got %s"), nt$value)
         }
@@ -533,7 +535,7 @@ compile_ <- function(pattern) {
 match_whitespace <- compile_('[ \t\r\n\f]+')
 match_number <- compile_('[+-]?(?:[0-9]*\\.[0-9]+|[0-9]+)')
 match_hash <- compile_(sprintf("#%s+", hash_re))#sprintf('#(?:%s)+', TokenMacros$nmchar))
-match_ident <- compile_("^\\w+")
+match_ident <- compile_("^[_a-zA-Z0-9-]+")#"^[\\w_-]+")
 #match_ident <- compile_(sprintf('-?%s|%s*',
 #                                TokenMacros$nmstart, TokenMacros$nmchar))
 match_string_by_quote <- list("'" = compile_(sprintf("([^\n\r\f\\']|%s)*",
@@ -679,8 +681,9 @@ TokenStream <- setRefClass("TokenStream",
         }
     },
     next_token = function() {
+        nt <- tokens[[pos]]
         pos <<- pos + 1
-        tokens[[pos]]
+        nt
     },
     peek = function() {
         if (! peeking) {
@@ -692,17 +695,17 @@ TokenStream <- setRefClass("TokenStream",
     next_ident = function() {
         nt <- .self$nxt()
         if (nt$type != "IDENT")
-            stop(sprintf("Expected ident, got %s", nt))
+            stop(sprintf("Expected ident, got %s", nt$type))
         nt$value
     },
     next_ident_or_star = function() {
         nt <- .self$nxt()
         if (nt$type == "IDENT")
             return(nt$value)
-        else if (all(nt$value == c("DELIM", "*")))
+        else if (token_equality(nt, "DELIM", "*"))
             return(NULL)
         else
-            stop(sprintf("Expected ident or '*', got %s", nt))
+            stop(sprintf("Expected ident or '*', got %s", nt$type))
     },
     skip_whitespace = function() {
         peek <- .self$peek()
