@@ -233,7 +233,7 @@ parse <- function(css) {
     nc <- nchar(css)
     el_match <- str_match(css, el_re)[1, 2]
     if (! is.na(el_match))
-        return(Selector$new(Element$new(el_match)))
+        return(Selector$new(Element$new(element = el_match)))
     id_match <- str_match(css, id_re)[1, 2:3]
     if (! is.na(id_match[2]))
         return(Selector$new(
@@ -307,6 +307,7 @@ parse_selector <- function(stream) {
             combinator <- ' '
         }
         stuff <- parse_simple_selector(stream)
+        pseudo_element <- stuff$pseudo_element
         result <- CombinedSelector$new(result, combinator, stuff$result)
     }
     list(result = result, pseudo_element = pseudo_element)
@@ -354,12 +355,19 @@ parse_simple_selector <- function(stream, inside_negation = FALSE) {
         } else if (token_equality(peek, "DELIM", "[")) {
             stream$nxt()
             result <- parse_attrib(result, stream)
-        } else if (token_equality(peek, "DELIM", ":")) {
-            stream$nxt()
-            if (token_equality(stream$peek(), "DELIM", ":")) {
-                stream$nxt()
+        } else if (token_equality(peek, "DELIM", ":") ||
+                   token_equality(peek, "DELIM", "::")) {
+            if (token_equality(peek, "DELIM", "::")) {
+                stream$nxt()   
                 pseudo_element <- stream$next_ident()
                 next
+            } else {
+                stream$nxt()
+                if (token_equality(stream$peek(), "DELIM", ":")) {
+                    stream$nxt()
+                    pseudo_element <- stream$next_ident()
+                    next
+                }
             }
             ident <- stream$next_ident()
             if (tolower(ident) %in% c("first-line", "first-letter", "before", "after")) {
