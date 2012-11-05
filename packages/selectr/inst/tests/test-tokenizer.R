@@ -12,7 +12,7 @@ test_that("tokenizer extracts correct representation", {
                          "<DELIM '[' at 7>",
                          "<IDENT 'a' at 8>",
                          "<DELIM '~=' at 9>",
-                         "<STRING 'y\\\"x' at 11>",
+                         "<STRING 'y\"x' at 11>",
                          "<DELIM ']' at 17>",
                          "<DELIM ':' at 18>",
                          "<IDENT 'nth' at 19>",

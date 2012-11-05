@@ -554,17 +554,22 @@ compile_ <- function(pattern) {
 
 delims_2ch <- c('~=', '|=', '^=', '$=', '*=', '::', '!=')
 delims_1ch <- c('>', '+', '~', ',', '.', '*', '=', '[', ']', '(', ')', '|', ':', '#')
-delim_escapes <- paste0("\\", delims_1ch, collapse = "|")
+delim_escapes <- paste0(delims_1ch, collapse = "|")
 match_whitespace <- compile_('[ \t\r\n\f]+')
 match_number <- compile_('[+-]?(?:[0-9]*\\.[0-9]+|[0-9]+)')
-match_hash <- compile_(sprintf("#%s+", hash_re))#sprintf('#(?:%s)+', TokenMacros$nmchar))
-match_ident <- compile_(sprintf("^([_a-zA-Z0-9-]|%s)+", nonascii))#"^[\\w_-]+")
+match_hash <- compile_(sprintf("^#([_a-zA-Z0-9-]|%s|\\\\(?:%s))+", nonascii, delim_escapes))#sprintf('#(?:%s)+', TokenMacros$nmchar))
+match_ident <- compile_(sprintf("^([_a-zA-Z0-9-]|%s|\\\\(?:%s))+", nonascii, delim_escapes))#"^[\\w_-]+")
 #match_ident <- compile_(sprintf('-?%s|%s*',
 #                                TokenMacros$nmstart, TokenMacros$nmchar))
 match_string_by_quote <- list("'" = compile_(sprintf("([^\n\r\f\\']|%s)*",
                                                      TokenMacros$string_escape)),
                               '"' = compile_(sprintf('([^\n\r\f\\"]|%s)*',
                                              TokenMacros$string_escape)))
+
+# Substitution for escaped chars
+sub_simple_escape <- function(x) gsub('\\\\(.)', "\\1", x)
+sub_unicode_escape <- function(x) gsub(TokenMacros$unicode_escape, "\\1", x, ignore.case = TRUE)
+sub_newline_escape <- function(x) gsub('\\\\(?:\n|\r\n|\r|\f)', "", x)
 
 tokenize <- function(s) {
     pos <- 1
@@ -596,6 +601,7 @@ tokenize <- function(s) {
             match_start <- match[1]
             match_end <- max(match[1], match[2])
             value <- substring(ss, match_start, match_end)
+            value <- sub_simple_escape(sub_unicode_escape(value))
             results[[i]] <- Token$new("IDENT", value, pos)
             pos <- pos + match_end
             i <- i + 1
@@ -606,6 +612,7 @@ tokenize <- function(s) {
             match_start <- match[1]
             match_end <- max(match[1], match[2])
             value <- substring(ss, match_start, match_end)
+            value <- sub_simple_escape(sub_unicode_escape(value))
             hash_id <- substring(value, 2)
             results[[i]] <- Token$new("HASH", hash_id, pos)
             pos <- pos + match_end
@@ -654,6 +661,9 @@ tokenize <- function(s) {
                 }
                 end_quote <- matching_quotes[min(which(! is_escaped))]
                 value <- substring(s, pos + 1, pos + end_quote - 1)
+                value <- sub_simple_escape(
+                             sub_unicode_escape(
+                                 sub_newline_escape(value)))
                 results[[i]] <- Token$new("STRING", value, pos)
                 pos <- pos + end_quote + 1 # one for each quote char
                 i <- i + 1

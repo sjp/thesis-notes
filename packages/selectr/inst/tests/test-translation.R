@@ -78,13 +78,27 @@ test_that("translation from parsed objects to XPath works", {
     expect_that(xpath('div#container p'),
                 equals("div[@id = 'container']/descendant-or-self::*/p"))
 
-    ## Invalid characters in XPath element names
-    #expect_that(xpath('di\ua0v'),
-    #            equals("*[name() = 'di v']")) # div\ua0v
-    #expect_that(xpath('di\\[v'),
-    #            equals("*[name() = 'di[v']"))
-    #expect_that(xpath('[h\ua0ref]'),
-    #            equals("*[attribute::*[name() = 'h ref']]")) # h\xa0ref
-    #expect_that(xpath('[h\\]ref]'),
-    #            equals("*[attribute::*[name() = 'h]ref']]"))
+    # Invalid characters in XPath element names
+    expect_that(xpath('di\ua0v'),
+                equals("*[name() = 'di v']")) # div\ua0v
+    expect_that(xpath('di\\[v'),
+                equals("*[name() = 'di[v']"))
+    expect_that(xpath('[h\ua0ref]'),
+                equals("*[attribute::*[name() = 'h ref']]")) # h\ua0ref
+    expect_that(xpath('[h\\]ref]'),
+                equals("*[attribute::*[name() = 'h]ref']]"))
+
+    #expect_that(xpath(":fİrst-child"), throws_error())
+    #expect_that(xpath(":first-of-type"), throws_error())
+    #expect_that(xpath(":only-of-type"), throws_error())
+    #expect_that(xpath(":last-of-type"), throws_error())
+    #expect_that(xpath(":nth-of-type(1)"), throws_error())
+    #expect_that(xpath(":nth-last-of-type(1)"), throws_error())
+    #expect_that(xpath(":nth-child(n-)"), throws_error())
+    #expect_that(xpath(":after"), throws_error())
+    #expect_that(xpath(":lorem-ipsum"), throws_error())
+    #expect_that(xpath(":lorem(ipsum)"), throws_error())
+    #expect_that(xpath("::lorem-ipsum"), throws_error())
+    #expect_that({gt <- GenericTranslator$new() ; gt$css_to_xpath(4)}, throws_error())
+    #expect_that({gt <- GenericTranslator$new() ; gt$selector_to_xpath("foo") }, throws_error())
 })
