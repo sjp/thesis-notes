@@ -552,19 +552,19 @@ compile_ <- function(pattern) {
     }
 }
 
-
+delims_2ch <- c('~=', '|=', '^=', '$=', '*=', '::', '!=')
+delims_1ch <- c('>', '+', '~', ',', '.', '*', '=', '[', ']', '(', ')', '|', ':', '#')
+delim_escapes <- paste0("\\", delims_1ch, collapse = "|")
 match_whitespace <- compile_('[ \t\r\n\f]+')
 match_number <- compile_('[+-]?(?:[0-9]*\\.[0-9]+|[0-9]+)')
 match_hash <- compile_(sprintf("#%s+", hash_re))#sprintf('#(?:%s)+', TokenMacros$nmchar))
-match_ident <- compile_("^[_a-zA-Z0-9-]+")#"^[\\w_-]+")
+match_ident <- compile_(sprintf("^([_a-zA-Z0-9-]|%s)+", nonascii))#"^[\\w_-]+")
 #match_ident <- compile_(sprintf('-?%s|%s*',
 #                                TokenMacros$nmstart, TokenMacros$nmchar))
 match_string_by_quote <- list("'" = compile_(sprintf("([^\n\r\f\\']|%s)*",
                                                      TokenMacros$string_escape)),
                               '"' = compile_(sprintf('([^\n\r\f\\"]|%s)*',
                                              TokenMacros$string_escape)))
-delims_2ch <- c('~=', '|=', '^=', '$=', '*=', '::', '!=')
-delims_1ch <- c('>', '+', '~', ',', '.', '*', '=', '[', ']', '(', ')', '|', ':', '#')
 
 tokenize <- function(s) {
     pos <- 1

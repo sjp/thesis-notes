@@ -1,7 +1,7 @@
 XPathExpr <- setRefClass("XPathExpr",
                          fields = c("path", "element", "condition", "star_prefix"),
                          methods = list(
-    initialize = function(path = "*", element = "", condition = "", star_prefix = FALSE) {
+    initialize = function(path = "", element = "*", condition = "", star_prefix = FALSE) {
         path <<- path
         element <<- element
         condition <<- condition
@@ -14,7 +14,7 @@ XPathExpr <- setRefClass("XPathExpr",
         p
     },
     repr = function() {
-        sprintf("%s[%s]", class(.self, .self$str()))
+        sprintf("%s[%s]", class(.self), .self$str())
     },
     add_condition = function(condition) {
         if (nchar(.self$condition))
@@ -38,7 +38,8 @@ XPathExpr <- setRefClass("XPathExpr",
             p <- paste0(p, other$path)
         path <<- p
         element <<- other$element
-        condition <<- other.condition
+        condition <<- other$condition
+        .self
     }))
 
 is_safe_name <- function(name) {
@@ -78,13 +79,18 @@ GenericTranslator <- setRefClass("GenericTranslator",
         selectors <- parse(css)
     
         lapply(selectors, function(selector) {
-            if (selector$pseudo_element)
+            if (class(selector) == "Selector" && ! is.null(selector$pseudo_element))
                 stop("Pseudo-elements are not supported.")
         })
     
-        char_selectors <- lapply(selectors, function(selector) {
-            selector_to_xpath(selector, prefix)
-        })
+        char_selectors <-
+            if (is.list(selectors)) {
+                lapply(selectors, function(selector) {
+                    selector_to_xpath(selector, prefix)
+                })
+            } else {
+                selector_to_xpath(selectors, prefix)
+            }
     
         paste0(char_selectors, collapse = " | ")
     },
@@ -116,21 +122,26 @@ GenericTranslator <- setRefClass("GenericTranslator",
         s
     },
     xpath = function(parsed_selector) {
-        type_name <- parsed_selector$name
+        usingMethods("xpath_attrib", "xpath_class", "xpath_combinedselector",
+                     "xpath_element", "xpath_function", "xpath_hash",
+                     "xpath_negation", "xpath_pseudo")
+        type_name <- class(parsed_selector)
         method <- sprintf("xpath_%s", tolower(type_name))
-        do.call(method)
+        do.call(method, list(parsed_selector))
     },
     xpath_combinedselector = function(combined) {
+        usingMethods("xpath_descendant_combinator", "xpath_child_combinator",
+                     "xpath_direct_adjacent_combinator", "xpath_indirect_adjacent_combinator")
         combinator <- sprintf("xpath_%s_combinator",
                               combinator_mapping[combined$combinator])
-        do.call(combinator, list(left = combined$selector,
-                                 right = combined$subselector))
+        do.call(combinator, list(left = .self$xpath(combined$selector),
+                                 right = .self$xpath(combined$subselector)))
     },
     xpath_negation = function(negation) {
         xpath <- .self$xpath(negation$selector)
         sub_xpath <- .self$xpath(negation$subselector)
         sub_xpath$add_name_test()
-        if (sub_xpath$condition) {
+        if (! is.null(sub_xpath$condition) && nchar(sub_xpath$condition)) {
             xpath$add_condition(sprintf("not(%s)", sub_xpath$condition))
         } else {
             xpath$add_condition("0")
@@ -138,18 +149,34 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath
     },
     xpath_function = function(fn) {
+        usingMethods("xpath_contains_function", "xpath_lang_function",
+                     "xpath_nth_child_function", "xpath_nth_last_child_function",
+                     "xpath_nth_of_type_function", "xpath_nth_last_of_type_function")
         method <- sprintf("xpath_%s_function", gsub("-", "_", fn$name))
         if (! exists(method))
             stop(sprintf("The pseudo-class :%s() is unknown", fn$name))
-        do.call(method, xpath(fn$selector), fn)
+        do.call(method, list(xpath(fn$selector), fn))
     },
     xpath_pseudo = function(pseudo) {
+        usingMethods("xpath_root_pseudo", "xpath_first_child_pseudo",
+                     "xpath_last_child_pseudo", "xpath_first_of_type_pseudo",
+                     "xpath_last_of_type_pseudo", "xpath_only_child_pseudo",
+                     "xpath_only_of_type_pseudo", "xpath_empty_pseudo",
+                     "xpath_link_pseudo", "xpath_visited_pseudo",
+                     "xpath_hover_pseudo", "xpath_active_pseudo",
+                     "xpath_focus_pseudo", "xpath_target_pseudo",
+                     "xpath_enabled_pseudo", "xpath_disabled_pseudo",
+                     "xpath_checked_pseudo")
         method <- sprintf("xpath_%s_pseudo", gsub("-", "_", pseudo$ident))
         if (! exists(method))
             stop(sprintf("The pseudo-class :%s is unknown", fn$ident))
-        do.call(method, xpath(pseudo$selector))
+        do.call(method, list(xpath(pseudo$selector)))
     },
     xpath_attrib = function(selector) {
+        usingMethods("xpath_attrib_dashmatch", "xpath_attrib_different",
+                     "xpath_attrib_equals", "xpath_attrib_exists",
+                     "xpath_attrib_prefixmatch", "xpath_attrib_substringmatch",
+                     "xpath_attrib_suffixmatch")
         operator <- attribute_operator_mapping[selector$operator]
         method <- sprintf("xpath_attrib_%s", operator)
         if (lower_case_attribute_names) {
@@ -158,7 +185,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
             name <- selector$attrib
         }
         safe <- is_safe_name(name)
-        if (selector$namespace) {
+        if (! is.null(selector$namespace)) {
             name <- sprintf("%s:%s", selector$namespace, name)
         }
         if (safe) {
@@ -172,20 +199,22 @@ GenericTranslator <- setRefClass("GenericTranslator",
         } else {
             value <- selector$value
         }
-        do.call(method, xpath(selector$selector), attrib, value)
+        do.call(method, list(xpath(selector$selector), attrib, value))
     },
     # .foo is defined as [class~=foo] in the spec
     xpath_class = function(class_selector) {
         xpath <- xpath(class_selector$selector)
         xpath_attrib_includes(xpath, "@class", class_selector$class_name)
+        xpath
     },
     xpath_hash = function(id_selector) {
         xpath <- xpath(id_selector$selector)
         xpath_attrib_equals(xpath, "@id", id_selector$id)
+        xpath
     },
     xpath_element = function(selector) {
         element <- selector$element
-        if (! element) {
+        if (is.null(element)) {
             element <- "*"
             safe <- TRUE
         } else {
@@ -193,7 +222,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
             if (lower_case_element_names)
                 element <- tolower(element)
         }
-        if (selector$namespace) {
+        if (! is.null(selector$namespace)) {
             # Namespace prefixes are case-sensitive.
             # http://www.w3.org/TR/css3-namespace/#prefixes
             element <- sprintf("%s:%s", selector$namespace, element)
@@ -201,7 +230,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
         }
         xpath <- XPathExpr$new(element = element)
         if (! safe)
-            xpath.add_name_test()
+            xpath$add_name_test()
         xpath
     },
     xpath_descendant_combinator = function(left, right) {
@@ -283,9 +312,9 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath_nth_child_function(xpath, fn, last = TRUE, add_name_test = FALSE)
     },
     xpath_contains_function = function(xpath, fn) {
-        if (! (fn$argument_types %in% c("STRING", "IDENT"))) {
+        if (! (fn$argument_types() %in% c("STRING", "IDENT"))) {
             stop(sprintf("Expected a single string or ident for :contains(), got %s",
-                         paste0("(", paste0(fn$argument_types, collapse = ", "), ")")))
+                         paste0("(", paste0(fn$argument_types(), collapse = ", "), ")")))
         }
         value <- fn$arguments[[1]]$value
         xpath$add_condition(sprintf("contains(string(.), %s)", xpath_literal(value)))
@@ -306,16 +335,19 @@ GenericTranslator <- setRefClass("GenericTranslator",
     },
     xpath_root_pseudo = function(xpath) {
         xpath$add_condition("not(parent::*)")
+        xpath
     },
     xpath_first_child_pseudo = function(xpath) {
         xpath$add_star_prefix()
         xpath$add_name_test()
         xpath$add_condition("position() = 1")
+        xpath
     },
     xpath_last_child_pseudo = function(xpath) {
         xpath$add_star_prefix()
         xpath$add_name_test()
         xpath$add_condition("position() = last()")
+        xpath
     },
     xpath_first_of_type_pseudo = function(xpath) {
         if (xpath$element == "*") {
@@ -323,6 +355,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
         }
         xpath$add_star_prefix()
         xpath$add_condition("position() = 1")
+        xpath
     },
     xpath_last_of_type_pseudo = function(xpath) {
         if (xpath$element == "*") {
@@ -330,103 +363,103 @@ GenericTranslator <- setRefClass("GenericTranslator",
         }
         xpath$add_star_prefix()
         xpath$add_condition("position() = last()")
+        xpath
     },
     xpath_only_child_pseudo = function(xpath) {
         xpath$add_name_test()
         xpath$add_star_prefix()
         xpath$add_condition('last() = 1')
+        xpath
     },
     xpath_only_of_type_pseudo = function(xpath) {
         if (xpath$element == "*") {
             stop("*:only-of-type is not implemented")
         }
         xpath$add_condition("last() = 1")
+        xpath
     },
     xpath_empty_pseudo = function(xpath) {
         xpath$add_condition("not(*) and not(normalize-space())")
+        xpath
     },
     pseudo_never_matches = function(xpath) {
-        xpath$add_condition(xpath, "0")
+        xpath$add_condition("0")
+        xpath
     },
 
     # All are pseudo_never_matches()
-    xpath_link_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_visited_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_hover_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_active_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_focus_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_target_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_enabled_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_disabled_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
-    xpath_checked_pseudo = function(xpath) xpath$add_condition(xpath, "0"),
+    xpath_link_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_visited_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_hover_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_active_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_focus_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_target_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_enabled_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_disabled_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
+    xpath_checked_pseudo = function(xpath) { xpath$add_condition("0") ; xpath },
     
     xpath_attrib_exists = function(xpath, name, value) {
-        xpath$add_condition(xpath, name)
+        xpath$add_condition(name)
         xpath
     },
     xpath_attrib_equals = function(xpath, name, value) {
-        xpath$add_condition(xpath, sprintf("%s = %s", name, xpath_literal(value)))
+        xpath$add_condition(sprintf("%s = %s", name, xpath_literal(value)))
         xpath
     },
     xpath_attrib_different = function(xpath, name, value) {
-        if (value) {
-            xpath$add_condition(xpath, sprintf("not(%s) or %s != %s",
-                                               name, name, xpath_literal(value)))
+        if (! is.null(value)) {
+            xpath$add_condition(sprintf("not(%s) or %s != %s",
+                                        name, name, xpath_literal(value)))
         } else {
-            xpath$add_condition(xpath, sprintf("%s != %s",
-                                               name, xpath_literal(value)))
+            xpath$add_condition(sprintf("%s != %s",
+                                        name, xpath_literal(value)))
         }
         xpath
     },
     xpath_attrib_includes = function(xpath, name, value) {
         if (grepl("^[^ \t\r\n\f]+$", value)) {
-            xpath$add_condition(xpath,
-                                sprintf("%s and contains(concat(' ', normalize-space(%s), ' ', %s",
+            xpath$add_condition(sprintf("%s and contains(concat(' ', normalize-space(%s), ' '), %s)",
                                         name, name, xpath_literal(paste0(" ", value, " "))))
         } else {
-            xpath$add_condition(xpath, "0")
+            xpath$add_condition("0")
         }
         xpath
     },
     xpath_attrib_dashmatch = function(xpath, name, value) {
-        if (value) {
-            xpath$add_condition(xpath,
-                                sprintf("%s and (%s = %s or starts-with(%s, %s))",
+        if (! is.null(value)) {
+            xpath$add_condition(sprintf("%s and (%s = %s or starts-with(%s, %s))",
                                         name, name, xpath_literal(value),
                                         name, xpath_literal(paste0(value, "-"))))
         } else {
-            xpath$add_condition(xpath, "0")
+            xpath$add_condition("0")
         }
         xpath
     },
     xpath_attrib_prefixmatch = function(xpath, name, value) {
-        if (value) {
-            xpath$add_condition(xpath,
-                                sprintf("%s and starts-with(%s, %s)",
+        if (! is.null(value)) {
+            xpath$add_condition(sprintf("%s and starts-with(%s, %s)",
                                         name, name, xpath_literal(value)))
         } else {
-            xpath$add_condition(xpath, "0")
+            xpath$add_condition("0")
         }
         xpath
     },
     # In XPath there is starts-with but not ends-with, hence the oddness
     xpath_attrib_suffixmatch = function(xpath, name, value) {
-        if (value) {
-            xpath$add_condition(xpath,
-                                sprintf("%s and substring(%s, string-length(%s)-%s) = %s",
+        if (! is.null(value)) {
+            xpath$add_condition(sprintf("%s and substring(%s, string-length(%s)-%s) = %s",
                                         name, name, name, nchar(value) - 1, xpath_literal(value)))
         } else {
-            xpath$add_condition(xpath, "0")
+            xpath$add_condition("0")
         }
         xpath
     },
     xpath_attrib_substringmatch = function(xpath, name, value) {
-        if (value) {
-            xpath$add_condition(xpath,
-                                sprintf("%s and contains(%s, %s)",
+        if (! is.null(value)) {
+            xpath$add_condition(sprintf("%s and contains(%s, %s)",
                                         name, name, xpath_literal(value)))
         } else {
-            xpath$add_condition(xpath, "0")
+            xpath$add_condition("0")
         }
         xpath
     }))
@@ -478,7 +511,7 @@ HTMLTranslator <- setRefClass("HTMLTranslator",
                   "name(.) = 'textarea'",
                   ")",
                   "and ancestor::fieldset[@disabled]",
-                  ")"))
+                  ")", collapse = ""))
         xpath
     },
     xpath_enabled_pseudo = function(xpath) {
