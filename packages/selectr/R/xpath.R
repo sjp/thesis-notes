@@ -469,7 +469,7 @@ HTMLTranslator <- setRefClass("HTMLTranslator",
                               fields = "xhtml",
                               methods = list(
     initialize = function(xhtml = FALSE) {
-        .self$callSuper()
+        callSuper()
         xhtml <<- xhtml
         if (! xhtml) {
             lower_case_element_names <<- TRUE
