@@ -321,16 +321,16 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath
     },
     xpath_lang_function = function(xpath, fn) {
-        if (! (fn$argument_types %in% c("STRING", "IDENT"))) {
+        if (! (fn$argument_types() %in% c("STRING", "IDENT"))) {
             stop(sprintf("Expected a single string or ident for :lang(), got %s",
-                         paste0("(", paste0(fn$argument_types, collapse = ", "), ")")))
+                         fn$arguments[[1]]$repr()))
         }
         value <- fn$arguments[[1]]$value
         xpath$add_condition(sprintf(paste0("ancestor-or-self::*[@lang][1][starts-with(concat(",
                                            "translate(@%s, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ",
                                                           "'abcdefghijklmnopqrstuvwxyz'), ",
-                                           "'-'), %s)]"),
-                                    lang_attribute, xpath_literal(value)))
+                                           "'-'), %s)]", collapse = ""),
+                                    lang_attribute, xpath_literal(paste0(tolower(value), "-"))))
         xpath
     },
     xpath_root_pseudo = function(xpath) {
@@ -417,7 +417,8 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath
     },
     xpath_attrib_includes = function(xpath, name, value) {
-        if (grepl("^[^ \t\r\n\f]+$", value)) {
+        if (! is.null(value) && nzchar(value) &&
+            grepl("^[^ \t\r\n\f]+$", value)) {
             xpath$add_condition(sprintf("%s and contains(concat(' ', normalize-space(%s), ' '), %s)",
                                         name, name, xpath_literal(paste0(" ", value, " "))))
         } else {
@@ -426,7 +427,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath
     },
     xpath_attrib_dashmatch = function(xpath, name, value) {
-        if (! is.null(value)) {
+        if (! is.null(value) && nzchar(value)) {
             xpath$add_condition(sprintf("%s and (%s = %s or starts-with(%s, %s))",
                                         name, name, xpath_literal(value),
                                         name, xpath_literal(paste0(value, "-"))))
@@ -436,7 +437,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath
     },
     xpath_attrib_prefixmatch = function(xpath, name, value) {
-        if (! is.null(value)) {
+        if (! is.null(value) && nzchar(value)) {
             xpath$add_condition(sprintf("%s and starts-with(%s, %s)",
                                         name, name, xpath_literal(value)))
         } else {
@@ -446,7 +447,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
     },
     # In XPath there is starts-with but not ends-with, hence the oddness
     xpath_attrib_suffixmatch = function(xpath, name, value) {
-        if (! is.null(value)) {
+        if (! is.null(value) && nzchar(value)) {
             xpath$add_condition(sprintf("%s and substring(%s, string-length(%s)-%s) = %s",
                                         name, name, name, nchar(value) - 1, xpath_literal(value)))
         } else {
@@ -455,7 +456,7 @@ GenericTranslator <- setRefClass("GenericTranslator",
         xpath
     },
     xpath_attrib_substringmatch = function(xpath, name, value) {
-        if (! is.null(value)) {
+        if (! is.null(value) && nzchar(value)) {
             xpath$add_condition(sprintf("%s and contains(%s, %s)",
                                         name, name, xpath_literal(value)))
         } else {
@@ -468,8 +469,8 @@ HTMLTranslator <- setRefClass("HTMLTranslator",
                               contains = "GenericTranslator",
                               fields = "xhtml",
                               methods = list(
-    initialize = function(xhtml = FALSE) {
-        callSuper()
+    initialize = function(xhtml = FALSE, ...) {
+        callSuper(...)
         xhtml <<- xhtml
         if (! xhtml) {
             lower_case_element_names <<- TRUE
@@ -511,36 +512,21 @@ HTMLTranslator <- setRefClass("HTMLTranslator",
                   "name(.) = 'textarea'",
                   ")",
                   "and ancestor::fieldset[@disabled]",
-                  ")", collapse = ""))
+                  ")"))
         xpath
     },
     xpath_enabled_pseudo = function(xpath) {
         xpath$add_condition(
-            paste("(",
-                  "@href and (",
-                  "name(.) = 'a' or",
-                  "name(.) = 'link' or",
-                  "name(.) = 'area'",
-                  ")",
-                  ") or (",
-                  "(",
-                  "name(.) = 'command' or",
-                  "name(.) = 'fieldset' or",
-                  "name(.) = 'optgroup'",
-                  ")",
-                  "and not(@disabled)",
-                  ") or (",
-                  "(",
-                  "(name(.) = 'input' and @type != 'hidden') or",
-                  "name(.) = 'button' or",
-                  "name(.) = 'select' or",
-                  "name(.) = 'textarea' or",
-                  "name(.) = 'keygen'",
-                  ")",
-                  "and not (@disabled or ancestor::fieldset[@disabled])",
-                  ") or (",
-                  "name(.) = 'option' and not(",
-                  "@disabled or ancestor::optgroup[@disabled]",
-                  ")"))
+            paste("(@href and (name(.) = 'a' or name(.) = 'link' or name(.) = 'area'))",
+                  "or",
+                  "((name(.) = 'command' or name(.) = 'fieldset' or name(.) = 'optgroup') and not(@disabled))",
+                  "or",
+                  "(((name(.) = 'input' and @type != 'hidden')",
+                  "or name(.) = 'button'",
+                  "or name(.) = 'select'",
+                  "or name(.) = 'textarea'",
+                  "or name(.) = 'keygen')",
+                  "and not (@disabled or ancestor::fieldset[@disabled]))",
+                  "or (name(.) = 'option' and not(@disabled or ancestor::optgroup[@disabled]))"))
         xpath
     }))
