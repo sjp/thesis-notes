@@ -1,20 +1,7 @@
 import(methods)
 import(stringr)
-exportPattern("^[[:alpha:]]+")
-exportClasses(
-    "Attrib",
-    "Class",
-    "CombinedSelector",
-    "Element",
-    "EOFToken",
-    "Function",
-    "GenericTranslator",
-    "Hash",
-    "HTMLTranslator",
-    "Negation",
-    "Pseudo",
-    "Selector",
-    "Token",
-    "TokenStream",
-    "XPathExpr" 
-)
+import(XML)
+
+export(css_to_xpath)
+export(querySelector)
+export(querySelectorAll)
