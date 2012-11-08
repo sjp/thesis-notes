@@ -15,7 +15,7 @@
       \item Created two convenience functions, 'querySelector()' and
       'querySelectorAll()'. These mirror the behaviour of the same
       functions present in a web browser. 'querySelector()' returns a
-      node, while 'querySelector()' returns a list of nodes.
+      node, while 'querySelectorAll()' returns a list of nodes.
 
     }
   }
