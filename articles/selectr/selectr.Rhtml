@@ -347,17 +347,22 @@ end.rcode-->
     written to abstract away the XPath-dependent code. The following
     code demonstrates this:</p>
 
-<!--begin.rcode nsGen
-nsGen <- function(ns, nsUrl, ...) {
-    function(node, selector, prefix = "descendant-or-self::", ...) {
-        querySelector(node, selector,
-                      structure(nsUrl, .Names = ns),
-                      prefix = sprintf(paste0("/%s:*/", prefix), ns), ...)
-    }
+<!--begin.rcode nsQS
+querySelectorNS <- function(node, selector, ns,
+                            prefix = "descendant-or-self::", ...) {
+    if (length(ns) > 1)
+        stop("Only one namespace is able to be the default namespace.")
+    # Handle both names vectors and lists
+    nsNames <- names(ns)
+    ns <- unlist(ns)
+    names(ns) <- nsNames
+    # Call qs
+    querySelector(node, selector, ns,
+                  prefix = sprintf(paste0("/%s:*/", prefix), names(ns)), ...)
 }
 
-svgQS <- nsGen("svg", "http://www.w3.org/2000/svg")
-legendNode <- svgQS(svgdoc, "#layout\\:\\:guide-box\\.3-5-3-5\\.1")
+legendNode <- querySelectorNS(svgdoc, "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+                              c(svg="http://www.w3.org/2000/svg"))
 end.rcode-->
 
     <p>The resulting use of CSS selection is now as concise as the
