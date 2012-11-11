@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Introducing the selectr Package</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Inconsolata" media="screen, print">
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" media="screen,print,projection">
+    <link rel="stylesheet" type="text/css" href="css/main.css" media="screen,print,projection">
+<!--begin.rcode echo=FALSE
+# Setting knitr options
+options(prompt = "R> ", continue = "R+ ")
+opts_chunk$set(tidy = FALSE, prompt = TRUE, comment = NA)
+
+# Declaring an XML sanitisation function
+clean <- function(x) {
+    fn <- function(text) {
+        gsub("<", "&lt;",
+        gsub(">", "&gt;",
+        gsub('"', "&quot;",
+        gsub("'", "&apos;",
+        gsub("&", "&amp;", text)))))
+    }
+
+    if (is.list(x)) {
+        lapply(x, fn)
+    } else {
+        fn(x)
+    }
+}
+
+printNode <- function(x) {
+    cat(clean(saveXML(x, file=NULL)))
+}
+
+printNS <- function(x) {
+    tmp <- clean(capture.output(print(x), file=NULL))
+    cat(paste(tmp, collapse="\n"))
+}
+end.rcode-->
+  </head>
+  <body>
+    <header>
+      <h1>Introducing the &lsquo;selectr&rsquo; Package</h1>
+      <p>Simon Potter <a href="mailto:simon.potter@auckland.ac.nz"><code>simon.potter@auckland.ac.nz</code></a></p>
+      <p>Department of Statistics, University of Auckland</p>
+      <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
+      <p class="abstract">
+        <strong>Abstract:</strong> The <em>selectr</em> package
+        translates a CSS selector into an equivalent XPath
+        expression. This allows one to use CSS selectors to query XML
+        documents using the <em>XML</em> package. Convenience
+        functions are also provided to mirror functionality present in
+        modern web browsers.
+      </p>
+    </header>
+    <h2>Introduction</h2>
+    <p>When working with XML documents a common task is to be able to
+    search for parts of a document that match a search query. For
+    example, if we have a document representing a collection of books,
+    we might want to search through for a book matching a certain
+    title or author. A language has been created that constructs
+    search queries on XML documents called XPath. XPath is capable of
+    constructing complex search queries but this is often at the cost
+    of readability and terseness of the resulting expression.</p>
+
+    <p>An alternative way of searching for parts of a document is
+    using CSS selectors. These are most commonly used in web browsers
+    to apply styling information to components of a web page. We can
+    use the same language that selects which nodes to style in a web
+    page to select nodes in an XML document. This most often produces
+    more concise and readable queries than the equivalent XPath
+    expression. It must be noted however that XPath expressions are
+    more flexible than CSS selectors, so although all CSS selectors
+    have an equivalent XPath expression, the reverse is not true.</p>
+
+    <p>An advantage of using CSS selectors is that most people working
+    with web documents such as HTML and SVG also know CSS. XPath is
+    not employed anywhere beyond querying XML documents so is not a
+    commonly known query language. Another important reason why CSS
+    selectors are widely known is due to the common use of them in
+    popular JavaScript libraries. jQuery and D3 are two examples where
+    they select elements of a page to perform operations on using CSS
+    selectors, rather than XPath. This is mostly due to the complexity
+    of performing an XPath query in the browser in addition to the
+    more verbose expressions.</p>
+
+<figure>
+<pre class="js" style="text-align:left;">
+JS&gt; // jQuery
+JS&gt; $("#listing code");
+JS&gt; // D3
+JS&gt; d3.selectAll("#listing code");
+JS&gt; // The equivalent XPath expression
+JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
+</pre>
+<figcaption>Selecting all <code>code</code> elements that are children of the element with the ID &ldquo;listing&rdquo;.</figcaption>
+</figure>
+
+    <p>The <em>XML</em> package for R is able to parse XML documents,
+    which can later be queried using XPath. This limitation is due to
+    the <em>libxml2</em> library (a dependency of <em>XML</em>) which
+    can only search using XPath. For reasons mentioned above, it would
+    be ideal if we had the option of using CSS selectors to query such
+    documents instead of XPath. If we can translate a CSS selector to
+    XPath, then the restriction to only using XPath no longer applies
+    and we can therefore use a CSS selector whenever an XPath
+    expression is required. The rest of this document describes the
+    process that <em>selectr</em> takes to translate CSS selectors to
+    XPath expressions.</p>
+
+    <h2>Parsing</h2>
+
+    <p>The first step in translating any language to another is to
+    first <strong>tokenise</strong> an expression into individual
+    words, numbers, whitespace and symbols that represent the core
+    structure of an expression. These pieces are called tokens. The
+    following code shows character representation of tokens that have
+    been created from tokenising a CSS selector expression:</p>
+
+<!--begin.rcode tokenizeCode, eval=FALSE
+tokenize("body > p")
+end.rcode-->
+
+<!--begin.rcode tokenizeResults, echo=FALSE
+tokens <- selectr:::tokenize("body > p")
+clean(sapply(tokens, function(x) x$repr()))
+end.rcode-->
+
+    <p>The selector <code>body &gt; p</code> is a query that looks for
+    all &ldquo;p&rdquo; elements within the document that are also
+    direct descendants of a &ldquo;body&rdquo; element. We can see
+    that the selector has been tokenised into 6 tokens. Each token has
+    the following structure: type, value, position. The type is the
+    type of token it is, an identifier, whitespace, a number or a
+    delimiter. The value is the actual text that a token represents,
+    while the position is simply the position along the string at
+    which the character was found.</p>
+
+    <p>Once we have the required tokens, it is necessary
+    to <strong>parse</strong> these tokens into a form that applies
+    meaning to the tokens. For example, in CSS a <code>#</code>
+    preceding an identifier means that we are looking for an element
+    with an ID matching that identifier. After parsing our tokens, we
+    have an understanding of what the CSS selector means and therefore
+    have the correct internal representation prior to translation to
+    XPath. The following code shows what our example selector is
+    understood to mean:</p>
+
+<!--begin.rcode parsedExprCode, eval=FALSE
+parse("body > p")
+end.rcode-->
+
+<!--begin.rcode parsedExprResults, echo=FALSE
+clean(selectr:::parse("body > p")[[1]]$repr())
+end.rcode-->
+
+    <p>This shows that the selector is understood to be a combined
+    selector that matches when a <code>p</code> is a direct descendant
+    of a <code>body</code> element. Given that the parsing step is
+    complete, it is necessary to translate this internal
+    representation of a selector into its equivalent XPath
+    expression.</p>
+
+    <h2>Translating</h2>
+
+    <p>XPath performs a superset of the functionality of CSS
+    selectors, because of this we can ensure that there is a mapping
+    from CSS to XPath. For instance, .</p>
+
+    <p>TODO</p>
+
+    <h2>Usage</h2>
+
+    <p>The <em>selectr</em> package becomes most useful when working
+    with the <em>XML</em> package. Most commonly <em>selectr</em> is
+    used to simplify the task of searching for a set of nodes. In the
+    browser, there are two functions that perform this task using CSS
+    selectors, <code>querySelector()</code>
+    and <code>querySelectorAll()</code>. These functions are methods
+    on a document or element object. Typical usage in the browser might be the following:</p>
+
+<pre class="js">
+JS&gt; document.querySelector("ul li.active");
+JS&gt; document.querySelectorAll("p > a.info");
+</pre>
+
+    <p>Because these are so commonly used in popular JavaScript
+    libraries, the behaviour has been mimicked
+    in <em>selectr</em>. The <em>selectr</em> package also provides
+    the functions but instead of being methods on a document or
+    element objects, they are functions. These functions typically
+    take two parameters, the XML object to be searched on, and the CSS
+    selector to query with, respectively.</p>
+
+    <p>The difference between the two functions is
+    that <code>querySelector()</code> will attempt to return
+    the <strong>first</strong> or <code>NULL</code> in the case that
+    no matches were found. <code>querySelectorAll()</code> will always
+    return a list of matching nodes, this list may be empty when there
+    are no matches. To demonstrate the usage of these functions, the
+    following XML document will be used:</p>
+
+<!--begin.rcode parseExDoc, results="hide"
+library(XML)
+exdoc <- xmlRoot(xmlParse('<a><b class="aclass"/><c id="anid"/></a>'))
+exdoc
+end.rcode-->
+
+<!--begin.rcode parseExDocResults, echo=FALSE
+printNode(exdoc)
+end.rcode-->
+
+    <p>We will first see how <code>querySelector()</code> is used.</p>
+
+<!--begin.rcode qsEx1, eval=FALSE
+library(selectr)
+querySelector(exdoc, "#anid")   # Returns the matching node
+end.rcode-->
+<!--begin.rcode qsEx1Show, echo=FALSE
+printNode(querySelector(exdoc, "#anid"))
+end.rcode-->
+<!--begin.rcode qsEx2, eval=FALSE
+querySelector(exdoc, ".aclass") # Returns the matching node
+end.rcode-->
+<!--begin.rcode qsEx2Show, echo=FALSE
+printNode(querySelector(exdoc, ".aclass"))
+end.rcode-->
+<!--begin.rcode qsEx3, eval=FALSE
+querySelector(exdoc, "b, c")    # First match from grouped selection
+end.rcode-->
+<!--begin.rcode qsEx3Show, echo=FALSE
+printNode(querySelector(exdoc, "b, c"))
+end.rcode-->
+<!--begin.rcode qsEx4, eval=FALSE
+querySelector(exdoc, "d")       # No match
+end.rcode-->
+<!--begin.rcode qsEx4Show, echo=FALSE
+print(NULL)
+end.rcode-->
+
+    <p>Now compare this to the
+    results returned by <code>querySelectorAll()</code>:</p>
+
+<!--begin.rcode qsAllEx1, eval=FALSE
+querySelectorAll(exdoc, "b, c") # Grouped selection
+end.rcode-->
+<!--begin.rcode qsAllEx1Show, echo=FALSE
+printNS(querySelectorAll(exdoc, "b, c"))
+end.rcode-->
+<!--begin.rcode qsAllEx2, eval=FALSE
+querySelectorAll(exdoc, "b")    # A list of length one
+end.rcode-->
+<!--begin.rcode qsAllEx2Show, echo=FALSE
+printNS(querySelectorAll(exdoc, "b"))
+end.rcode-->
+<!--begin.rcode qsAllEx3, eval=FALSE
+querySelectorAll(exdoc, "d")    # No match
+end.rcode-->
+<!--begin.rcode qsAllEx3Show, echo=FALSE
+printNS(querySelectorAll(exdoc, "d"))
+end.rcode-->
+
+    <p>The main point to get across is
+    that <code>querySelector()</code>
+    returns a <strong>node</strong>, <code>querySelectorAll()</code>
+    returns a <strong>list</strong> of nodes.</p>
+
+    <p>While the aforementioned functions are certainly useful, they
+    do not cover all possible use cases. For other uses of CSS
+    selectors, the <code>css_to_xpath()</code> function can be used
+    where an XPath expression would normally be
+    expected. The <code>css_to_xpath()</code> function has three
+    parameters. The first parameter is simply the CSS selector, then a
+    prefix on the resulting XPath expression. This prefix is useful in
+    the circumstance when you already know some XPath and know where
+    the selector should be scoped to. The final parameter determines
+    the translator to use when translating selectors to XPath
+    expressions. The generic translator is sufficient in most cases
+    except when (X)HTML is used; in those cases a translator can be
+    used is aware of (X)HTML pseudo-selectors. A case
+    where <code>css_to_xpath()</code> may be used is when
+    using <em>XML</em>'s <code>*apply</code> functions, as shown
+    below.</p>
+
+<!--begin.rcode css_to_xpathEx
+# Let's see all tag names present in the doc
+xpathSApply(exdoc, css_to_xpath("*"), xmlName)
+# What is the value of the class attribute on all "b" elements?
+xpathSApply(exdoc, css_to_xpath("b"),
+            function(x) xmlGetAttr(x, "class"))
+end.rcode-->
+
+    <p>Rather than returning nodes, we are processing each node using
+    a given function from the <em>XML</em> package, but specifying
+    paths using CSS selectors instead.</p>
+
+    <h2>Example</h2>
+
+    <p>While the example usage of the <em>selectr</em> package has
+    been demonstrated earlier, the real-world usage may not be clear,
+    or indeed the benefits over just using the <em>XML</em>
+    package. <a href="http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGviaXML/generating-svg.html">An
+    example</a> (see &ldquo;XPath&rdquo;) written for
+    the <em>gridSVG</em> package will be revisited. What is of
+    particular interest is that this example uses SVG, which is a
+    namespaced XML document. This provides some challenges that
+    require consideration, but the <em>selectr</em> package can still
+    be made to work.</p>
+
+<!--begin.rcode loadggEx, fig.keep="none", warning=FALSE
+library(ggplot2)
+library(gridSVG)
+qplot(mpg, wt, data=mtcars, colour=cyl)
+svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
+end.rcode-->
+
+    <p>So far we have simply reproduced the plot and stored the
+    resulting XML in a node tree called <code>svgdoc</code>. In order
+    to remove the legend from the plot we first need to select the
+    legend node from the SVG document. We will compare
+    the <em>XML</em>-only approach with one enhanced
+    with <em>selectr</em>. The comparison is shown below:</p>
+
+<!--begin.rcode compareXpathCSS, results="hide"
+# XPath
+legendNode <- getNodeSet(svgdoc,
+                         "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+                         c(svg = "http://www.w3.org/2000/svg"))[[1]]
+
+# CSS
+legendNode <- querySelector(svgdoc,
+                            "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+                            c(svg = "http://www.w3.org/2000/svg"),
+                            prefix = "/svg:*/descendant-or-self::")
+end.rcode-->
+
+    <p>This particular example demonstrates a case where the XPath
+    approach is more concise. This is because the <code>id</code>
+    attribute that we're searching for needs to have its CSS selector
+    escaped, while the XPath expression remains
+    unchanged. Additionally, we also need to specify a namespace-aware
+    prefix for the XPath that is generated. To use CSS selectors in
+    this case required knowledge of XPath that would rather be
+    avoided.</p>
+
+    <p>To work around this issue, a namespace aware function could be
+    written to abstract away the XPath-dependent code. The following
+    code demonstrates this:</p>
+
+<!--begin.rcode nsGen
+nsGen <- function(ns, nsUrl, ...) {
+    function(node, selector, prefix = "descendant-or-self::", ...) {
+        querySelector(node, selector,
+                      structure(nsUrl, .Names = ns),
+                      prefix = sprintf(paste0("/%s:*/", prefix), ns), ...)
+    }
+}
+
+svgQS <- nsGen("svg", "http://www.w3.org/2000/svg")
+legendNode <- svgQS(svgdoc, "#layout\\:\\:guide-box\\.3-5-3-5\\.1")
+end.rcode-->
+
+    <p>The resulting use of CSS selection is now as concise as the
+    XPath version, with the sole exception being the requirement of
+    escaping on the CSS selector.</p>
+
+    <p>Now that the legend has been selected, we can remove it from
+    the image to produce an image with a legend omitted.</p>
+
+<!--begin.rcode removeLegend, results="hide"
+removeChildren(xmlParent(legendNode), legendNode)
+saveXML(svgdoc, file = NULL)
+end.rcode-->
+<!--begin.rcode showResultingSVG, echo=FALSE
+cat(saveXML(svgdoc, file = NULL))
+end.rcode-->
+
+    <h2>Conclusion</h2>
+
+    <p>This article describes the new <em>selectr</em> package. Its
+    main purpose is to allow the use of CSS selectors in a domain
+    which previously only allowed XPath. In addition, convenience
+    functions have also been described; allowing easier use of CSS
+    selectors for the purpose of retrieving parts of an XML
+    document. It has been demonstrated that the <em>selectr</em>
+    package augments the <em>XML</em> package with the ability to use
+    a more concise language for selecting content from an XML
+    document.</p>
+
+    <h2>Downloads</h2>
+    <p>
+      This document is licensed under a
+      <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/nz/">
+        Creative Commons
+        Attribution 3.0 New Zealand License
+      </a>.
+      <img src="http://i.creativecommons.org/l/by/3.0/nz/88x31.png" width="88" height="31">
+      The code is freely available under the
+      <a href="../gpl.txt">GPL</a>. The described functionality of
+      <em>selectr</em> is present in version 0.1-1. <em>selectr</em>
+      is available
+      on <a href="http://cran.r-project.org/web/packages/selectr/index.html"><abbr title="Comprehensive R Archive Network">CRAN</abbr></a> and development occurs on
+      GitHub
+      at <a href="https://github.com/sjp/selectr">https://github.com/sjp/selectr</a>.
+    </p>
+    <ul>
+      <li><a href="selectr.Rhtml">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+    </ul>
+    <h2>References</h2>
+    <ol>
+      <li id="ref-1">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+      <li id="ref-2">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">gridSVG: Export grid graphics as SVG</span>. <a href="http://r-forge.r-project.org/projects/gridsvg/">https://r-forge.r-project.org/projects/gridsvg/</a>. R package version 1.0-0.</li>
+      <li id="ref-3">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition) Specification</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
+      <li id="ref-4"><span class="pkg-desc">JSON</span>, <a href="http://json.org/">http://json.org/</a>.</li>
+      <li id="ref-5">Lang, D. T. (2012). <span class="pkg-desc">XML: Tools for parsing and generating XML within R and S-Plus.</span>. <a href="http://www.omegahat.org/RSXML/">http://www.omegahat.org/RSXML/</a>. R package version 3.9-4</li>
+      <li id="ref-6">W3C (1999). <span class="pkg-desc">XML Path Language (XPath) Version 1.0 Specification</span>. <a href="http://www.w3.org/TR/xpath/">http://www.w3.org/TR/xpath/</a>.</li>
+    </ol>
+  </body>
+</html>
