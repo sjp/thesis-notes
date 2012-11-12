@@ -124,6 +124,7 @@ tokenize("body > p")
 end.rcode-->
 
 <!--begin.rcode tokenizeResults, echo=FALSE
+library(selectr)
 tokens <- selectr:::tokenize("body > p")
 clean(sapply(tokens, function(x) x$repr()))
 end.rcode-->
@@ -254,10 +255,11 @@ JS&gt; document.querySelectorAll("p > a.info");
 
     <p>The difference between the two functions is
     that <code>querySelector()</code> will attempt to return
-    the <strong>first</strong> or <code>NULL</code> in the case that
-    no matches were found. <code>querySelectorAll()</code> will always
-    return a list of matching nodes, this list may be empty when there
-    are no matches. To demonstrate the usage of these functions, the
+    the <strong>first</strong> matched node or <code>NULL</code> in
+    the case that no matches were
+    found. <code>querySelectorAll()</code> will always return a list
+    of matching nodes, this list may be empty when there are no
+    matches. To demonstrate the usage of these functions, the
     following XML document will be used:</p>
 
 <!--begin.rcode parseExDoc, results="hide"
@@ -377,7 +379,6 @@ end.rcode-->
 <!--begin.rcode loadggEx, fig.keep="none", warning=FALSE
 library(ggplot2)
 library(gridSVG)
-library(selectr)
 qplot(mpg, wt, data=mtcars, colour=cyl)
 svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
 end.rcode-->
