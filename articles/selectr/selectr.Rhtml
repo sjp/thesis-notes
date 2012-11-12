@@ -47,9 +47,9 @@ end.rcode-->
       <p class="abstract">
         <strong>Abstract:</strong> The <em>selectr</em> package
         translates a CSS selector into an equivalent XPath
-        expression. This allows one to use CSS selectors to query XML
+        expression. This allows the use of CSS selectors to query XML
         documents using the <em>XML</em> package. Convenience
-        functions are also provided to mirror functionality present in
+        functions are also provided to mimic functionality present in
         modern web browsers.
       </p>
     </header>
@@ -67,8 +67,8 @@ end.rcode-->
     using CSS selectors. These are most commonly used in web browsers
     to apply styling information to components of a web page. We can
     use the same language that selects which nodes to style in a web
-    page to select nodes in an XML document. This most often produces
-    more concise and readable queries than the equivalent XPath
+    page to select nodes in an XML document. This often produces more
+    concise and readable queries than the equivalent XPath
     expression. It must be noted however that XPath expressions are
     more flexible than CSS selectors, so although all CSS selectors
     have an equivalent XPath expression, the reverse is not true.</p>
@@ -97,8 +97,10 @@ JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
 </figure>
 
     <p>The <em>XML</em> package for R is able to parse XML documents,
-    which can later be queried using XPath. This limitation is due to
-    the <em>libxml2</em> library (a dependency of <em>XML</em>) which
+    which can later be queried using XPath. No facility exists for
+    using CSS selectors on XML documents in the <em>XML</em>
+    package. This limitation is due to the <em>XML</em>
+    package&rsquo;s dependence on the <em>libxml2</em> library which
     can only search using XPath. For reasons mentioned above, it would
     be ideal if we had the option of using CSS selectors to query such
     documents instead of XPath. If we can translate a CSS selector to
@@ -106,7 +108,7 @@ JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
     and we can therefore use a CSS selector whenever an XPath
     expression is required. The rest of this document describes the
     process that <em>selectr</em> takes to translate CSS selectors to
-    XPath expressions.</p>
+    XPath expressions along with example usage.</p>
 
     <h2>Parsing</h2>
 
@@ -163,11 +165,69 @@ end.rcode-->
 
     <h2>Translating</h2>
 
-    <p>XPath performs a superset of the functionality of CSS
-    selectors, because of this we can ensure that there is a mapping
-    from CSS to XPath. For instance, .</p>
+    <p>XPath is a superset of the functionality of CSS selectors,
+    because of this we can ensure that there is a mapping from CSS to
+    XPath. Given that we already know the parsed structure of the
+    selector, we work from the outer-most selector inwards. This means
+    with the parsed selector <code>body > p</code> we
+    look at the <code>CombinedSelector</code> first, then the
+    remaining <code>Element</code> components. In this case we know
+    that the <code>CombinedSelector</code> is going to map
+    to <code>Element[body]/Element[p]</code>, which in turn
+    produces <code>body/p</code>.</p>
 
-    <p>TODO</p>
+    <p>Some of these mappings are straightforward as was the case in
+    the given example, others are more complex. The table below shows a
+    sample of the translations that occur:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>CSS Selector</th>
+          <th>Parsed Structure</th>
+          <th>XPath Expression</th>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>#test</code></td>
+          <td><code>Hash[Element[*]#test]</code></td>
+          <td><code>*[@id = 'test']</code></td>
+        </tr>
+        <tr>
+          <td><code>.test</code></td>
+          <td><code>Class[Element[*].test]</code></td>
+          <td><code>*[@class and contains(concat(' ', normalize-space(@class), ' '), ' test ')]</code></td>
+        </tr>
+        <tr>
+          <td><code>body p</code></td>
+          <td><code>CombinedSelector[Element[body] &lt;followed&gt; Element[p]]</code></td>
+          <td><code>body/descendant-or-self::*/p</code></td>
+        </tr>
+        <tr>
+          <td><code>a[title]</code></td>
+          <td><code>Attrib[Element[a][title]]</code></td>
+          <td><code>a[@title]</code></td>
+        </tr>
+        <tr>
+          <td><code>div[class^='btn']</code></td>
+          <td><code>Attrib[Element[div][class ^= 'btn']]</code></td>
+          <td><code>div[@class and starts-with(@class, 'btn')]</code></td>
+        </tr>
+        <tr>
+          <td><code>li:nth-child(even)</code></td>
+          <td><code>Function[Element[li]:nth-child(['even'])]</code></td>
+          <td><code>*/*[name() = 'li' and ((position() +0) mod 2 = 0 and position() >= 0)]</code></td>
+        </tr>
+        <tr>
+          <td><code>#outer-div :first-child</code></td>
+          <td><code>CombinedSelector[Hash[Element[*]#outer-div] &lt;followed&gt; Pseudo[Element[*]:first-child]]</code></td>
+          <td><code>*[@id = 'outer-div']/descendant-or-self::*/*[position() = 1]</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>These only touch on the possible translations, but it
+    demonstrates that a mapping from CSS to XPath exists.</p>
 
     <h2>Usage</h2>
 
@@ -265,6 +325,13 @@ end.rcode-->
     returns a <strong>node</strong>, <code>querySelectorAll()</code>
     returns a <strong>list</strong> of nodes.</p>
 
+    <p>Both <code>querySelector()</code>
+    and <code>querySelectorAll()</code> are paired with namespaced
+    equivalents, <code>querySelectorNS()</code>
+    and <code>querySelectorAllNS()</code> respectively. These
+    functions will be demonstrated in more detail later in this
+    article.</p>
+
     <p>While the aforementioned functions are certainly useful, they
     do not cover all possible use cases. For other uses of CSS
     selectors, the <code>css_to_xpath()</code> function can be used
@@ -310,6 +377,7 @@ end.rcode-->
 <!--begin.rcode loadggEx, fig.keep="none", warning=FALSE
 library(ggplot2)
 library(gridSVG)
+library(selectr)
 qplot(mpg, wt, data=mtcars, colour=cyl)
 svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
 end.rcode-->
@@ -326,12 +394,11 @@ end.rcode-->
 legendNode <- getNodeSet(svgdoc,
                          "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
                          c(svg = "http://www.w3.org/2000/svg"))[[1]]
-
 # CSS
 legendNode <- querySelector(svgdoc,
                             "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
                             c(svg = "http://www.w3.org/2000/svg"),
-                            prefix = "/svg:*/descendant-or-self::")
+                            prefix = "//svg:*/descendant-or-self::")
 end.rcode-->
 
     <p>This particular example demonstrates a case where the XPath
@@ -343,31 +410,19 @@ end.rcode-->
     this case required knowledge of XPath that would rather be
     avoided.</p>
 
-    <p>To work around this issue, a namespace aware function could be
-    written to abstract away the XPath-dependent code. The following
-    code demonstrates this:</p>
+    <p>To work around this issue, a namespace-aware function should be
+    used instead to abstract away the XPath dependent code. The
+    following code demonstrates the use of <em>selectr</em>&rsquo;s
+    namespace-aware function <code>querySelectorNS()</code>:</p>
 
-<!--begin.rcode nsQS
-querySelectorNS <- function(node, selector, ns,
-                            prefix = "descendant-or-self::", ...) {
-    if (length(ns) > 1)
-        stop("Only one namespace is able to be the default namespace.")
-    # Handle both names vectors and lists
-    nsNames <- names(ns)
-    ns <- unlist(ns)
-    names(ns) <- nsNames
-    # Call qs
-    querySelector(node, selector, ns,
-                  prefix = sprintf(paste0("/%s:*/", prefix), names(ns)), ...)
-}
-
+<!--begin.rcode qsNS
 legendNode <- querySelectorNS(svgdoc, "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
-                              c(svg="http://www.w3.org/2000/svg"))
+                              c(svg = "http://www.w3.org/2000/svg"))
 end.rcode-->
 
     <p>The resulting use of CSS selection is now as concise as the
-    XPath version, with the sole exception being the requirement of
-    escaping on the CSS selector.</p>
+    XPath version, with the only special consideration being the
+    requirement of escaping on the CSS selector.</p>
 
     <p>Now that the legend has been selected, we can remove it from
     the image to produce an image with a legend omitted.</p>
@@ -385,7 +440,7 @@ end.rcode-->
     <p>This article describes the new <em>selectr</em> package. Its
     main purpose is to allow the use of CSS selectors in a domain
     which previously only allowed XPath. In addition, convenience
-    functions have also been described; allowing easier use of CSS
+    functions have also been described; allowing easy use of CSS
     selectors for the purpose of retrieving parts of an XML
     document. It has been demonstrated that the <em>selectr</em>
     package augments the <em>XML</em> package with the ability to use
@@ -402,7 +457,7 @@ end.rcode-->
       <img src="http://i.creativecommons.org/l/by/3.0/nz/88x31.png" width="88" height="31">
       The code is freely available under the
       <a href="../gpl.txt">GPL</a>. The described functionality of
-      <em>selectr</em> is present in version 0.1-1. <em>selectr</em>
+      <em>selectr</em> is present in version 0.2-0. <em>selectr</em>
       is available
       on <a href="http://cran.r-project.org/web/packages/selectr/index.html"><abbr title="Comprehensive R Archive Network">CRAN</abbr></a> and development occurs on
       GitHub
