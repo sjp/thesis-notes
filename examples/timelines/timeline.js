@@ -1,10 +1,11 @@
 var Timeline = function(name) {
-    var totalDuration = 0;
-    var tracks = {};
-    var timelines = {};
-    var start = 0;
+    this.name = name;
+    this.totalDuration = 0;
+    this.tracks = {};
+    this.timelines = {};
+    this.start = 0;
 
-    var validateNames = function(tName, animName) {
+    this.validateNames = function(tName, animName) {
         if (this.tracks.length === 0) {
             console.error("Need > 0 tracks first");
             return;
@@ -26,7 +27,7 @@ var Timeline = function(name) {
         return;
     };
 
-    var addTimeline = function(tl, start) {
+    this.addTimeline = function(tl, start) {
         if (_.isUndefined(start)) {
             start = 0;
         }
@@ -35,7 +36,7 @@ var Timeline = function(name) {
         this.totalDuration = Math.max(this.totalDuration, tl.totalDuration);
     };
 
-    var removeTimeline = function(tlName) {
+    this.removeTimeline = function(tlName) {
         delete this.timelines[tlName];
         var newTotal = 0;
         for (var tl in this.timelines) {
@@ -47,7 +48,7 @@ var Timeline = function(name) {
         this.totalDuration = newTotal;
     };
 
-    var removeTrack = function(tName) {
+    this.removeTrack = function(tName) {
         delete this.tracks[tName];
         var newTotal = 0;
         for (var track in this.tracks) {
@@ -56,12 +57,12 @@ var Timeline = function(name) {
         this.totalDuration = newTotal;
     };
 
-    var addTrack = function(track) {
+    this.addTrack = function(track) {
         this.tracks[track.name] = track;
         this.totalDuration = Math.max(this.totalDuration, track.getDuration());
     };
 
-    var getStart = function(tName, animName, iter) {
+    this.getStart = function(tName, animName, iter) {
         this.validateNames(tName, animName);
         var animMin = this.tracks[tName].animStart(animName, iter);
         if (timelines.length === 0) {
@@ -75,12 +76,12 @@ var Timeline = function(name) {
         }
     };
 
-    var getDuration = function(tName, animName, iter) {
+    this.getDuration = function(tName, animName, iter) {
         this.validateNames(tName, animName);
         return this.tracks[tName].animLength(animName, iter);
     };
 
-    var play = function(t) {
+    this.play = function(t) {
         // when we play with no params, assume 0
         if (_.isUndefined(t)) {
             t = 0;
@@ -102,33 +103,21 @@ var Timeline = function(name) {
             }
         }
     };
-
-    return {
-        name: name,
-        start: start,
-        totalDuration: totalDuration,
-        tracks: tracks,
-        timelines: timelines,
-        validateNames: validateNames,
-        addTimeline: addTimeline,
-        removeTimeline: removeTimeline,
-        addTrack: addTrack,
-        removeTrack: removeTrack,
-        getStart: getStart,
-        getDuration: getDuration,
-        play: play
-    };
 };
 
 var Track = function(name, niter) {
+    this.name = name;
+    this.trackDuration = 0;
+    this.animations = {};
+    this.niter = niter;
 
-    var setIterations = function(niter) {
+    this.setIterations = function(niter) {
         for (var anim in this.animations) {
             this.animations[anim].setIterations(niter);
         }
     };
 
-    var addAnimation = function(anim, loc) {
+    this.addAnimation = function(anim, loc) {
        
         anim.setIterations(this.niter);
 
@@ -168,39 +157,32 @@ var Track = function(name, niter) {
         this.animations[anim.name] = anim;
     };
 
-    var removeAnimation = function(name) {
+    this.removeAnimation = function(name) {
         delete this.animations[name];
     };
 
-    var animStart = function(name, iter) {
+    this.animStart = function(name, iter) {
         var anim = this.animations[name];
         return anim.starts[(iter - 1)];
     };
 
-    var animDuration = function(name, iter) {
+    this.animDuration = function(name, iter) {
         var anim = this.animations[name];
         return anim.durations[(iter - 1)];
     };
 
-    var getDuration = function() {
+    this.getDuration = function() {
         return this.trackDuration;
-    };
-
-    return {
-        name: name,
-        niter: niter,
-        trackDuration: 0,
-        animations: {},
-        setIterations: setIterations,
-        addAnimation: addAnimation,
-        removeAnimation: removeAnimation,
-        animStart: animStart,
-        animDuration: animDuration,
-        getDuration: getDuration
     };
 };
 
 var Animation = function(name, animfn, durationfn, startfn) {
+    this.name = name;
+    this.anims = [];
+    this.durations = [];
+    this.starts = [];
+    this.ends = [];
+
     // If we have constants here, wrap them in appropriate functions
     if (_.isNumber(durationfn)) {
         var durationVal = durationfn;
@@ -215,7 +197,11 @@ var Animation = function(name, animfn, durationfn, startfn) {
         };
     }
 
-    var setIterations = function(niter) {
+    this.start = startfn;
+    this.anim = animfn;
+    this.duration = durationfn;
+
+    this.setIterations = function(niter) {
         var anims = [];
         var durations = [];
         var starts = [];
@@ -232,22 +218,8 @@ var Animation = function(name, animfn, durationfn, startfn) {
         this.ends = ends;
     };
 
-    var animLength = function() {
+    this.animLength = function() {
         _.last(this.ends);
     };
-
-    return {
-        name: name,
-        anims: [],
-        durations: [],
-        starts: [],
-        ends: [],
-        anim: animfn,
-        duration: durationfn,
-        start: startfn,
-        setIterations: setIterations,
-        animLength: animLength
-    };
-
 };
 
