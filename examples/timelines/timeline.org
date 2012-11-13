@@ -10,8 +10,63 @@ being inserted relative to which iteration it was occurring within
 any non-trivial amount of animations, the work required to correctly
 place animations over time was going to be burdensome.
 
-Many solutions already exist that solve this problem. They mostly
-appear to follow the following structure:
+Many solutions already exist that aim to solve this problem.
+
++ Microsoft Powerpoint :: Allows you to specify the duration, delay,
+     repetitions and order of animations. Additionally the starting
+     point of animations can also be relative to other animations as
+     one of the following: "On Click" -- run after the previous
+     animation finishes. This is much like "After Previous" but "After
+     Previous" informs a stronger relationship between the two as the
+     animation is played back in the Animation Pane. "With Previous"
+     -- sets the starting point of the animation to be the same as the
+     previous animation. Here the control over how the animation
+     occurs is separate from the timing information, much like the
+     situation we desire in JS.
++ [[http://marcinignac.com/blog/timeline-js][Timeline.js]] :: A library by Marcin Ignac that aims to ease the task
+     of managing multiple animations. Uses an in-browser GUI to build
+     up a series of animations. Unfortunately it does not separate the
+     animation from the timing description of the animation. So
+     although we are able to declaratively specifiy how animations are
+     to be performed, this must be done using Timeline.js, and not an
+     alternative like D3. It cannot perform nesting of timelines but
+     otherwise seems to have the idea of tracks, animations and
+     timelines.
++ Adobe Flash/Edge/After Effects/Premiere :: All aforementioned Adobe
+     products have the same general idea of an animation, track and
+     timelines. The animation itself, because of the graphical nature
+     of these applications is usually described graphically, or at
+     least described along with the animation. This approach has more
+     in common with a D3 transition than a description of the temporal
+     properties of the animation itself.
++ [[https://github.com/rwldrn/burst-core][burst-core]] :: A JS library aimed at describing animations. The
+     library, like many of the others is concerned with timelines,
+     tracks and the animations (called Keys) within the timeline. The
+     API for burst is similar to D3 and jQuery in that there is
+     prominent use of method chaining which can make description of
+     animations more convenient if they are intended to be used only
+     once.
++ [[http://www.sencha.com/products/animator/][Sencha Animator]] :: A desktop application that eases the creation of
+     CSS3 animations in the browser, tested across multiple browsers.
+     The user interface is very similar to the Adobe products, and
+     indeed, the behaviour of the user interface and the description
+     of the timeline and associated animations is very
+     similar. Unfortunately, this produces animations itself using
+     HTML and CSS3, so we cannot use this on SVG.
++ [[http://www.greensock.com/timelinemax/][Greensock TimelineMax]] :: This is an ActionScript library manages
+     both the animation itself and the sequencing by which this
+     occurs. The ~TimelineMax~ instance that manages these animations
+     has common properties like pause/play/resume. There is no notion
+     of a track. Because this library only knows about transitions, it
+     cannot add or remove elements, though this is hinted to by the
+     use of "tweens". It can however use callbacks to create and
+     destory objects if necessary. It has plenty of useful features,
+     such as being able to nest timelines, repeat timelines (possibly
+     infinitely!), and delays added to each repeat.
+
+
+The majority of the existing solutions appear to conform to the
+following structure:
 
 + Timeline :: An entity which manages the time domain, i.e. playback,
               pausing, seeking. All events and animations are managed
