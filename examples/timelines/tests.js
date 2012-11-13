@@ -1,5 +1,5 @@
 // Creating a couple of animations
-var a = new Animation("testanim",
+var a = new Animation("testanima",
                       function(i) {
                           return function(d, i) {
                               console.log('anim a: iteration: %d lasting: %d', i, d);
@@ -8,7 +8,7 @@ var a = new Animation("testanim",
                       1000,
                       function(i) { return (i * 2000); });
 
-var b = new Animation("testanim",
+var b = new Animation("testanimb",
                       function(i) {
                           return function(d, i) {
                               console.log('anim b: iteration: %d lasting: %d', i, d);
@@ -33,13 +33,13 @@ tl.addTrack(tr);
 tl.addTrack(trtwo);
 
 // See how long the entire "animation" is
-tl.totalDuration;
+tl.getTotalDuration();
 
 // Let's see the "animation" functions run in the console
-//tl.play();
+// tl.play();
 
 // Let's play it again after 30s
-//tl.play(30000);
+// tl.play(30000);
 
 
 // Now that we have built our main timeline, let's see if we can

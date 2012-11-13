@@ -1,29 +1,43 @@
-var Timeline = function(name) {
-    this.name = name;
-    this.totalDuration = 0;
-    this.tracks = {};
-    this.timelines = {};
-    this.start = 0;
+var Timeline = function(name, niter) {
+    var totalDuration = 0;
+    var tracks = {};
+    var timelines = {};
+    var start = 0;
+    // Handle optional parameter
+    if (_.isUndefined(niter)) {
+        niter = 1;
+    }
+
+    this.toString = function() {
+        return "[Timeline " + name + "]";
+    };
+
+    this.getIterations = function() {
+        return niter;
+    }
+
+    this.getTlStart = function() {
+        return start;
+    };
+
+    this.setTlStart = function(t) {
+        start = t;
+    };
+
+    this.getName = function() {
+        return name;
+    };
 
     this.validateNames = function(tName, animName) {
-        if (this.tracks.length === 0) {
+        if (_.isEmpty(tracks)) {
             console.error("Need > 0 tracks first");
             return;
         }
-        var track = this.tracks[tName];
+        var track = tracks[tName];
         if (! tr) {
             console.error("No such track with name '%s'", tName);
         }
-        var anims = track.getAnimations();
-        if (anims.length === 0) {
-            console.error("Need > 0 animations in track '%s' first", tName);
-            return;
-        }
-        var anim = anims[animName];
-        if (! anim) {
-            console.error("No such animation with name '%s' in track '%s'", animName, tName);
-            return;
-        }
+        track.validateNames(animName);
         return;
     };
 
@@ -31,54 +45,65 @@ var Timeline = function(name) {
         if (_.isUndefined(start)) {
             start = 0;
         }
-        tl.start = start;
-        this.timelines[tl.name] = tl;
-        this.totalDuration = Math.max(this.totalDuration, tl.totalDuration);
+        tl.setTlStart(start);
+        timelines[tl.getName()] = tl;
+        totalDuration = Math.max(totalDuration, tl.getTotalDuration());
     };
 
     this.removeTimeline = function(tlName) {
-        delete this.timelines[tlName];
+        delete timelines[tlName];
         var newTotal = 0;
-        for (var tl in this.timelines) {
-            newTotal = Math.max(newTotal, tl.totalDuration);
-        }
-        for (var track in this.tracks) {
+        _.each(timelines, function(tl) {
+            newTotal = Math.max(newTotal, tl.getTotalDuration());
+        });
+        _.each(tracks, function(track) {
             newTotal = Math.max(newTotal, track.getDuration());
-        }
-        this.totalDuration = newTotal;
+        });
+        totalDuration = newTotal;
     };
 
     this.removeTrack = function(tName) {
-        delete this.tracks[tName];
+        delete tracks[tName];
         var newTotal = 0;
-        for (var track in this.tracks) {
+        _.each(tracks, function(track) {
             newTotal = Math.max(newTotal, track.getDuration());
-        }
-        this.totalDuration = newTotal;
+        });
+        totalDuration = newTotal;
     };
 
     this.addTrack = function(track) {
-        this.tracks[track.name] = track;
-        this.totalDuration = Math.max(this.totalDuration, track.getDuration());
+        tracks[track.getName()] = track;
+        totalDuration = Math.max(totalDuration, track.getDuration());
     };
 
     this.getStart = function(tName, animName, iter) {
         this.validateNames(tName, animName);
-        var animMin = this.tracks[tName].animStart(animName, iter);
-        if (timelines.length === 0) {
+        var animMin = tracks[tName].animStart(animName, iter);
+        if (_.isEmpty(timelines)) {
             return animMin;
         } else {
             var tlMin = 0;
-            for (var tl in this.timelines) {
-                tlMin = Math.min(tlMin, tl.start);
-            }
+            _.each(timelines, function(tl) {
+                tlMin = Math.min(tlMin, tl.getStart());
+            });
             return Math.min(animMin, tlMin);
         }
     };
 
     this.getDuration = function(tName, animName, iter) {
         this.validateNames(tName, animName);
-        return this.tracks[tName].animLength(animName, iter);
+        return tracks[tName].animLength(animName, iter);
+    };
+
+    this.getTotalDuration = function() {
+        return totalDuration;
+    };
+
+    this.setIterations = function(n) {
+        niter = n;
+        _.each(tracks, function(track) {
+            track.setIterations(niter * track.getIterations());
+        });
     };
 
     this.play = function(t) {
@@ -87,45 +112,67 @@ var Timeline = function(name) {
             t = 0;
         }
 
-        // If we have timelines within timelines
-        for (var tl in this.timelines) {
-            var cTl = this.timelines[tl];
-            cTl.play(t + cTl.start);
-        }
+        // If this has an offset, start relative to it.
+        t = t + start;
 
-        for (var track in this.tracks) {
-            var cTrack = this.tracks[track];
-            for (var anim in cTrack.animations) {
-                var cAnim = cTrack.animations[anim];
-                for (var i = 0; i < cTrack.niter; i++) {
-                    _.delay(cAnim.anims[i], t + cAnim.starts[i], cAnim.durations[i], i + 1);
-                }
-            }
-        }
+        // Play any nested timelines
+        _.each(timelines, function(tl) {
+            tl.play(t);
+        });
+
+        // Play all tracks
+        _.each(tracks, function(track) {
+            track.play(t);
+        });
     };
 };
 
 var Track = function(name, niter) {
-    this.name = name;
-    this.trackDuration = 0;
-    this.animations = {};
-    this.niter = niter;
+    var trackDuration = 0;
+    var animations = {};
+
+    this.getName = function() {
+        return name;
+    };
+
+    this.getIterations = function() {
+        return niter;
+    };
+
+    this.toString = function() {
+        return "[Track " + name + "]";
+    };
 
     this.setIterations = function(niter) {
-        for (var anim in this.animations) {
-            this.animations[anim].setIterations(niter);
+        _.each(animations, function(anim) {
+            anim.setIterations(niter);
+        });
+    };
+
+    this.validateNames = function(animName) {
+        if (_.isEmpty(animations)) {
+            console.error("Need > 0 animations in track '%s' first", name);
+            return;
         }
+
+        var anim = anims[animName];
+        if (! anim) {
+            console.error("No such animation with name '%s' in track '%s'", animName, name);
+            return;
+        }
+
+        return;
     };
 
     this.addAnimation = function(anim, loc) {
        
-        anim.setIterations(this.niter);
+        anim.setIterations(niter);
 
         // The start time is *relative to the reference anim*
         if (! _.isUndefined(loc) && ! _.isNull(loc)) {
-            var refAnim = this.animations[loc];
-            for (i = 0; i < this.niter; i++) {
-                anim.starts[i] = anim.starts[i] + refAnim.starts[i];
+            var refAnim = animations[loc];
+            for (i = 0; i < niter; i++) {
+                anim.setStart(i, anim.getStart(i) + refAnim.getStart(i));
             }
         }
 
@@ -137,51 +184,74 @@ var Track = function(name, niter) {
         //
         // The use of timelines should be encouraged in this instance.
         if (_.isUndefined(loc) || _.isNull(loc)) {
-            for (var a in this.animations) {
-                var cAnim = this.animations[a];
+            _.each(animations, function(cAnim) {
                 var overlap = [];
 
-                for (i = 0; i < this.niter; i++) {
-                    overlap.push(anim.starts[i] > cAnim.starts[i] && anim.ends[i] < refAnim.ends[i]);
+                for (i = 0; i < niter; i++) {
+                    overlap.push((anim.getStart(i) > cAnim.getStart(i) && anim.getStart(i) < cAnim.getEnd(i)) ||
+                                 (anim.getEnd(i) > cAnim.getStart(i) && anim.getEnd(i) < cAnim.getEnd(i)));
                 }
 
                 if (_.any(overlap)) {
-                    console.warning("Inserted animation '%s' overlaps with animation '%s'", anim.name, cAnim.name);
+                    console.warning("Inserted animation '%s' overlaps with animation '%s'",
+                                    anim.getName(), cAnim.getName());
                 }
-            }
+            });
         }
 
         // Update track durations
-        this.trackDuration = Math.max(this.trackDuration, _.last(anim.ends));
+        trackDuration = Math.max(trackDuration, anim.getEnd(niter));
 
-        this.animations[anim.name] = anim;
+        animations[anim.getName()] = anim;
     };
 
     this.removeAnimation = function(name) {
-        delete this.animations[name];
+        delete animations[name];
     };
 
     this.animStart = function(name, iter) {
-        var anim = this.animations[name];
+        var anim = animations[name];
         return anim.starts[(iter - 1)];
     };
 
     this.animDuration = function(name, iter) {
-        var anim = this.animations[name];
+        var anim = animations[name];
         return anim.durations[(iter - 1)];
     };
 
     this.getDuration = function() {
-        return this.trackDuration;
+        return trackDuration;
+    };
+
+    this.play = function(t) {
+        if (_.isUndefined(t)) {
+            t = 0;
+        }
+
+        _.each(animations, function(anim) {
+            for (var i = 0; i < niter; i++) {
+                _.delay(anim.getAnimation(i),
+                        t + anim.getStart(i),
+                        anim.getDuration(i),
+                        i + 1);
+            }
+        });
     };
 };
 
 var Animation = function(name, animfn, durationfn, startfn) {
-    this.name = name;
-    this.anims = [];
-    this.durations = [];
-    this.starts = [];
-    this.ends = [];
+    var anims = [];
+    var durations = [];
+    var starts = [];
+    var ends = [];
+
+    this.toString = function() {
+        return "[Animation " + name + "]";
+    };
+
+    this.getName = function() {
+        return name;
+    };
 
     // If we have constants here, wrap them in appropriate functions
     if (_.isNumber(durationfn)) {
@@ -201,25 +271,45 @@ var Animation = function(name, animfn, durationfn, startfn) {
     this.anim = animfn;
     this.duration = durationfn;
 
+    this.getStart = function(i) {
+        return starts[i];
+    };
+
+    this.setStart = function(i, t) {
+        starts[i] = t;
+    };
+
+    this.getAnimation = function(i) {
+        return anims[i];
+    };
+
+    this.getDuration = function(i) {
+        return durations[i];
+    };
+
+    this.getEnd = function(i) {
+        return ends[i];
+    };
+
     this.setIterations = function(niter) {
-        var anims = [];
-        var durations = [];
-        var starts = [];
-        var ends = [];
+        var newAnims = [];
+        var newDurations = [];
+        var newStarts = [];
+        var newEnds = [];
         for (var i = 0; i < niter; i++) {
-            anims.push(this.anim(i + 1));
-            durations.push(this.duration(i + 1));
-            starts.push(this.start(i + 1));
-            ends.push(starts[i] + durations[i]);
+            newAnims.push(this.anim(i + 1));
+            newDurations.push(this.duration(i + 1));
+            newStarts.push(this.start(i + 1));
+            newEnds.push(newStarts[i] + newDurations[i]);
         }
-        this.anims = anims;
-        this.durations = durations;
-        this.starts = starts;
-        this.ends = ends;
+        anims = newAnims;
+        durations = newDurations;
+        starts = newStarts;
+        ends = newEnds;
     };
 
     this.animLength = function() {
-        _.last(this.ends);
+        _.last(ends);
     };
 };
 
