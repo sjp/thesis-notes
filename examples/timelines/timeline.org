@@ -62,7 +62,7 @@ Many solutions already exist that aim to solve this problem.
      use of "tweens". It can however use callbacks to create and
      destory objects if necessary. It has plenty of useful features,
      such as being able to nest timelines, repeat timelines (possibly
-     infinitely!), and delays added to each repeat.
+     infinitely!), and constant delays added to each repeat.
 
 
 The majority of the existing solutions appear to conform to the
