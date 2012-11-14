@@ -263,7 +263,7 @@ var Animation = function(name, animfn, durationfn, startfn) {
     if (_.isNumber(startfn)) {
         var startVal = startfn;
         startfn = function(i) {
-            return startVal;
+            return i * startVal;
         };
     }
 
@@ -309,7 +309,7 @@ var Animation = function(name, animfn, durationfn, startfn) {
     };
 
     this.animLength = function() {
-        _.last(ends);
+        return _.last(ends);
     };
 };
 
