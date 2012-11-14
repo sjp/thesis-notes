@@ -82,7 +82,9 @@ end.rcode-->
     they select elements of a page to perform operations on using CSS
     selectors, rather than XPath. This is mostly due to the complexity
     of performing an XPath query in the browser in addition to the
-    more verbose expressions.</p>
+    more verbose expressions. An example of how one would use CSS
+    selectors to retrieve content using popular JavaScript libraries
+    is with the following code:</p>
 
 <figure>
 <pre class="js" style="text-align:left;">
@@ -93,7 +95,7 @@ JS&gt; d3.selectAll("#listing code");
 JS&gt; // The equivalent XPath expression
 JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
 </pre>
-<figcaption>Selecting all <code>code</code> elements that are children of the element with the ID &ldquo;listing&rdquo;.</figcaption>
+<figcaption>Selecting all <code>code</code> elements that are descendants of the element with the ID &ldquo;listing&rdquo;.</figcaption>
 </figure>
 
     <p>The <em>XML</em> package for R is able to parse XML documents,
@@ -103,12 +105,22 @@ JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
     package&rsquo;s dependence on the <em>libxml2</em> library which
     can only search using XPath. For reasons mentioned above, it would
     be ideal if we had the option of using CSS selectors to query such
-    documents instead of XPath. If we can translate a CSS selector to
+    documents as well as XPath. If we can translate a CSS selector to
     XPath, then the restriction to only using XPath no longer applies
     and we can therefore use a CSS selector whenever an XPath
-    expression is required. The rest of this document describes the
-    process that <em>selectr</em> takes to translate CSS selectors to
-    XPath expressions along with example usage.</p>
+    expression is required.</p>
+
+    <p>A mature Python package exists that performs translation of CSS
+    selectors to XPath expressions. Unfortunately this
+    package, <em>cssselect</em>, cannot be used in R because it would
+    require Python to be present on a user's system which cannot be
+    guaranteed, particularly on Windows. The <em>selectr</em> package
+    is a translation of <em>cssselect</em> to R so that we have the
+    same functionality within R as we would have using Python.</p>
+
+    <p>The rest of this article describes the process
+    that <em>selectr</em> takes to translate CSS selectors to XPath
+    expressions along with example usage.</p>
 
     <h2>Parsing</h2>
 
@@ -166,20 +178,20 @@ end.rcode-->
 
     <h2>Translating</h2>
 
-    <p>XPath is a superset of the functionality of CSS selectors,
-    because of this we can ensure that there is a mapping from CSS to
-    XPath. Given that we already know the parsed structure of the
-    selector, we work from the outer-most selector inwards. This means
-    with the parsed selector <code>body > p</code> we
-    look at the <code>CombinedSelector</code> first, then the
+    <p>XPath is a superset of the functionality of CSS selectors, so
+    we can ensure that there is a mapping from CSS to XPath. Given
+    that we already know the parsed structure of the selector, we work
+    from the outer-most selector inwards. This means with the parsed
+    selector <code>body &gt; p</code> we look at
+    the <code>CombinedSelector</code> first, then the
     remaining <code>Element</code> components. In this case we know
     that the <code>CombinedSelector</code> is going to map
     to <code>Element[body]/Element[p]</code>, which in turn
     produces <code>body/p</code>.</p>
 
     <p>Some of these mappings are straightforward as was the case in
-    the given example, others are more complex. The table below shows a
-    sample of the translations that occur:</p>
+    the given example, but others are more complex. The table below
+    shows a sample of the translations that occur:</p>
 
     <table>
       <thead>
@@ -235,15 +247,19 @@ end.rcode-->
     <p>The <em>selectr</em> package becomes most useful when working
     with the <em>XML</em> package. Most commonly <em>selectr</em> is
     used to simplify the task of searching for a set of nodes. In the
-    browser, there are two functions that perform this task using CSS
-    selectors, <code>querySelector()</code>
+    browser, there are two JavaScript functions that perform this task
+    using CSS selectors, <code>querySelector()</code>
     and <code>querySelectorAll()</code>. These functions are methods
-    on a document or element object. Typical usage in the browser might be the following:</p>
+    on a document or element object. Typical usage in the browser
+    using JavaScript might be the following:</p>
 
+<figure>
 <pre class="js">
 JS&gt; document.querySelector("ul li.active");
-JS&gt; document.querySelectorAll("p > a.info");
+JS&gt; document.querySelectorAll("p &gt; a.info");
 </pre>
+<figcaption>Retrieving content from a document using CSS selectors in JavaScript.</figcaption>
+</figure>
 
     <p>Because these are so commonly used in popular JavaScript
     libraries, the behaviour has been mimicked
@@ -255,7 +271,7 @@ JS&gt; document.querySelectorAll("p > a.info");
 
     <p>The difference between the two functions is
     that <code>querySelector()</code> will attempt to return
-    the <strong>first</strong> matched node or <code>NULL</code> in
+    the <strong>first</strong> matching node or <code>NULL</code> in
     the case that no matches were
     found. <code>querySelectorAll()</code> will always return a list
     of matching nodes, this list may be empty when there are no
@@ -370,11 +386,18 @@ end.rcode-->
     or indeed the benefits over just using the <em>XML</em>
     package. <a href="http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGviaXML/generating-svg.html">An
     example</a> (see &ldquo;XPath&rdquo;) written for
-    the <em>gridSVG</em> package will be revisited. What is of
-    particular interest is that this example uses SVG, which is a
-    namespaced XML document. This provides some challenges that
-    require consideration, but the <em>selectr</em> package can still
-    be made to work.</p>
+    the <em>gridSVG</em> package will be revisited. The example first
+    shows a <em>ggplot2</em> plot that has been exported to SVG
+    using <em>gridSVG</em>. The aim is to then remove the legend from
+    the plot by removing the node containing all legend
+    information. Once the node has been removed, the resulting
+    document can be saved to produce an image with a legend
+    removed.</p>
+
+    <p>What is of particular interest with this example is that it
+    uses SVG, which is a namespaced XML document. This provides some
+    challenges that require consideration, but the <em>selectr</em>
+    package can handle this case.</p>
 
 <!--begin.rcode loadggEx, fig.keep="none", warning=FALSE
 library(ggplot2)
@@ -383,10 +406,10 @@ qplot(mpg, wt, data=mtcars, colour=cyl)
 svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
 end.rcode-->
 
-    <p>So far we have simply reproduced the plot and stored the
-    resulting XML in a node tree called <code>svgdoc</code>. In order
-    to remove the legend from the plot we first need to select the
-    legend node from the SVG document. We will compare
+    <p>So far we have simply reproduced the original plot and stored
+    the resulting XML in a node tree called <code>svgdoc</code>. In
+    order to remove the legend from the plot we first need to select
+    the legend node from the SVG document. We will compare
     the <em>XML</em>-only approach with one enhanced
     with <em>selectr</em>. The comparison is shown below:</p>
 
@@ -405,7 +428,8 @@ end.rcode-->
     <p>This particular example demonstrates a case where the XPath
     approach is more concise. This is because the <code>id</code>
     attribute that we're searching for needs to have its CSS selector
-    escaped, while the XPath expression remains
+    escaped (due to <code>:</code> and <code>.</code> being special
+    characters in CSS), while the XPath expression remains
     unchanged. Additionally, we also need to specify a namespace-aware
     prefix for the XPath that is generated. To use CSS selectors in
     this case required knowledge of XPath that would rather be
@@ -417,16 +441,17 @@ end.rcode-->
     namespace-aware function <code>querySelectorNS()</code>:</p>
 
 <!--begin.rcode qsNS
-legendNode <- querySelectorNS(svgdoc, "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+legendNode <- querySelectorNS(svgdoc,
+                              "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
                               c(svg = "http://www.w3.org/2000/svg"))
 end.rcode-->
 
     <p>The resulting use of CSS selection is now as concise as the
     XPath version, with the only special consideration being the
-    requirement of escaping on the CSS selector.</p>
+    requirement of escaping the CSS selector.</p>
 
     <p>Now that the legend has been selected, we can remove it from
-    the image to produce an image with a legend omitted.</p>
+    the SVG document to produce an image with a legend omitted.</p>
 
 <!--begin.rcode removeLegend, results="hide"
 removeChildren(xmlParent(legendNode), legendNode)
