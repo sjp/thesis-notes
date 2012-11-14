@@ -1,4 +1,69 @@
 
+2012-11-14
+----------
+
+DISCUSS:
+
+  + Paul's comments on 'selectr' tech report
+
+
+FOR NOTING:
+
+  + 'Shiny' package for rapid development of R web apps
+
+    http://www.rstudio.com/shiny/
+
+    (from the R Studio guys)
+
+  + More coolness from Mike Bostock (et al)
+
+    http://www.nytimes.com/interactive/2012/11/07/us/politics/obamas-diverse-base-of-support.html
+
+
+TODO:
+
+  + Multiple namespaces in querySelectorNS() ?
+
+  + Write tech report on 'selectr'
+
+  + Tidy and polish timelines code
+    
+  + Try to use timelines code to redo VIT example?
+  
+  + Consider whether timelines can be composed of other timelines?
+    (not just composed of animations;  i.e., recursive, arbitrary-depth,
+     hierarchical structure rather than fixed 3-depth structure)
+    -
+
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + tidy up 'selectr' package
+
+  + 'selectr' on CRAN ...
+
+    http://cran.r-project.org/web/packages/selectr/index.html
+
+    ... and with its own github repo ...
+    
+    https://github.com/sjp/selectr
+
+
 2012-11-07
 ----------
 
