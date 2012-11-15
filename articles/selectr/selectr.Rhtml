@@ -59,32 +59,35 @@ end.rcode-->
     example, if we have a document representing a collection of books,
     we might want to search through for a book matching a certain
     title or author. A language has been created that constructs
-    search queries on XML documents called XPath. XPath is capable of
-    constructing complex search queries but this is often at the cost
-    of readability and terseness of the resulting expression.</p>
+    search queries on XML documents called
+    XPath <a href="#ref-1">[1]</a>. XPath is capable of constructing
+    complex search queries but this is often at the cost of
+    readability and terseness of the resulting expression.</p>
 
     <p>An alternative way of searching for parts of a document is
-    using CSS selectors. These are most commonly used in web browsers
-    to apply styling information to components of a web page. We can
-    use the same language that selects which nodes to style in a web
-    page to select nodes in an XML document. This often produces more
-    concise and readable queries than the equivalent XPath
-    expression. It must be noted however that XPath expressions are
-    more flexible than CSS selectors, so although all CSS selectors
-    have an equivalent XPath expression, the reverse is not true.</p>
+    using CSS selectors <a href="#ref-2">[2]</a>. These are most
+    commonly used in web browsers to apply styling information to
+    components of a web page. We can use the same language that
+    selects which nodes to style in a web page to select nodes in an
+    XML document. This often produces more concise and readable
+    queries than the equivalent XPath expression. It must be noted
+    however that XPath expressions are more flexible than CSS
+    selectors, so although all CSS selectors have an equivalent XPath
+    expression, the reverse is not true.</p>
 
     <p>An advantage of using CSS selectors is that most people working
     with web documents such as HTML and SVG also know CSS. XPath is
     not employed anywhere beyond querying XML documents so is not a
     commonly known query language. Another important reason why CSS
     selectors are widely known is due to the common use of them in
-    popular JavaScript libraries. jQuery and D3 are two examples where
-    they select elements of a page to perform operations on using CSS
-    selectors, rather than XPath. This is mostly due to the complexity
-    of performing an XPath query in the browser in addition to the
-    more verbose expressions. An example of how one would use CSS
-    selectors to retrieve content using popular JavaScript libraries
-    is with the following code:</p>
+    popular JavaScript libraries. jQuery <a href="#ref-3">[3]</a> and
+    D3 <a href="#ref-4">[4]</a> are two examples where they select
+    elements of a page to perform operations on using CSS selectors,
+    rather than XPath. This is mostly due to the complexity of
+    performing an XPath query in the browser in addition to the more
+    verbose expressions. An example of how one would use CSS selectors
+    to retrieve content using popular JavaScript libraries is with the
+    following code:</p>
 
 <figure>
 <pre class="js" style="text-align:left;">
@@ -98,13 +101,14 @@ JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
 <figcaption>Selecting all <code>code</code> elements that are descendants of the element with the ID &ldquo;listing&rdquo;.</figcaption>
 </figure>
 
-    <p>The <em>XML</em> package for R is able to parse XML documents,
-    which can later be queried using XPath. No facility exists for
-    using CSS selectors on XML documents in the <em>XML</em>
-    package. This limitation is due to the <em>XML</em>
-    package&rsquo;s dependence on the <em>libxml2</em> library which
-    can only search using XPath. For reasons mentioned above, it would
-    be ideal if we had the option of using CSS selectors to query such
+    <p>The <em>XML</em> package <a href="#ref-5">[5]</a> for
+    R <a href="#ref-6">[6]</a> is able to parse XML documents, which
+    can later be queried using XPath. No facility exists for using CSS
+    selectors on XML documents in the <em>XML</em> package. This
+    limitation is due to the <em>XML</em> package&rsquo;s dependence
+    on the <em>libxml2</em> <a href="#ref-1">[7]</a> library which can
+    only search using XPath. For reasons mentioned above, it would be
+    ideal if we had the option of using CSS selectors to query such
     documents as well as XPath. If we can translate a CSS selector to
     XPath, then the restriction to only using XPath no longer applies
     and we can therefore use a CSS selector whenever an XPath
@@ -112,11 +116,12 @@ JS&gt; "descendant-or-self::*[@id = 'listing']/descendant-or-self::*/code"
 
     <p>A mature Python package exists that performs translation of CSS
     selectors to XPath expressions. Unfortunately this
-    package, <em>cssselect</em>, cannot be used in R because it would
-    require Python to be present on a user's system which cannot be
-    guaranteed, particularly on Windows. The <em>selectr</em> package
-    is a translation of <em>cssselect</em> to R so that we have the
-    same functionality within R as we would have using Python.</p>
+    package, <em>cssselect</em> <a href="#ref-8">[8]</a>, cannot be
+    used in R because it would require Python to be present on a
+    user's system which cannot be guaranteed, particularly on
+    Windows. The <em>selectr</em> package <a href="#ref-9">[9]</a> is
+    a translation of <em>cssselect</em> to R so that we have the same
+    functionality within R as we would have using Python.</p>
 
     <p>The rest of this article describes the process
     that <em>selectr</em> takes to translate CSS selectors to XPath
@@ -170,9 +175,9 @@ clean(selectr:::parse("body > p")[[1]]$repr())
 end.rcode-->
 
     <p>This shows that the selector is understood to be a combined
-    selector that matches when a <code>p</code> is a direct descendant
-    of a <code>body</code> element. Given that the parsing step is
-    complete, it is necessary to translate this internal
+    selector that matches when a <code>p</code> element is a direct
+    descendant of a <code>body</code> element. Once the parsing step
+    is complete, it is necessary to translate this internal
     representation of a selector into its equivalent XPath
     expression.</p>
 
@@ -249,9 +254,9 @@ end.rcode-->
     used to simplify the task of searching for a set of nodes. In the
     browser, there are two JavaScript functions that perform this task
     using CSS selectors, <code>querySelector()</code>
-    and <code>querySelectorAll()</code>. These functions are methods
-    on a document or element object. Typical usage in the browser
-    using JavaScript might be the following:</p>
+    and <code>querySelectorAll()</code> <a href="#ref-10">[10]</a>. These
+    functions are methods on a document or element object. Typical
+    usage in the browser using JavaScript might be the following:</p>
 
 <figure>
 <pre class="js">
@@ -264,7 +269,7 @@ JS&gt; document.querySelectorAll("p &gt; a.info");
     <p>Because these are so commonly used in popular JavaScript
     libraries, the behaviour has been mimicked
     in <em>selectr</em>. The <em>selectr</em> package also provides
-    the functions but instead of being methods on a document or
+    these functions but instead of being methods on document or
     element objects, they are functions. These functions typically
     take two parameters, the XML object to be searched on, and the CSS
     selector to query with, respectively.</p>
@@ -274,7 +279,7 @@ JS&gt; document.querySelectorAll("p &gt; a.info");
     the <strong>first</strong> matching node or <code>NULL</code> in
     the case that no matches were
     found. <code>querySelectorAll()</code> will always return a list
-    of matching nodes, this list may be empty when there are no
+    of matching nodes, this list will be empty when there are no
     matches. To demonstrate the usage of these functions, the
     following XML document will be used:</p>
 
@@ -386,11 +391,12 @@ end.rcode-->
     or indeed the benefits over just using the <em>XML</em>
     package. <a href="http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGviaXML/generating-svg.html">An
     example</a> (see &ldquo;XPath&rdquo;) written for
-    the <em>gridSVG</em> package will be revisited. The example first
-    shows a <em>ggplot2</em> plot that has been exported to SVG
-    using <em>gridSVG</em>. The aim is to then remove the legend from
-    the plot by removing the node containing all legend
-    information. Once the node has been removed, the resulting
+    the <em>gridSVG</em> package <a href="#ref-11">[11]</a> will be
+    revisited. The example first shows
+    a <em>ggplot2</em> <a href="#ref-12">[12]</a> plot that has been
+    exported to SVG using <em>gridSVG</em>. The aim is to then remove
+    the legend from the plot by removing the node containing all
+    legend information. Once the node has been removed, the resulting
     document can be saved to produce an image with a legend
     removed.</p>
 
@@ -494,12 +500,18 @@ end.rcode-->
     </ul>
     <h2>References</h2>
     <ol>
-      <li id="ref-1">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
-      <li id="ref-2">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">gridSVG: Export grid graphics as SVG</span>. <a href="http://r-forge.r-project.org/projects/gridsvg/">https://r-forge.r-project.org/projects/gridsvg/</a>. R package version 1.0-0.</li>
-      <li id="ref-3">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition) Specification</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
-      <li id="ref-4"><span class="pkg-desc">JSON</span>, <a href="http://json.org/">http://json.org/</a>.</li>
-      <li id="ref-5">Lang, D. T. (2012). <span class="pkg-desc">XML: Tools for parsing and generating XML within R and S-Plus.</span>. <a href="http://www.omegahat.org/RSXML/">http://www.omegahat.org/RSXML/</a>. R package version 3.9-4</li>
-      <li id="ref-6">W3C (1999). <span class="pkg-desc">XML Path Language (XPath) Version 1.0 Specification</span>. <a href="http://www.w3.org/TR/xpath/">http://www.w3.org/TR/xpath/</a>.</li>
+      <li id="ref-1">W3C (1999). <span class="pkg-desc">XML Path Language (XPath) Version 1.0 Specification</span>. <a href="http://www.w3.org/TR/xpath/">http://www.w3.org/TR/xpath/</a>.</li>
+      <li id="ref-2">W3C (2011). <span class="pkg-desc">Selectors Level 3 Specification</span>. <a href="http://www.w3.org/TR/css3-selectors/">http://www.w3.org/TR/css3-selectors/</a>.</li>
+      <li id="ref-3">The jQuery Foundation (2012). <span class="pkg-desc">jQuery: The write less, do more, JavaScript library</span>. <a href="http://jquery.com/">http://jquery.com/</a>. Version 1.8.3.</li>
+      <li id="ref-4">Mike Bostock (2012). <span class="pkg-desc">D3: Data-Driven Documents</span>. <a href="http://d3js.org/">http://d3js.org/</a>. Version 2.10.3.</li>
+      <li id="ref-5">Lang, D. T. (2012). <span class="pkg-desc">XML: Tools for parsing and generating XML within R and S-Plus.</span>. <a href="http://www.omegahat.org/RSXML/">http://www.omegahat.org/RSXML/</a>. R package version 3.95-0</li>
+      <li id="ref-6">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+      <li id="ref-7"><span class="pkg-desc">libxml2: The XML C parser and toolkit of Gnome</span>. <a href="http://www.xmlsoft.org/">http://www.xmlsoft.org/</a>.</li>
+      <li id="ref-8">Sapin S. and Bicking, I. (2012). <span class="pkg-desc">cssselect: CSS Selectors for Python</span>. <a href="http://packages.python.org/cssselect/">http://packages.python.org/cssselect/</a>. Version 0.7.1.</li>
+      <li id="ref-9">Potter, S., Sapin, S., &amp; Bicking, I. (2012). <span class="pkd-desc">selectr: Translate  CSS Selectors to XPath Expressions</span>. R package version 0.2-0.</li>
+      <li id="ref-10"><span class="pkg-desc">document.querySelectorAll</span>. <a href="https://developer.mozilla.org/en-US/docs/DOM/Document.querySelectorAll">https://developer.mozilla.org/en-US/docs/DOM/Document.querySelectorAll</a>.</li>
+      <li id="ref-11">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">gridSVG: Export grid graphics as SVG</span>. <a href="http://r-forge.r-project.org/projects/gridsvg/">https://r-forge.r-project.org/projects/gridsvg/</a>. R package version 1.0-0.</li>
+      <li id="ref-12">H. Wickham. <span class="pkg-desc">ggplot2: elegant graphics for data analysis</span>. Springer New York, 2009.</li>
     </ol>
   </body>
 </html>
