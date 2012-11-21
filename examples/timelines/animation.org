@@ -1,0 +1,30 @@
+#+TITLE: Animations
+
+This is another attempt at producing a library that provides timeline
+management. The main idea is that we are trying to produce a tree of
+animations. Rather than composing objects which contain parts of the
+necessary information, we want each Animation object to be able to
+play as required, along with having children that are also Animation
+objects
+
+A major issue was encountered in this approach due to the semantics of
+JavaScript. This is because although JavaScript is a pass by value
+language, this is not telling the whole truth. If we pass in an object
+to a function, we are passing the *reference* to the object. The
+*reference* to the object is always copied, but the object itself is
+never copied. This means we are quite limited in this approach if we
+want to produce independent copies of existing animations. We do not
+want all copies of an Animation object to be modified when one of them
+are.
+
+As a result this approach, although workable, may not be as feasible
+as was hoped. A workaround is to write a function that generates the
+required objects but is a low-level fix that would we would rather
+avoid (which we can't).
+
+Another limitation is that it becomes difficult to work out what
+iteration an animation is on. For example, if ~A~ contains ~B~ and ~A~
+repeats 10 times and ~B~ repeats three times, then we will see
+iteration numbers from ~B~ of ~1, 2, 3, 1, 2, 3, 1...~. There is a way
+around this but it makes it difficult for us to treat an Animation as
+an independent entity that happens to be composed within a tree.
