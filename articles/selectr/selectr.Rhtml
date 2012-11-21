@@ -384,12 +384,100 @@ end.rcode-->
     a given function from the <em>XML</em> package, but specifying
     paths using CSS selectors instead.</p>
 
-    <h2>Example</h2>
+    <h2>Examples</h2>
 
     <p>While the example usage of the <em>selectr</em> package has
     been demonstrated earlier, the real-world usage may not be clear,
     or indeed the benefits over just using the <em>XML</em>
-    package. <a href="http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGviaXML/generating-svg.html">An
+    package. To show how succinct it can be, we will try to create a
+    data frame in R that lists the titles and URLs of technical
+    reports hosted on
+    the <a href="http://stattech.wordpress.fos.auckland.ac.nz/">Department
+    of Statistics Technical Report Blog</a>, along with their
+    publishing dates. First, lets examine part of the HTML that
+    comprises the page to see how we're going to be selecting
+    content.</p>
+
+<pre class="js">
+...
+&lt;article&gt;
+  &lt;header&gt;
+    &lt;h1 class="entry-title"&gt;
+      &lt;a href="http://stattech.wordpress.fos.auckland.ac.nz/2012-9-writing-grid-extensions/"
+         title="Permalink to 2012-9 Writing grid Extensions"
+         rel="bookmark">2012-9 Writing grid Extensions&lt;/a&gt;
+    &lt;/h1&gt;
+    &lt;div class="entry-meta"&gt;
+      &lt;span class="sep"&gt;Posted on &lt;/span&gt;
+        &lt;a href="http://stattech.wordpress.fos.auckland.ac.nz/2012-9-writing-grid-extensions/"
+           title="9:48 pm"
+           rel="bookmark"&gt;
+          &lt;time class="entry-date"
+                datetime="2012-11-06T21:48:17+00:00" pubdate&gt;
+            November 6, 2012
+          &lt;/time&gt;
+        &lt;/a&gt;
+...
+</pre>
+
+    <p>This fragment shows us that we have the information available
+    to us, we just need to know how to query it. For example, we can
+    see that the URL to each technical report is in
+    the <code>href</code> attribute within an <code>a</code>
+    element. In particular, this <code>a</code> element has
+    an <code>h1</code> parent with a class
+    of <code>entry-title</code>. The <code>a</code> element also
+    contains the title of the technical report. Similarly we can see
+    a <code>time</code> element that tells us via
+    the <code>datetime</code> attribute when the post was
+    published. We first start by loading the required packages and
+    retrieving the data so that we can work with it.</p>
+
+<!--begin.rcode exHTML
+library(XML)
+library(selectr)
+page <- htmlParse("http://stattech.wordpress.fos.auckland.ac.nz/")
+end.rcode-->
+
+    <p>Now that the page has been parsed into a queryable form, we can
+    write the required CSS selectors to retrieve this information
+    using <code>querySelectorAll()</code>.</p>
+
+<!--begin.rcode exHTMLGetNodes
+# CSS selector to get titles and URLs: "h1.entry-title > a"
+links <- querySelectorAll(page, "h1.entry-title > a")
+# Now lets get all of the publishing times
+timeEls <- querySelectorAll(page, "time")
+end.rcode-->
+
+    <p>Now that we have gathered the correct elements, it is
+    reasonably simple to manipulate them using the <em>XML</em>
+    package. We want to extract the correct attributes and values from
+    the selected nodes. The code below shows how we would do this.</p>
+
+<!--begin.rcode exHTMLParseLinkTimes
+# Collect all URLs
+urls <- sapply(links, function(x) xmlGetAttr(x, "href"))
+# Collect all titles
+titles <- sapply(links, xmlValue)
+# Collect all datetime attributes
+dates <- sapply(timeEls, function(x) xmlGetAttr(x, "datetime"))
+# To play nice with R, lets parse it as a Date
+dates <- as.Date(dates)
+# Create a data frame of the results
+technicalReports <- data.frame(title = titles,
+                               url = urls,
+                               date = dates,
+                               stringsAsFactors = FALSE)
+# and show one column at a time
+technicalReports$title
+technicalReports$url
+technicalReports$date
+end.rcode-->
+
+    <h2>A complex example</h2>
+
+    <p><a href="http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGviaXML/generating-svg.html">An
     example</a> (see &ldquo;XPath&rdquo;) written for
     the <em>gridSVG</em> package <a href="#ref-11">[11]</a> will be
     revisited. The example first shows
@@ -405,11 +493,14 @@ end.rcode-->
     challenges that require consideration, but the <em>selectr</em>
     package can handle this case.</p>
 
-<!--begin.rcode loadggEx, fig.keep="none", warning=FALSE
+<!--begin.rcode loadggEx, fig.keep="none", warning=FALSE, message=FALSE
 library(ggplot2)
 library(gridSVG)
 qplot(mpg, wt, data=mtcars, colour=cyl)
 svgdoc <- gridToSVG(name=NULL, "none", "none")$svg
+end.rcode-->
+<!--begin.rcode showggEx, echo=FALSE
+cat(saveXML(svgdoc, file = NULL))
 end.rcode-->
 
     <p>So far we have simply reproduced the original plot and stored
