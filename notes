@@ -1,23 +1,65 @@
 
+2012-11-21
+----------
+
+DISCUSS:
+
+  + aniMaker
+
+    - Sources:  see examples/timelines/timeline.org
+                PLUS M$ MovieMaker
+
+  + SMIL
+
+    - animation is declarative so everything has to be known in 
+      advance (cannot generate what or when or how to animate 
+      on-the-fly, which you CAN do via javascript).
+
+  + Updated 'selectr' tech report
+
+
+TODO:
+
+  + Add better example to end of 'selectr' tech report
+
+  + Try again to implement an animation control system
+    (see Paul's aniMaker code and doc)
+
+  + Try to use animation control system to redo VIT example?
+  
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Write tech report on 'selectr'
+
+  + Multiple namespaces in querySelectorNS() ?
+
+  + some bug fixes for 'selectr'
+
+    INCLUDING pushing (Python) versions back to original Python library
+
+
 2012-11-14
 ----------
 
 DISCUSS:
 
   + Paul's comments on 'selectr' tech report
-
-
-FOR NOTING:
-
-  + 'Shiny' package for rapid development of R web apps
-
-    http://www.rstudio.com/shiny/
-
-    (from the R Studio guys)
-
-  + More coolness from Mike Bostock (et al)
-
-    http://www.nytimes.com/interactive/2012/11/07/us/politics/obamas-diverse-base-of-support.html
 
 
 TODO:
@@ -62,6 +104,19 @@ DONE:
     ... and with its own github repo ...
     
     https://github.com/sjp/selectr
+
+
+FOR NOTING:
+
+  + 'Shiny' package for rapid development of R web apps
+
+    http://www.rstudio.com/shiny/
+
+    (from the R Studio guys)
+
+  + More coolness from Mike Bostock (et al)
+
+    http://www.nytimes.com/interactive/2012/11/07/us/politics/obamas-diverse-base-of-support.html
 
 
 2012-11-07
