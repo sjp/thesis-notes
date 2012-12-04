@@ -1,0 +1,114 @@
+#+TITLE: TimingManager: A JS Interface to animaker Timing Information
+
+* Introduction
+
+While an attempt has been made to replicate the behaviour of the
+~animaker~ package in the browser, it comes with many differences and
+issues. The main reason for this is because of the behaviour of
+objects in JavaScript. We cannot clone/copy a JavaScript object, only
+its reference, this means that when we construct an animation tree,
+any child animations that are referenced more than once are
+potentially problematic.
+
+An alternative approach is to use the ~RJSONIO~ package to export
+timing information from ~animaker~. This creates an array of timing
+information that is fixed at the time of exporting. This avoids the
+concerns of object references in JS as we have fixed data values to
+consider. This also provides all of the information necessary to play
+back animation sequences.
+
+The only real concern is when observing the contexts in which the
+animations occur, in particular with respect to the ~vecNum~ and
+~tracNum~ properties, which are indexed from 1, while in JS we would
+prefer to use 0.
+
+* ~TimingManager~
+
+In order to use the exported timing information, a function has been
+created that aims to manage the state, action assignment and
+playback. What first needs to be performed is assigning the exported
+timing information as a variable.
+
+** Initialisation
+
+We first create a new instance of a ~TimingManager~ and pass into the
+constructor function the timing information, like so:
+
+: var tm = new TimingManager(timingInfo);
+
+This variable, ~tm~, now has several methods bound to it that manage
+that particular timing information.
+
+** Action Registration
+
+One important part of animations that is not determined at the time of
+exporting is the *action* that is to be performed at a particular time
+period. We need to be able to assign actions to each of the ~atomic~
+animations that have been exported. Consider the following JS
+functions which simply write a message to the ~console~ when called:
+
+: var alphaAction = function() {
+:     console.log("Alpha was called!");
+: };
+: var bravoAction = function() {
+:     console.log("Bravo was called!");
+: };
+: var charlieAction = function() {
+:     console.log("Charlie was called!");
+: };
+
+We want to assign these action functions to the animations labelled
+~Alpha~, ~Bravo~ and ~Charlie~ respectively. To do this, we use the
+~register~ method bound to ~TimingManager~ instances. This function
+can take two parameters, the second of which is an optional boolean
+parameter which determines whether to overwrite existing definitions
+of actions for animations. The first parameter is a JS object where
+the keys are the names of the animations and the values are functions
+that perform actions. To continue our example, to assign our action
+functions to animations we would do the following:
+
+: tm.register({
+:     Alpha: alphaAction,
+:     Bravo: bravoAction,
+:     Charlie: charlieAction
+: });
+
+Now when the ~Alpha~ animation begins, it calls
+~alphaAction~. Likewise for the remaining animations.
+
+** Playback
+
+There are two methods for playing animations. ~play~ and
+~frameApply~. We will first consider ~play~.
+
+~play~ takes a single parameter, ~t~, which applies a delay given to
+the entire animation sequence. This is optional and by default it is
+~0~, i.e. no delay is applied. What it does is look through all of the
+timing information, delays calling an animation action until the
+animations starting point, and passes in the timing information for
+that particular animation. The object that is passed into the action
+gives an action all of the necessary information to determine at what
+context it was called.
+
+To use ~play~ with our ~TimingManager~ instance, we would just do the
+following:
+
+: tm.play();
+: tm.play(1000); // Add a 1s delay
+
+~frameApply~ performs much the same task as ~play~ but animations are
+only occurring at an instant in time, so must be performed repeatedly
+to produce a fluid animation.
+
+~frameApply~ takes two parameters, ~fps~ and ~t~. ~t~, like with
+~play~ is an optional parameter that specifies a delay. ~fps~
+determines how often each second we should call animations.
+
+~frameApply~ passes into each action the timing information for that
+particular animation, the same as with ~play~. The key difference
+being that instead of the action only being called once for an
+animation, it will likely be called multiple times.
+
+Example usage of ~frameApply~ is the following:
+
+: tm.frameApply(10); // Refresh 10x every second
