@@ -21,3 +21,21 @@ var vParentDelay = new vec(a, b, c, {start: [0, 0.5, 0.5]});
 
 var tParentDelay = new trac(a, b, c, {start: [0, 0.5, 1]});
 
+
+var f = new atomic({label: "f", duration: null});
+
+var navec = new vec(a, f, b, f, c, {label: "navec", duration: null});
+
+var natrac = new trac(a, b, c, f);
+
+var vRep = v.rep({times: 3});
+vRep.subset(2);
+
+
+var e = atomic({label: "e", duration: 1});
+var vAppend = v.splice(e);
+
+var vSplice = vAppend.splice(t, {after: 2});
+
+var sequence = new vec(a, b, c);
+var newSeq = new sequence.splice(e, {at: 2});
