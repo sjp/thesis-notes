@@ -1,4 +1,134 @@
 
+2012-12-05
+----------
+
+TODO:
+
+  + Try to start a summary for Chambers Award
+
+  + Demos of TimingManager using D3 (?)
+
+  + Update notes on Shiny (RStudio web apps) ?
+
+  + Try to use animation control system to redo VIT example?
+  
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Demonstrated that implementing an animation control system
+    (see Paul's aniMaker code and doc)
+    in javascript was a fool's errand
+    See examples/animaker/animaker.js
+
+  + Wrote javascript to consume timing information from 
+    'animaker' instead
+    See examples/animaker/timing.js
+
+
+DISCUSS:
+
+  + ASA Stat. Computing & Stat. Graphics Student Paper Competition 2013
+
+  + ASA John M. Chambers Statistical Software Award - 2013
+
+  + Add Simon as "collaborator" on 'animaker' github repo
+
+  + Walk through handling pull request ?
+
+
+FOR NOTING:
+
+  + Another R-web solution worth keeping an eye on ?
+
+    http://rapporter.net/
+
+
+2012-11-28
+----------
+
+DISCUSS:
+
+  + 'animaker' package on github
+
+    https://github.com/pmur002/animaker
+
+  + ASA Stat. Computing & Stat. Graphics Student Paper Competition 2013
+
+  + ASA John M. Chambers Statistical Software Award - 2013
+
+  + Simon: Shouldn't you be able to insert a track into a sequence?
+    Paul:  YES!  See https://github.com/pmur002/animaker
+
+
+TODO:
+
+  + Continue to implement an animation control system
+    (see Paul's aniMaker code and doc)
+
+  + Try to use animation control system to redo VIT example?
+  
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Add better example to end of 'selectr' tech report
+    See http://stattech.wordpress.fos.auckland.ac.nz/2012-10-introducing-the-selectr-package/
+
+  + Try again to implement an animation control system
+    (see Paul's aniMaker code and doc)
+    
+    See examples/animaker/
+    (from google-chrome open examples/animaker/animaker-qunit.html,
+     Ctrl-shift-j for console, then, e.g., a.printTiming(true),
+     aContainer.printTiming(true) [all examples from R animaker doc
+     implemented)
+
+    ESPECIALLY see examples/animaker/animaker-ex.js
+
+
+FOR NOTING: 
+
+  + Someone else (Yihui Xie) combining R and D3 (but with D3 doing the drawing)
+
+    http://vis.supstat.com/2012/11/contour-plots-with-d3-and-r/
+
+  + Simple interaction example (but which would extend to web page with
+    R as server)
+
+    Two plots:  click on left one and right one updates
+
+    R-help 2012-11-28 from Baoqiang Cao
+
+
 2012-11-21
 ----------
 
