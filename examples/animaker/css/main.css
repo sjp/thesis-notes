@@ -1,0 +1,135 @@
+body {
+  margin: 0px auto;
+  width: 620px;
+}
+
+body p, figure figcaption {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+abbr[title] {
+  cursor: help;
+  border-bottom: 1px dotted #999;
+}
+
+pre {
+  font-size: 16px;
+  line-height: 20px;
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+  font-family: Inconsolata, Consolas, monospace;
+}
+
+code {
+  display: inline-block;
+  font-family: Inconsolata, Consolas, monospace;
+  font-size: 16px;
+  line-height: 20px;
+  background-color: #F8F8FF;
+  border:1px solid #DEDEDE;
+}
+
+figure {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+figure pre {
+  text-align: left;
+}
+
+button {
+  display: inline-block;
+  margin: 0px auto 20px; 
+  padding: 9px 14px;
+  font-size: 16px;
+  line-height: 24px;
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+          border-radius: 5px;
+  vertical-align: middle;
+}
+
+.pars {
+  display: inline-block;
+  margin: 0px auto 20px;
+  padding: 9px 14px;
+  font-size: 16px;
+  line-height: 24px;
+  vertical-align: middle;
+}
+
+p {
+  text-align: justify;
+}
+
+a {
+  text-decoration: underline;
+}
+
+em {
+  color: #555;
+}
+
+header h1, header p {
+  text-align: center;
+}
+
+header p.abstract {
+  text-align: justify;
+  margin-left: 30px;
+  margin-right: 30px;
+}
+
+.output, .js, .codeblock {
+  background-color: #F7F7F7;
+}
+
+.js {
+  padding: 1em;
+}
+
+input {
+  max-width: 50px;
+}
+
+.warning {
+  padding: 15px;
+  background-color: #FFFBE6;
+  border: 1px solid #FFDC26;
+}
+
+.warning p {
+  margin: 0;
+}
+
+.compat-btn {
+  display: block;
+  margin: 10px auto 0px auto; 
+  padding: 5px 10px;
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-border-radius: 5px;
+     -moz-border-radius: 5px;
+          border-radius: 5px;
+  vertical-align: middle;
+}
+
+.pkg-desc {
+  font-style: italic;
+}
+
+img, svg, canvas {
+  margin: 20px auto;
+  display: block;
+  -webkit-box-shadow: 0px 0px 9px black;
+  -moz-box-shadow: 0px 0px 9px black;
+  box-shadow: 0px 0px 9px black;
+}
+
+th, td {
+  padding: 8px;
+}

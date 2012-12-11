@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Timing Manager Examples</title>
+        <link rel="stylesheet" href="qunit.css">
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <style type="text/css">
+            .axis path,
+	    .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+
+            .axis text {
+                font-family: sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Examples of using TimingManager</h1>
+        <h2>Introduction</h2>
+
+        <p>The <code>TimingManager</code> API provides us with an easy
+        way of using timing information exported from animations in
+        R. This does not allow us to modify exported animations but
+        does allow us to be able to use the animations
+        provided. Examples of these are demonstrated for both
+        declarative animation and iterative animation by frames. The
+        declarative animation is demonstrated via D3 and its use of
+        SVG and CSS3 transitions. The framed animation is performed by
+        the <code>canvas</code> element, which uses a painter-model
+        approach, rather than SVG's object-based approach to image
+        construction.</p>
+
+        <h2>Exporting From R</h2>
+
+        <p>To begin, we will first create an animation and export it
+        from R. We first need to load
+        the <a href="https://github.com/pmur002/animaker">animaker</a>
+        package.</p>
+
+<pre class="codeblock">
+library(animaker)
+</pre>
+
+        <p>By taking some of the code from a tech report we can
+        reconstruct an animation.</p>
+
+<pre class="codeblock">
+a <- atomic(label = "Alpha", durn = 1)
+b <- atomic(label = "Bravo", durn = 2)
+c <- atomic(label = "Charlie", durn = 3)
+f <- atomic(label = "Delta", durn = NA)
+navec <- vec(a, f, b, f, c, durn = 10)
+# We'll have this repeated 3 times
+navec <- rep(navec, 3)
+</pre>
+
+        <p>We can then observe the timing information that this
+        animation generates in order to use it.</p>
+
+<pre class="codeblock">
+timing(navec)
+</pre>
+
+        <p>In order to export this timing information into a form that
+        is easy to manipulate in the browser, we will use
+        the <code>RJSONIO</code> package. This package translates R
+        data structures into JSON equivalents. This means we can
+        access the data in JavaScript that has been exported from R in
+        a natural manner.</p>
+
+<pre class="codeblock">
+library(RJSONIO)
+timingData <- toJSON(timing(navec))
+# Turn it into a JS variable
+timingData <- paste("var timingData = ", timingData, ";", sep = "")
+cat(timingData, file = "data.js")
+</pre>
+
+        <p>Now that we have the data exported from R, we can begin to
+        use the timing information in the browser.</p>
+
+        <h2>Declarative Animation</h2>
+
+        <p>When we are creating an animation in the browser, we can
+        use existing facilities in the browser for transitioning
+        between states. This allows us to have smooth animation
+        performed for us without needing to specify how this is to be
+        performed. We can see how this is supposed to look by creating
+        a simple plot using D3. Note that the <strong>action</strong>
+        that we are going to be applying to the animation is simply
+        going to append text to a field below the timing plot. By
+        clicking the &ldquo;Play&rdquo; button we can visualise how
+        the playback is going to occur, along with the associated
+        actions.</p>
+
+        <div id="declarative-timing"></div>
+
+        <p>We can see that actions for each animation are simply to
+        print out their labels, along with the starting times and
+        their durations. This is a trivial example for demonstrating
+        how this can be used, but instead of simply appending some
+        text, we could be performing any task we like within
+        JavaScript.</p>
+
+        <!--<h3>A Simple Example</h3>
+
+        <p>We can provide a more useful demonstration of this
+        technique by creating a simple gridSVG based plot, then
+        animating between transformations on a log scale.</p>-->
+
+        <h2>Framed Animation</h2>
+
+        <p>In the case of framed animation, the intention is to
+        provide the illusion of animation be producing several frames
+        close together. This effect is employed in films where 24
+        individual frames are shown per second, but because they are
+        shown close together, the illusion of a moving picture is
+        produced. In the browser, a natural way of performing this
+        task is by using the <code>canvas</code> element. This is
+        mostly useful if we do not have the ability to employ
+        declarative animation.</p>
+
+        <div id="frame-ex"></div>
+
+        <h2>Conclusion</h2>
+
+        <p>This has been a quick demonstration to show how we can use
+        both framed animation and declarative animation within a web
+        browser. The use of R&rsquo;s <code>animaker</code> package
+        and <code>TimingManager</code> provide a convenient interface
+        to describe and apply animations respectively. It allows us to
+        focus less on <em>when</em> things are happening, and more
+        on <em>what</em> the animations are aiming to show.</p>
+
+        <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+        <script type="text/javascript" src="timing-data.js"></script>
+        <script type="text/javascript" src="timing.js"></script>
+        <!--<script type="text/javascript" src="timing-ex.js"></script>-->
+        <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+        <script type="text/javascript" src="timing-plot.js"></script>
+        <script type="text/javascript">
+            timingPlot(timingData, "#declarative-timing", {
+                width: 500,
+                height: 500,
+                caption: "A timing plot generated from exported timing information"
+            });
+
+            framePlot(timingData, "#frame-ex", {
+                width: 500,
+                height: 200,
+                caption: "A frame-based animation"
+            });
+        </script>
+    </body>
+</html>

@@ -304,6 +304,8 @@
 <script type="text/javascript" src="http://backbonejs.org/backbone-min.js"></script>
 <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
 <script type="text/javascript" src="/custom/sampvar/coords.js"></script>
+<script type="text/javascript" src="/custom/sampvar/js/timing.js"></script>
+<script type="text/javascript" src="/custom/sampvar/js/timing-data.js"></script>
 <script type="text/javascript">
     var SampvarView = Backbone.View.extend({
         el: $("#user-input"),
@@ -322,6 +324,7 @@
         },
 
         showAnimation: function(obj) {
+            // Pulling in data from R
             var sampInds = obj.sampInds;
             var sampLocs = obj.sampLocs;
             var statPoints = new DOMParser()
@@ -337,122 +340,145 @@
                               .documentElement
                               .firstChild;
 
-            for (var j = 0; j < 20; j++) {
-                (function(ind) {
-                    var beginClone = function(d, i) {
-                        var newNode = this.cloneNode(true);
-                        var cloneSel = d3.select(this.parentNode.appendChild(newNode));
-                        cloneSel
-                            .attr({ stroke: "black",
-                                    fill: "black",
-                                    opacity: 1,
-                                    "fill-opacity": 1 });
-                        cloneSel
-                            .transition()
-                            .delay(1500)
-                            .duration(1500)
-                            .attr("y", sampLocs.y[ind][i]);
-                        cloneSel
-                            .transition()
-                            .delay(3000)
-                            .duration(4000)
-                            .remove();
-                    };
+            var cloneSampleNodes = function(info) {
+                var iter = info.vecNum[0] - 1;
+                var sampNodes = $("#data-points use")
+                    .filter(function(i) {
+                        return _.contains(sampInds[iter], i + 1);
+                    })
+                    .clone()
+                    .appendTo("#data-points")
+                    .get();
 
-                    d3.selectAll("#data-points use")
-                        .filter(function(d, i) {
-                            if (_.contains(sampInds[ind], i + 1)) {
-                                return this;
-                            }
-                        })
-                        .transition()
-                        .delay(ind * 7000)
-                        .duration(0)
-                        .each("start", beginClone);
+                d3.selectAll(sampNodes)
+                    .transition()
+                    .delay(function(d, i) {
+                        // Show one point at a time
+                        var step = (1000 * info.durn) / 100;
+                        return i * step;
+                    })
+                    .attr({
+                        class: "cloned",
+                        stroke: "black",
+                        fill: "black",
+                        opacity: 1,
+                        "fill-opacity": 1
+                    });
+            };
 
-                    // Adding the sample statistic point
-                    d3.select("#wrapper\\:\\:animation\\.field\\:\\:stat\\.3")
-                        .call(function() {
-                            var addPoint = function() {
-                                var newPoint = $(statPoints).find("use").get(ind);
-                                newPoint = newPoint.cloneNode(true);
+            var dropSample = function(info) {
+                var iter = info.vecNum[0] - 1;
+                d3.selectAll("#data-points .cloned")
+                    .data(sampLocs.y[iter])
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("y", function(d) { return d; });
+            };
 
-                                // Let's add a cool "bubble pop" effect, just using d3
-                                d3.select(this)
-                                    .append("circle")
-                                    .attr({ cx: $(newPoint).attr("x"),
-                                            cy: $(newPoint).attr("y"),
-                                            r: 0,
-                                            stroke: "none",
-                                            fill: "steelblue",
-                                            "fill-opacity": 0.5 })
-                                    .transition()
-                                    .duration(500)
-                                    .attr({ r: 250,
-                                            "fill-opacity": 0 })
-                                    .remove();
+            var removeSample = function(info) {
+                d3.selectAll("#data-points .cloned").remove();
+            };
 
-                                // Add the point *after* the "bubble" because otherwise
-                                // the point might be obscured for a brief moment
-                                this.appendChild(newPoint);
-                            };
+            // Adding the statistic point
+            var sampleStat = function(info) {
+                var iter = info.vecNum[0] - 1;
+                var newPoint = $(statPoints)
+                    .find("use")
+                    .eq(iter)
+                    .clone()
+                    .get(0);
 
-                            this
-                               .transition()
-                               .delay((ind * 7000) + 5500)
-                               .duration(0)
-                               .each("end", addPoint);
-                        });
-                    // At the same time, also draw a sample stat line and ghosting
-                    d3.select("#wrapper\\:\\:animation\\.field\\:\\:sample\\.3")
-                        .call(function() {
-                            var addLines = function() {
-                                var newGhost = $(ghostsTpl).find("polyline").get(0);
-                                newGhost = newGhost.cloneNode(true);
-                                var newLine = $(lineTpl).find("polyline").get(0);
-                                newLine = newLine.cloneNode(true);
+                var sel = "#wrapper\\:\\:animation\\.field\\:\\:stat\\.3";
+                d3.select(sel)
+                    .append("circle")
+                    .attr({
+                        cx: $(newPoint).attr("x"),
+                        cy: $(newPoint).attr("y"),
+                        r: 0,
+                        stroke: "none",
+                        fill: "steelblue",
+                        "fill-opacity": 0.5
+                    })
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr({
+                        r: 250,
+                        "fill-opacity": 0
+                    })
+                    .remove();
 
-                                // Modifying the ghost
-                                newGhost.id = "ghost" + (ind + 1);
-                                var gd = [obj.sampLines.lineXs[ind],
-                                          obj.sampLines.ghostLineYs[0],
-                                          obj.sampLines.ghostLineYs[1]];
-                                var gp = gd[0] + "," + gd[1] + " " + gd[0] + "," + gd[2];
-                                newGhost.setAttribute("points", gp);
-                                this.appendChild(newGhost);
+                $(sel).append(newPoint);
+            };
 
-                                // Modifying the line
-                                newLine.id = "sampLine";
-                                var ld = [obj.sampLines.lineXs[ind],
-                                          obj.sampLines.lineYs[0],
-                                          obj.sampLines.lineYs[1]]
-                                var lp = ld[0] + "," + ld[1] + " " + ld[0] + "," + ld[2];
-                                newLine.setAttribute("points", lp);
-                                this.appendChild(newLine);
+            // Add sample stat line
+            var addStatLine = function(info) {
+                var iter = info.vecNum[0] - 1;
+                var sel = "#wrapper\\:\\:animation\\.field\\:\\:sample\\.3";
+                var newGhost = $(ghostsTpl)
+                    .find("polyline")
+                    .get(0)
+                    .cloneNode(true);
+                var newLine = $(lineTpl)
+                    .find("polyline")
+                    .get(0)
+                    .cloneNode(true);
 
-                                // Moving the stat line down
-                                var currStatPoint = $(statPoints).find("use").get(ind);
-                                currStatPoint = currStatPoint.cloneNode(true);
-                                var cspy = currStatPoint.y.baseVal.value;
-                                var newPoints = ld[0] + "," + cspy + " " +
-                                                ld[0] + "," + cspy;
-                                d3.select("#sampLine")
-                                    .transition()
-                                    .delay(1000)
-                                    .duration(1500)
-                                    .attr("points", newPoints)
-                                    .remove();
+                // Modifying the ghost and adding
+                newGhost.id = "ghost" + (iter + 1);
+                var gd = [obj.sampLines.lineXs[iter],
+                          obj.sampLines.ghostLineYs[0],
+                          obj.sampLines.ghostLineYs[1]];
+                var gp = gd[0] + "," + gd[1] + " " + gd[0] + "," + gd[2];
+                newGhost.setAttribute("points", gp);
+                $(sel).append(newGhost);
 
-                            };
-                                
-                            this
-                                .transition()
-                                .delay((ind * 7000) + 3000)
-                                .duration(0)
-                                .each("end", addLines);
-                        });
-                })(j);
-            }
+                // Modifying the line and adding
+                newLine.id = "sampLine";
+                var ld = [obj.sampLines.lineXs[iter],
+                          obj.sampLines.lineYs[0],
+                          obj.sampLines.lineYs[1]]
+                var lp = ld[0] + "," + ld[1] + " " + ld[0] + "," + ld[2];
+                newLine.setAttribute("points", lp);
+                $(sel).append(newLine);
+            };
+
+            var dropSampleStat = function(info) {
+                var iter = info.vecNum[0] - 1;
+
+                // Moving the stat line down
+                var currStatPoint = $(statPoints)
+                    .find("use")
+                    .eq(iter)
+                    .clone()
+                    .get(0);
+                var lineX = obj.sampLines.lineXs[iter];
+                var cspy = currStatPoint.y.baseVal.value;
+                var newPoints = lineX + "," + cspy + " " +
+                                lineX + "," + cspy;
+
+                d3.select("#sampLine")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("points", newPoints)
+                    .remove();
+            };
+
+            // Assume timingData holds timing information exported
+            // from R via RJSONIO and animaker
+            var tm = new TimingManager(timingData);
+
+            // Assign actions to animations
+            tm.register({
+                sampleSelect: cloneSampleNodes,
+                sampleDrop: dropSample,
+                sampleStat: addStatLine,
+                sampleStatDrop: dropSampleStat,
+                sampleRemove: removeSample,
+                statPoint: sampleStat
+            });
+
+            // Let's go!
+            tm.play();
         }
     });
 

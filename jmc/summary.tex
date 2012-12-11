@@ -1,0 +1,120 @@
+\documentclass[11pt, a4paper]{article}
+
+\newcommand{\grid}{\textsf{grid}}
+\newcommand{\R}{\textsf{R}}
+\newcommand{\gridSVG}{\textsf{gridSVG}}
+\newcommand{\JS}{\textsf{JavaScript}}
+\newcommand{\pkg}[1]{\textsf{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\tsc}[1]{{\small \textsc{#1}}}
+
+\usepackage[margin = 30mm]{geometry}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{parskip}
+%\usepackage{microtype}
+% Defining the file/font/lang formats we want.
+\usepackage[utf8]{inputenc}
+\usepackage[OT1]{fontenc}
+\usepackage[newzealand]{babel}
+\usepackage{hyperref}
+
+% Document properties.
+\newcommand{\doctitle}{Dynamic Web-based Graphics for \R{}}
+\newcommand{\docauthor}{Simon J. Potter}
+\newcommand{\docdate}{February 18, 2013}
+\title{\doctitle{}}
+\author{\docauthor{} \\ \url{simon.potter@auckland.ac.nz}}
+\date{\docdate{}}
+\hypersetup{pdftitle = {\doctitle{} | \docauthor{}},
+            pdfauthor = {\docauthor{}},
+            pdfborder = {0 0 0.5}}
+
+\begin{document}
+
+\maketitle
+
+A collection of tools has been developed to create and present
+web-based graphics via the popular statistical software, \R{}. The
+primary motivation for this is because web browsers are a powerful and
+flexible tool for building rich user interfaces. They feature many
+capabilities that are difficult, if not impossible to do in \R{}. Many
+packages, notably RStudio's \pkg{shiny}, are able to present a
+reactive user interface based on input from users. However, no \R{}
+packages are able to provide a way of way of generating reactive
+\emph{graphics} from \R{}.
+
+The \gridSVG{} package has been extensively modified to support the
+goal of generating reactive graphics. In the past, it was able to
+generate an image that was capable of interactivity (via \JS{} event
+handlers and hyperlinking) and animation. However, it did not easily
+afford manipulating the image after it had been created. To correct
+this, two major features were added; exporting of a \gridSVG{}
+coordinate system and a node based \tsc{SVG} document generation.
+
+The node based approach to drawing \tsc{SVG} is a consequence of using
+the \pkg{XML} package. The two main reasons why rewriting to use
+\pkg{XML} was undertaken were because of the ability to construct
+in-memory images and to insert \tsc{XML} nodes at any location within
+our \tsc{SVG} document, rather than simply appending to the end of the
+document. Drawing images in memory allows us to more easily serve
+\gridSVG{} images over the web as it avoids the need to touch a hard
+disk for storage, as is the case for \textcolor{red}{most/all?}
+graphics devices. The ability to insert nodes at any location is
+particularly useful if we wish to modify the image, as we may want to
+add, remove or modify an \tsc{SVG} element, and its children.
+
+The exporting of \grid{}'s coordinate system allows one to re-use a
+\grid{} viewport even if it has been exported via \gridSVG{}. In
+\JS{}, this is useful because we are able to add extra graphical
+objects to a plot, relative to a scale, without the need to use
+\R{}. The same information can be imported into \R{} to generate parts
+of a plot and modify an existing plot.
+
+Commonly in a web browser, particularly with any of the popular \JS{}
+libraries, one is able to select content in a web page through the use
+of CSS3 Selectors. These are often very readable and terse expressions
+that are easy for developers to target particular pieces in a web
+page. It would be ideal if one could specify parts of an \tsc{XML}
+document (using the \pkg{XML} package) with the same convenient
+notation. The \pkg{XML} package does provide a notation that performs
+this task, called XPath, but it is not commonly employed within a web
+browser and its usage is limited among those familiar with a web-based
+environment. A package has been created, \pkg{selectr}, which
+translates CSS3 Selectors into XPath expressions, allowing us to use
+the same notation within \R{} as we would in a web
+browser. Convenience functions have also been created that mimic the
+\code{querySelector()} method present in a web browser. The creation
+of the \pkg{selectr} package eases manipulation of \tsc{HTML} and
+\tsc{XML} documents in \R{}.
+
+If we have an image within the browser that we wish to manipulate via
+animation, we need to determine how the image is to be animated. A
+problem with animation is that actions are often influenced by
+previous animations, and thus need to be sequenced in a particular
+order. Using a \JS{} library like D3, we would have to hard-code the
+sequencing ourselves, but this has limitations. The first of these
+limitations is that we have to keep track of the relationships between
+animations ourselves. For example, consider a sequence of animations
+that happens one after the other. If one of the earlier animations
+needs to take a longer period of time, it will affect any following
+animations. Without any animation management, we need to modify all
+following animations to account for this.
+
+To manage these sequences of animations, the \pkg{animaker} package
+was created. It allows us to describe in \R{} how an animation should
+be arranged. The result of this description is that it allows us to
+export the times and durations that each animation should occur at,
+along with the context at which animation occurred. The context gives
+us information like how many times the animation has been repeated
+within a sequence. If we export this information to \tsc{JSON} via the
+\pkg{RJSONIO} package, we have this information available to us in
+\JS{}. We can then use this information to build up our sequence of
+animations without the need to worry about when they are to occur, or
+information about how long they are to occur for.
+
+These tools are independent of the underlying mechanism used to send
+information to and from \R{}. Therefore we could use the
+\pkg{websockets}, \pkg{shiny}, \pkg{Rook} packages without being
+limited in the type of graphics we can produce.
+
+\end{document}

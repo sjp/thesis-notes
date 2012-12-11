@@ -334,19 +334,10 @@
 
 ** RStudio Shiny
 
-   + URL :: http://rstudio.org/, http://rstudio.github.com/shiny/tutorial/,[[https://github.com/rstudio/shiny][ https://github.com/rstudio/shiny]] [PRIVATE]
+   + URL :: http://rstudio.org/, http://rstudio.github.com/shiny/tutorial/,[[https://github.com/rstudio/shiny][ https://github.com/rstudio/shiny]], [[http://cran.stat.auckland.ac.nz/web/packages/shiny/index.html][CRAN Shiny]]
    + Author :: Josh Paulson, Joe Cheng, JJ Allaire
    + Status :: Active
    + Category :: Application Server
-
-   To install the software the following code needs to be executed:
-
-   : options(repos=c(RStudio="http://rstudio.org/_packages", getOption("repos")))
-   : install.packages("shiny")
-
-   As a result, we observe that the current location of the ~shiny~
-   package is at:
-   http://rstudio.org/_packages/src/contrib/shiny_0.1.2.tar.gz
 
    Unlike RStudio Server, Shiny is a standalone piece of software that
    aims to build a web-based GUI in HTML/CSS/JS. The "workhorse" of
@@ -379,6 +370,44 @@
    R and sent to the browser, if this a ~reactivePlot~, a lot of data
    may end up being transmitted over a WebSocket, depending on the
    complexity of the image.
+
+   Even more importantly, Shiny offers extensibility via input and
+   output bindings. An input binding allows one to send information to
+   R via a web browser. The given example on the Shiny tutorial page
+   is for a button to be able to call back to Shiny, receive a new
+   counter value, then assign the value of the counter to the button
+   text. In particular, the purpose of an input binding is for Shiny
+   to know, in the browser, how to identify a component and how to
+   react to specific events. In addition it needs to know how to get
+   and set values on the component.
+
+   An output binding informs Shiny how to send information to the
+   browser. Normally it knows how to send basic information like data
+   frames, text, vectors and plots. However, it lacks the ability to
+   understand anything more complex than that. An example given is
+   that Shiny will not understand how to send a time series object to
+   the browser, as a result, a reactive interface needs to constructed
+   that understands the structure of a time series object. For our
+   purposes, this might mean constructing a way of generating an
+   initial plot via gridSVG and how to update it.
+
+   How we might use that in conjunction with gridSVG is that we could
+   build a binding that creates a gridSVG plot, sends it to the
+   browser and displays it appropriately. We could then have buttons
+   that intend to modify the plot by setting input bindings on them
+   that are bound to functions returning pieces of a plot. The
+   handlers would know what to do with the response, so it could
+   manipulate the plot using a library like D3.
+
+   An example of how D3 can be used to produce custom graphics with
+   Shiny is at the following URL:
+
+   http://glimmer.rstudio.com/qbrc/grn/
+
+   Here *all* of the graphics are produced via D3, so R is just acting
+   as a data service. Instead of just piping data to the browser, we
+   could instead send an SVG document to instantiate a plot with,
+   *then* modify it with D3 as required.
 
 ** R-Node
 
