@@ -1,11 +1,26 @@
-var TimingManager = function(timingInfo) {
+var TimingManager = function(timingInfo, timeUnit) {
     // If we've just exported a single animation, force it
     // to be an array to generalise the rest of the code to arrays.
     if (! _.isArray(timingInfo)) {
         timingInfo = [timingInfo];
     }
 
+    // Assume milliseconds by default, as that's natural in JS
+    timeUnit = timeUnit || "ms";
+
     var callbacks = {};
+
+    var toMs = function(t) {
+        if (timeUnit === "ms") {
+            return t;
+        } else if (timeUnit === "s") {
+            return t * 1000;
+        } else if (timeUnit === "m") {
+            return t * 60 * 1000;
+        } else {
+            throw new Error("Unknown time unit: " + timeUnit);
+        }
+    };
 
     this.register = function(fns, overwrite) {
         for (var f in fns) {
@@ -25,7 +40,7 @@ var TimingManager = function(timingInfo) {
         _.each(timingInfo, function(anim) {
             if (callbacks[anim.label]) {
                 _.delay(callbacks[anim.label],
-                        t + (anim.start * 1000),
+                        t + toMs(anim.start),
                         anim);
             } else {
                 console.warn("Ignoring playback of animation: %s", anim.label);
@@ -36,8 +51,8 @@ var TimingManager = function(timingInfo) {
     this.frameTiming = function(t) {
         t = t || 0; // Default to 0ms
         return _.filter(timingInfo, function(info) {
-            return (t >= (info.start * 1000)) &&
-                   (t < ((info.start + info.durn) * 1000));
+            return (t >= toMs(info.start)) &&
+                   (t < toMs(info.start + info.durn));
         });
     };
 
@@ -51,7 +66,7 @@ var TimingManager = function(timingInfo) {
         var increment = 1000 / fps;
         var durn = 0;
         _.each(timingInfo, function(info) {
-            durn = Math.max(durn, ((info.start + info.durn) * 1000));
+            durn = Math.max(durn, toMs(info.start + info.durn));
         });
         var times = [];
         var i;
@@ -61,8 +76,8 @@ var TimingManager = function(timingInfo) {
 
         var getCurrentTiming = function(t) {
             return function(info) {
-                return (t >= (info.start * 1000)) &&
-                       (t < ((info.start + info.durn) * 1000));
+                return (t >= toMs(info.start)) &&
+                       (t < toMs(info.start + info.durn));
             };
         };
 
