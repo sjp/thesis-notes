@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Applying Animations with TimingManager</title>
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <style type="text/css">
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+
+            .axis text {
+                font-family: sans-serif;
+            }
+        </style>
+<!--begin.rcode echo=FALSE
+# Setting knitr options
+options(prompt = "R> ", continue = "R+ ")
+opts_chunk$set(tidy = FALSE, prompt = TRUE, comment = NA)
+end.rcode-->
+    </head>
+    <body>
+        <header>
+            <h1>Applying Animations with TimingManager</h1>
+            <p>Simon Potter <a href="mailto:simon.potter@auckland.ac.nz"><code>simon.potter@auckland.ac.nz</code></a></p>
+            <p>Department of Statistics, University of Auckland</p>
+            <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
+            <p class="abstract">
+                <strong>Abstract:</strong> The <em>TimingManager</em>
+                library is a tool written in JavaScript used to apply
+                animations in a web browser. It is not concerned with
+                creation or modification of animation timing
+                information, and delegates those tasks to R via
+                the <em>animaker</em>
+                package. Primarily <em>TimingManager</em> is focused
+                on assigning actions to existing animations, then
+                playing animation sequences using either a declarative
+                or frame-based approach.
+            </p>
+        </header>
+
+        <h2>Introduction</h2>
+
+        <p>The <em>TimingManager</em> <a href="#ref-1">[1]</a> library
+        provides us with an easy way of using timing information
+        exported from animations in R <a href="#ref-2">[2]</a>. This
+        does not allow us to modify exported animations but does allow
+        us to be able to use the animations created by
+        the <em>animaker</em> <a href="#ref-3">[3]</a>
+        package. <em>animaker</em> tells us when an animation occurs,
+        and its duration, but it does not assign actions to
+        animations. The <em>TimingManager</em> library not only
+        assigns actions to animation descriptions, it also allows us
+        to play back animations in a simple manner.</p>
+
+        <p>We demonstrate how <em>TimingManager</em> is used for both
+        declarative animation and iterative animation by frames. The
+        declarative animation is demonstrated via
+        D3 <a href="#ref-4">[4]</a> and its use of
+        SVG <a href="#ref-5">[5]</a> and CSS
+        transitions <a href="#ref-6">[6]</a>. The framed animation is
+        performed by the HTML <code>&lt;canvas&gt;</code>
+        element <a href="#ref-7">[7]</a>, which uses a painter-model
+        approach, rather than SVG's object-based approach to image
+        construction.</p>
+
+        <h2>Exporting From R</h2>
+
+        <p>To begin, we will first create an animation and export it
+        from R. We first need to load the <em>animaker</em>
+        package.</p>
+
+<!--begin.rcode loadpkg, message=FALSE
+library(animaker)
+end.rcode-->
+
+        <p>By taking some of the code
+        from <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">a
+        technical report</a> we can reconstruct an animation.</p>
+
+<!--begin.rcode buildAnims
+a <- atomic(label = "Alpha", durn = 1)
+b <- atomic(label = "Bravo", durn = 2)
+c <- atomic(label = "Charlie", durn = 3)
+f <- atomic(label = "Delta", durn = NA)
+navec <- vec(a, f, b, f, c, durn = 10)
+# We'll have this repeated 3 times
+navec <- rep(navec, 3)
+end.rcode-->
+
+        <p>We can then observe the timing information that this
+        animation generates in order to use it.</p>
+
+<!--begin.rcode showAnimTiming
+timing(navec)
+end.rcode-->
+
+        <p>In order to export this timing information into a form that
+        is easy to manipulate in the browser, <em>animaker</em> uses
+        the <em>RJSONIO</em> <a href="#ref-8">[8]</a> package. This
+        package translates R data structures into JSON
+        equivalents. This means we can access the data in JavaScript
+        that has been exported from R in a natural
+        manner. <em>TimingManager</em> can export animation timings to
+        a JavaScript variable that is assigned timing information.</p>
+
+<!--begin.rcode exportAnims, message=FALSE
+# Store timing information
+timingData <- timing(navec)
+# Turn it into a JS variable and save
+export(timingData,
+       jsVar = "timingData",
+       file = "timing-data.js")
+end.rcode-->
+
+        <p>The file <code>timing-data.js</code> can now be used within
+        an HTML document so that we can use this timing information
+        within a browser. Now that we have the data exported from R,
+        we can begin to use the timing information in the browser.</p>
+
+        <h2>Declarative Animation</h2>
+
+        <p>When we are creating an animation in the browser, we can
+        use existing facilities within the browser for transitioning
+        between states. This allows us to have smooth animation
+        performed for us without needing to specify how this is to be
+        performed. We can see how this is supposed to look by creating
+        a simple plot using D3. Note that the <strong>actions</strong>
+        associated with each animation are going to be appending text
+        below the timing plot. By clicking the &ldquo;Play&rdquo;
+        button we can visualise how the playback is going to occur,
+        along with triggering associated actions.</p>
+
+        <div id="declarative-timing"></div>
+
+        <p>We can see that actions for each animation are simply to
+        print out their labels, along with the starting times and
+        their durations. This is a trivial example for demonstrating
+        how this can be used, but instead of simply appending some
+        text, we could be performing any task we like within
+        JavaScript.</p>
+
+        <h3>A Simple Example</h3>
+
+        <p>We can provide a simple demonstration of this technique by
+        creating a simple plot where we have 3 squares that move
+        around and change colour. The aim is to perform the following
+        animation sequence:</p>
+
+        <ol>
+            <li>Move a red square from left to right. This starts
+            immediately and lasts for 1 second. The square will turn
+            black once it has completed moving.</li>
+            <li>Move a green square from right to left. This starts 1
+            second after the previous animation and lasts for 1
+            second. The square will turn black once it has completed
+            moving.</li>
+            <li>Move a blue square from the left to the middle of the
+            plot. This starts 1 second after the previous animation
+            and lasts for 1 second. The square will turn black once it
+            has completed moving.</li>
+            <li>All squares will then move into the centre of the
+            plot, also transitioning to white. This starts 1 second
+            after the previous animation and lasts for 3 seconds.</li>
+        </ol>
+
+        <p>Now that we have described this animation sequence, we
+        first need to describe the timings of the animation sequence
+        with <em>animaker</em>. The description is created below:</p>
+
+<!--begin.rcode simpleAnim, fig=TRUE, message=FALSE
+library(animaker)
+redSq <- atomic(label = "red", durn = 1)
+greenSq <- atomic(label = "green", start = 1, durn = 1)
+blueSq <- atomic(label = "blue", start = 1, durn = 1)
+final <- atomic(label = "final", start = 1, durn = 3)
+# Combine animations into a sequence
+completeAnim <- vec(redSq, greenSq, blueSq, final,
+                    label = "complete")
+# Let's see what this looks like
+plot(completeAnim)
+end.rcode-->
+
+        <p>Now that the description of the animation sequence has been
+        created, we need to be able to export it into a form that a
+        web browser can use. We do this by calling
+        the <code>export()</code> function, as shown below.</p>
+
+<!--begin.rcode exportSimple
+export(completeAnim,
+       jsVar = "simpleAnim",
+       file = "simple-anim-timing.js")
+end.rcode-->
+
+        <p>We can then import that into the browser using the
+        HTML <code>&lt;script&gt;</code> tag. This allows us to make
+        use of <em>TimingManager</em> because we expose a JavaScript
+        variable, <code>simpleAnim</code>, which contains all of the
+        necessary timing information. We will first begin by
+        instantiating a <em>TimingManager</em> object, noting that it
+        should be using seconds as its unit of time.</p>
+
+<pre class="js">
+JS&gt; var tm = new TimingManager(simpleAnim, "s");
+</pre>
+
+        <p>Next we will be creating JavaScript functions that we will
+        assign as actions to our atomic animations. For clarity, the
+        code used to generate the initial scene has been
+        ommitted. Note in the following functions that each takes a
+        single parameter which contains the information about the
+        animation as it is being called. For example, it contains the
+        starting time, duration, and the context in which the
+        animation occurred (i.e. to determine whether this is a
+        repeated animation).</p>
+
+<pre class="js">
+JS&gt; var redAction = function(info) {
+JS+     d3.select("#redsq")
+JS+         .transition()
+JS+         .duration(info.durn * 1000)
+JS+         .attr("x", 400)
+JS+         .transition()
+JS+         .attr("fill", "black");
+JS+ };
+JS&gt; var greenAction = function(info) {
+JS+     d3.select("#greensq")
+JS+         .transition()
+JS+         .duration(info.durn * 1000)
+JS+         .attr("x", 100)
+JS+         .transition()
+JS+         .attr("fill", "black");
+JS+ };
+JS&gt; var blueAction = function(info) {
+JS+     d3.select("#bluesq")
+JS+         .transition()
+JS+         .duration(info.durn * 1000)
+JS+         .attr("x", 250)
+JS+         .transition()
+JS+         .attr("fill", "black");
+JS+ };
+JS&gt; var finalAction = function(info) {
+JS+     d3.selectAll("#redsq, #greensq, #bluesq")
+JS+         .transition()
+JS+         .duration(info.durn * 1000)
+JS+         .attr({
+JS+             x: 250,
+JS+             y: 250,
+JS+             fill: "white"
+JS+         });
+JS+ };
+</pre>
+
+        <p>Note that the only timing calculation we needed to make is
+        to convert seconds to milliseconds. This is because D3, like
+        almost all time-related JavaScript code, uses milliseconds as
+        its primary unit of time. While the D3 code shown above is
+        what we're going to be using to perform animation, it is not
+        strictly necessary to understand it, only the resulting
+        actions it performs.</p>
+
+        <p>In order to bind actions to animations, we need
+        to <strong>register</strong> the actions
+        within <em>TimingManager</em>. To do this, we simply build a
+        JavaScript object that has animation labels as its keys, and
+        the associated actions as its values. This is shown below:</p>
+
+<pre class="js">
+JS&gt; tm.register({
+JS+     red: redAction,
+JS+     green: greenAction,
+JS+     blue: blueAction,
+JS+     final: finalAction
+JS+ });
+</pre>
+
+        <p>Now that the actions have been <strong>registered</strong>
+        to atomic animations, we can now <strong>play</strong>
+        them. The result is shown below:</p>
+
+        <div id="simple-ex"></div>
+
+        <h2>Framed Animation</h2>
+
+        <p>In the case of framed animation, the intention is to
+        provide the illusion of animation be producing several frames
+        close together. This effect is employed in films where 24
+        individual frames are shown per second, but because they are
+        shown close together, the illusion of a moving picture is
+        produced. In the browser, a natural way of performing this
+        task is by using the <code>&lt;canvas&gt;</code> element. This
+        is mostly useful if we do not have the ability to employ
+        declarative animation, as is the case with R graphics
+        devices.</p>
+
+        <p>A frame-based animation has been created, using the same
+        animation sequence description as was first described in this
+        document. The key difference is that we need to overwrite the
+        definitions of actions associated animations with new action
+        functions. In order to do this, we simply register the actions
+        again, but with an additional parameter, which determines
+        whether we can overwrite definitions. The following code
+        demonstrates this:</p>
+
+<pre class="js">
+JS&gt; tm.register({
+JS+     Alpha: alphaFrameAction,
+JS+     Bravo: bravoFrameAction,
+JS+     Charlie: charlieFrameAction,
+JS+     Delta: deltaFrameAction
+JS+ }, true);
+</pre>
+
+        <p>Note that <code>true</code> has been passed in as an
+        argument to allow overwriting of definitions. For the sake of
+        brevity, we will not show the definitions of each of the
+        action functions. However, their definitions are such that
+        they aim to simply draw a filled rectangle when they are
+        called. Additionally, they append text to a field below the
+        plot, so we can see when the &ldquo;frames&rdquo; are being
+        drawn.</p>
+
+        <p>Now that we have our timing information, and our actions
+        registered, we can play our frame-based animation. To do this,
+        we call the <code>frameApply()</code> method. It requires a
+        single parameter, which represents the number of frames to
+        draw per second.</p>
+
+<pre class="js">
+JS&gt; tm.frameApply(10);
+</pre>
+
+        <p>The result of this function call is that animation actions
+        are repeatedly called during the duration of their actions,
+        rather than just once at the starting point of the
+        animation. The resulting animation that has been constructed
+        is shown below.</p>
+
+        <div id="frame-ex"></div>
+
+        <p>This example is not a particularly demonstrative
+        animation. Instead of each action describing how to perform an
+        animation, the action simply draws to a canvas. We can also
+        see that a frame counter is being shown to make it clear that
+        we really are drawing multiple times, even if it doesn't
+        appear to be the case.</p>
+
+        <p>An example beyond this simple demonstration for frame-based
+        animations has not been created. The main reason for this is
+        because in a web browser, we usually have the capacity to
+        apply declarative animations. Declarative animations should be
+        preferred to frame-based animations primarily because they are
+        much simpler to write. Another reason is because web browsers
+        are able to hardware accelerate declarative animations,
+        whereas frame-based animations are not able to receive this
+        benefit. As a result declarative animations are almost always
+        going to look nicer than an equivalent frame-based
+        approach.</p>
+
+        <h2>Conclusion</h2>
+
+        <p>This has been a quick demonstration to show how we can use
+        both framed animation and declarative animation within a web
+        browser. The use of R&rsquo;s <em>animaker</em> package
+        and <em>TimingManager</em> provide a convenient interface to
+        describe and apply animations respectively. It allows us to
+        focus less on <em>when</em> things are happening, and more
+        on <em>what</em> the animations are aiming to show.</p>
+
+        <h2>Downloads</h2>
+
+        <p>
+            This document is licensed under a <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/nz/">Creative Commons Attribution 3.0 New Zealand License</a>.
+          <img src="http://i.creativecommons.org/l/by/3.0/nz/88x31.png" width="88" height="31">
+            The code is freely available under
+            the <a href="../gpl.txt">GPL</a>. The described
+            functionality of <em>TimingManager</em> is present in the
+            latest verion on GitHub.
+        </p>
+
+        <ul>
+            <li><a href="timing-manager.Rhtml">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+        </ul>
+
+        <h2>References</h2>
+
+        <ol>
+            <li id="ref-1">Potter, S. (2012). <span class="pkg-desc">TimingManager: A Library for Managing Animation Timing Information</span>. <a href="https://github.com/sjp/TimingManager">https://github.com/sjp/TimingManager</a>.</li>
+            <li id="ref-2">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+            <li id="ref-3">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">animaker: Generating Animation Timelines</span>. <a href="https://github.com/pmur002/animaker">https://github.com/pmur002/animaker</a>.</li>
+            <li id="ref-4">Bostock, M. (2012). <span class="pkg-desc">Data Driven Documents</span>. <a href="http://d3js.org/">http://d3js.org/</a>.</li>
+            <li id="ref-5">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition)</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
+            <li id="ref-6">W3C (2012). <span class="pkg-desc">CSS Transitions (Working Draft)</span>. <a href="http://www.w3.org/TR/css3-transitions/">http://www.w3.org/TR/css3-transitions/</a>.</li>
+            <li id="ref-7">W3C (2012). <span class="pkg-desc">HTML5: The canvas element</span>. <a href="http://www.w3.org/TR/html5/embedded-content-0.html#the-canvas-element">http://www.w3.org/TR/html5/embedded-content-0.html#the-canvas-element</a>.</li>
+            <li id="ref-8">Lang, D. T. (2012). <span class="pkg-desc">RJSONIO: Serialize R objects to JSON, JavaScript Object Notation</span>. <a href="http://CRAN.R-project.org/package=RJSONIO">http://CRAN.R-project.org/package=RJSONIO</a>.</li>
+        </ol>
+
+        <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+        <script type="text/javascript" src="timing-data.js"></script>
+        <script type="text/javascript" src="timing.js"></script>
+        <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
+        <script type="text/javascript" src="timing-plot.js"></script>
+        <script type="text/javascript">
+            // Adding timing plots
+            timingPlot(timingData, "#declarative-timing", {
+                width: 500,
+                height: 500,
+                caption: "A timing plot generated from exported timing information"
+            });
+
+            framePlot(timingData, "#frame-ex", {
+                width: 500,
+                height: 200,
+                caption: "A frame-based animation"
+            });
+        </script>
+        <script type="text/javascript" src="simple-anim-timing.js"></script>
+        <script type="text/javascript">
+            var tm = new TimingManager(simpleAnim, "s");
+            var redAction = function(info) {
+                d3.select("#redsq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("x", 400)
+                    .transition()
+                    .delay(info.durn * 1000)
+                    .attr("fill", "black");
+            };
+            var greenAction = function(info) {
+                d3.select("#greensq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("x", 100)
+                    .transition()
+                    .delay(info.durn * 1000)
+                    .attr("fill", "black");
+            };
+            var blueAction = function(info) {
+                d3.select("#bluesq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("x", 250)
+                    .transition()
+                    .delay(info.durn * 1000)
+                    .attr("fill", "black");
+            };
+            var finalAction = function(info) {
+                d3.selectAll("#redsq, #greensq, #bluesq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr({
+                        x: 250,
+                        y: 250,
+                        fill: "white"
+                    });
+            };
+
+            tm.register({
+                red: redAction,
+                green: greenAction,
+                blue: blueAction,
+                final: finalAction
+            });
+
+            var figwrap = d3.select("#simple-ex").append("figure");
+            var controlDiv = figwrap.append("div")
+                .attr("class", "control-btns");
+            var playButton = controlDiv.append("button")
+                .text("Play")
+                .on("click", function(d) {
+                    d3.select("#redsq")
+                        .attr({
+                            x: 100,
+                            y: 100,
+                            fill: "red"
+                        });
+                    d3.select("#greensq")
+                        .attr({
+                            x: 400,
+                            y: 250,
+                            fill: "green"
+                        });
+                    d3.select("#bluesq")
+                        .attr({
+                            x: 100,
+                            y: 400,
+                            fill: "blue"
+                        });
+                    tm.play();
+                });
+
+            var plot = d3.select("#simple-ex figure")
+                .append("svg")
+                .attr({
+                    width: 500,
+                    height: 500
+                });
+
+            var redsq = plot.append("rect")
+                .attr({
+                    id: "redsq",
+                    x: 100,
+                    y: 100,
+                    width: 20,
+                    height: 20,
+                    fill: "red",
+                    stroke: "none"
+                });
+            
+            var greensq = plot.append("rect")
+                .attr({
+                    id: "greensq",
+                    x: 400,
+                    y: 250,
+                    width: 20,
+                    height: 20,
+                    fill: "green",
+                    stroke: "none"
+                });
+            
+            var bluesq = plot.append("rect")
+                .attr({
+                    id: "bluesq",
+                    x: 100,
+                    y: 400,
+                    width: 20,
+                    height: 20,
+                    fill: "blue",
+                    stroke: "none"
+                });
+        </script>
+
+    </body>
+</html>

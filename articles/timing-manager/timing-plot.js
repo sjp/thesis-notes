@@ -126,7 +126,11 @@ var timingPlot = function(info, sel, opts) {
                     var newLine = d.label + " started at " +
                                   d.start + "s and runs for " +
                                   d.durn + "s";
-                    outputText.text(prevText + "\n" + newLine);
+                    if (prevText === "") {
+                        outputText.text(newLine);
+                    } else {
+                        outputText.text(prevText + "\n" + newLine);
+                    }
                 })
                 .each("end", function() {
                     d3.select(this).remove();
@@ -248,7 +252,7 @@ var framePlot = function(info, sel, opts) {
         return (boxWidth - totalSpaces) / n;
     })(w);
 
-    var tm = new TimingManager(info);
+    var tm = new TimingManager(info, "s");
 
     var rectLocDims = _.map(info, function(i) {
         var xind = labels.indexOf(i.label); 
@@ -293,15 +297,13 @@ var framePlot = function(info, sel, opts) {
         _.each(namesToAdd, function(name) {
             var prevText = outputText.text();
             frameCounter++;
-            outputText.text(prevText + "\n" + name + " was executed on frame " + frameCounter);
+            if (prevText === "") {
+                outputText.text(name + " was executed on frame " + frameCounter);
+            } else {
+                outputText.text(prevText + "\n" + name + " was executed on frame " + frameCounter);
+            }
         });
     };
-
-    // Build up vector of frame numbers
-    var animEnd = 0;
-    _.each(info, function(i) {
-        animEnd = Math.max(animEnd, i.start + i.durn);
-    });
 
     var frameCounter = 0;
 
