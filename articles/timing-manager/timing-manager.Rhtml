@@ -284,125 +284,6 @@ JS+ });
 
         <div id="simple-ex"></div>
 
-<script type="text/javascript" src="simple-anim-timing.js"></script>
-<script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
-<script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
-<script type="text/javascript" src="timing.js"></script>
-<script type="text/javascript">
-var tm = new TimingManager(simpleAnim, "s");
-var redAction = function(info) {
-    d3.select("#redsq")
-        .transition()
-        .duration(info.durn * 1000)
-        .attr("x", 400)
-        .transition()
-        .delay(info.durn * 1000)
-        .attr("fill", "black");
-};
-var greenAction = function(info) {
-    d3.select("#greensq")
-        .transition()
-        .duration(info.durn * 1000)
-        .attr("x", 100)
-        .transition()
-        .delay(info.durn * 1000)
-        .attr("fill", "black");
-};
-var blueAction = function(info) {
-    d3.select("#bluesq")
-        .transition()
-        .duration(info.durn * 1000)
-        .attr("x", 250)
-        .transition()
-        .delay(info.durn * 1000)
-        .attr("fill", "black");
-};
-var finalAction = function(info) {
-    d3.selectAll("#redsq, #greensq, #bluesq")
-        .transition()
-        .duration(info.durn * 1000)
-        .attr({
-            x: 250,
-            y: 250,
-            fill: "white"
-        });
-};
-
-tm.register({
-    red: redAction,
-    green: greenAction,
-    blue: blueAction,
-    final: finalAction
-});
-
-var figwrap = d3.select("#simple-ex").append("figure")
-var controlDiv = figwrap.append("div")
-    .attr("class", "control-btns");
-var playButton = controlDiv.append("button")
-    .text("Play")
-    .on("click", function(d) {
-        d3.select("#redsq")
-            .attr({
-                x: 100,
-                y: 100,
-                fill: "red"
-            });
-        d3.select("#greensq")
-            .attr({
-                x: 400,
-                y: 250,
-                fill: "green"
-            });
-        d3.select("#bluesq")
-            .attr({
-                x: 100,
-                y: 400,
-                fill: "blue"
-            });
-        tm.play();
-    });
-
-var plot = d3.select("#simple-ex figure")
-    .append("svg")
-    .attr({
-        width: 500,
-        height: 500
-    });
-
-var redsq = plot.append("rect")
-    .attr({
-        id: "redsq",
-        x: 100,
-        y: 100,
-        width: 20,
-        height: 20,
-        fill: "red",
-        stroke: "none"
-    });
-
-var greensq = plot.append("rect")
-    .attr({
-        id: "greensq",
-        x: 400,
-        y: 250,
-        width: 20,
-        height: 20,
-        fill: "green",
-        stroke: "none"
-    });
-
-var bluesq = plot.append("rect")
-    .attr({
-        id: "bluesq",
-        x: 100,
-        y: 400,
-        width: 20,
-        height: 20,
-        fill: "blue",
-        stroke: "none"
-    });
-</script>
-
         <h2>Framed Animation</h2>
 
         <p>In the case of framed animation, the intention is to
@@ -490,26 +371,41 @@ JS&gt; tm.frameApply(10);
         focus less on <em>when</em> things are happening, and more
         on <em>what</em> the animations are aiming to show.</p>
 
+        <h2>Downloads</h2>
+
+        <p>
+            This document is licensed under a <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/nz/">Creative Commons Attribution 3.0 New Zealand License</a>.
+          <img src="http://i.creativecommons.org/l/by/3.0/nz/88x31.png" width="88" height="31">
+            The code is freely available under
+            the <a href="../gpl.txt">GPL</a>. The described
+            functionality of <em>TimingManager</em> is present in the
+            latest verion on GitHub.
+        </p>
+
+        <ul>
+            <li><a href="timing-manager.Rhtml">Code used to generate article</a> (note, requires <a href="http://yihui.name/knitr/"><em>knitr</em></a>, available on CRAN)</li>
+        </ul>
+
         <h2>References</h2>
 
         <ol>
-            <li>a</li>
-            <li>b</li>
-            <li>c</li>
-            <li>d</li>
-            <li>e</li>
-            <li>f</li>
-            <li>g</li>
-            <li>h</li>
+            <li id="ref-1">Potter, S. (2012). <span class="pkg-desc">TimingManager: A Library for Managing Animation Timing Information</span>. <a href="https://github.com/sjp/TimingManager">https://github.com/sjp/TimingManager</a>.</li>
+            <li id="ref-2">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+            <li id="ref-3">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">animaker: Generating Animation Timelines</span>. <a href="https://github.com/pmur002/animaker">https://github.com/pmur002/animaker</a>.</li>
+            <li id="ref-4">Bostock, M. (2012). <span class="pkg-desc">Data Driven Documents</span>. <a href="http://d3js.org/">http://d3js.org/</a>.</li>
+            <li id="ref-5">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition)</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
+            <li id="ref-6">W3C (2012). <span class="pkg-desc">CSS Transitions (Working Draft)</span>. <a href="http://www.w3.org/TR/css3-transitions/">http://www.w3.org/TR/css3-transitions/</a>.</li>
+            <li id="ref-7">W3C (2012). <span class="pkg-desc">HTML5: The canvas element</span>. <a href="http://www.w3.org/TR/html5/embedded-content-0.html#the-canvas-element">http://www.w3.org/TR/html5/embedded-content-0.html#the-canvas-element</a>.</li>
+            <li id="ref-8">Lang, D. T. (2012). <span class="pkg-desc">RJSONIO: Serialize R objects to JSON, JavaScript Object Notation</span>. <a href="http://CRAN.R-project.org/package=RJSONIO">http://CRAN.R-project.org/package=RJSONIO</a>.</li>
         </ol>
 
         <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
         <script type="text/javascript" src="timing-data.js"></script>
         <script type="text/javascript" src="timing.js"></script>
-        <!--<script type="text/javascript" src="timing-ex.js"></script>-->
         <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
         <script type="text/javascript" src="timing-plot.js"></script>
         <script type="text/javascript">
+            // Adding timing plots
             timingPlot(timingData, "#declarative-timing", {
                 width: 500,
                 height: 500,
@@ -522,5 +418,121 @@ JS&gt; tm.frameApply(10);
                 caption: "A frame-based animation"
             });
         </script>
+        <script type="text/javascript" src="simple-anim-timing.js"></script>
+        <script type="text/javascript">
+            var tm = new TimingManager(simpleAnim, "s");
+            var redAction = function(info) {
+                d3.select("#redsq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("x", 400)
+                    .transition()
+                    .delay(info.durn * 1000)
+                    .attr("fill", "black");
+            };
+            var greenAction = function(info) {
+                d3.select("#greensq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("x", 100)
+                    .transition()
+                    .delay(info.durn * 1000)
+                    .attr("fill", "black");
+            };
+            var blueAction = function(info) {
+                d3.select("#bluesq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr("x", 250)
+                    .transition()
+                    .delay(info.durn * 1000)
+                    .attr("fill", "black");
+            };
+            var finalAction = function(info) {
+                d3.selectAll("#redsq, #greensq, #bluesq")
+                    .transition()
+                    .duration(info.durn * 1000)
+                    .attr({
+                        x: 250,
+                        y: 250,
+                        fill: "white"
+                    });
+            };
+
+            tm.register({
+                red: redAction,
+                green: greenAction,
+                blue: blueAction,
+                final: finalAction
+            });
+
+            var figwrap = d3.select("#simple-ex").append("figure");
+            var controlDiv = figwrap.append("div")
+                .attr("class", "control-btns");
+            var playButton = controlDiv.append("button")
+                .text("Play")
+                .on("click", function(d) {
+                    d3.select("#redsq")
+                        .attr({
+                            x: 100,
+                            y: 100,
+                            fill: "red"
+                        });
+                    d3.select("#greensq")
+                        .attr({
+                            x: 400,
+                            y: 250,
+                            fill: "green"
+                        });
+                    d3.select("#bluesq")
+                        .attr({
+                            x: 100,
+                            y: 400,
+                            fill: "blue"
+                        });
+                    tm.play();
+                });
+
+            var plot = d3.select("#simple-ex figure")
+                .append("svg")
+                .attr({
+                    width: 500,
+                    height: 500
+                });
+
+            var redsq = plot.append("rect")
+                .attr({
+                    id: "redsq",
+                    x: 100,
+                    y: 100,
+                    width: 20,
+                    height: 20,
+                    fill: "red",
+                    stroke: "none"
+                });
+            
+            var greensq = plot.append("rect")
+                .attr({
+                    id: "greensq",
+                    x: 400,
+                    y: 250,
+                    width: 20,
+                    height: 20,
+                    fill: "green",
+                    stroke: "none"
+                });
+            
+            var bluesq = plot.append("rect")
+                .attr({
+                    id: "bluesq",
+                    x: 100,
+                    y: 400,
+                    width: 20,
+                    height: 20,
+                    fill: "blue",
+                    stroke: "none"
+                });
+        </script>
+
     </body>
 </html>
