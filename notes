@@ -1,10 +1,37 @@
-
+\
 2013-01-08
 ----------
 
 DISCUSS:
 
   + When (and how) should Simon start writing the final thesis?!
+
+    Paul spoke to Fiona Bellinger at the School of Graduate Studies
+
+    - Must produce a standard format thesis for print
+      (hopefully can cut-and-paste text from technical reports,
+       but will need to include static images
+       [obviously with links to online reports with dynamic images!])
+
+      See "Guide to Theses and Dissertations"
+      http://www.auckland.ac.nz/uoa/cs-pg-masters-theses-and-dissertations
+
+      Could submit copy of software and tech reports along with
+      thesis on digital media (?)
+
+  + Idea for interactive/dynamic web graphics:  an iPlots implementation
+    in the web browser?
+
+
+FOR NOTING:
+
+  + Another couple of D3 examples (with R shiny version)
+
+    http://timelyportfolio.blogspot.co.nz/2012/12/more-d3-with-shiny-and-r-cpi-from-blsgov.html
+
+    http://timelyportfolio.blogspot.co.nz/2012/12/shiny-r-d3-adaptation-of-mike-bostocks.html
+
+    http://timelyportfolio.blogspot.co.nz/2012/12/d3-shiny-and-r-reporting-performance.html
 
 
 2012-12-12
