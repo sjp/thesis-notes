@@ -3,7 +3,7 @@ body {
   width: 620px;
 }
 
-body p, figure figcaption {
+body p, figure figcaption, li {
   font-size: 14px;
   line-height: 20px;
 }
@@ -86,6 +86,10 @@ header p.abstract {
 
 .output, .js, .codeblock {
   background-color: #F7F7F7;
+}
+
+.codeblock {
+  padding: 10px;
 }
 
 .js {

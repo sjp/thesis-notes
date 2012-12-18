@@ -51,7 +51,7 @@ var TimingManager = function(timingInfo, timeUnit) {
 
     /**
      * Plays all animations associated with actions
-     * @param {number=} t - An optional delay (in 'timeUnit's) to add to the entire animation
+     * @param {number=} t An optional delay (in 'timeUnit's) to add to the entire animation
      */
     this.play = function(t) {
         ensureNonEmpty();
@@ -69,25 +69,26 @@ var TimingManager = function(timingInfo, timeUnit) {
 
     /**
      * Returns all of the timing information about the frames that are to be played at a given time.
-     * @param {number=} t The time (in 'timeUnit's) to select an animation from
+     * @param {number=} t The time (in 'ms') to select an animation from
      * @return {Array} A list of matching animations to play at the current time
      */
     this.frameTiming = function(t) {
-        t = t || 0; // Default to 0ms
+        t = t || 0; // Default to 0
         return _.filter(timingInfo, function(info) {
             return (t >= toMs(info.start)) &&
-                   (t < toMs(info.start + info.durn));
+                    (t < toMs(info.start + info.durn));
         });
     };
 
     /**
      * Plays all animations associated with actions at a given rate per second.
      * @param {number=} fps How many frames per second are going to be drawn. By default this is 10.
-     * @param {number=} t An optional delay to add to the entire animation
+     * @param {number=} t An optional delay (in 'timeUnit's) to add to the entire animation
      */
     this.frameApply = function(fps, t) {
         ensureNonEmpty();
         t = t || 0;
+        t = toMs(t);
         fps = fps || 10;
         if (fps <= 0)
             throw new Error("Frames per second must be > 0");
@@ -102,16 +103,7 @@ var TimingManager = function(timingInfo, timeUnit) {
             times.push(t + (i * increment));
         }
 
-        // Returns a function that determines whether an animation should be playing
-        // at the current point in time.
-        var getCurrentTiming = function(t) {
-            return function(info) {
-                return (t >= toMs(info.start)) &&
-                       (t < toMs(info.start + info.durn));
-            };
-        };
-
-        // Do the playback after a delay
+        // Do the playback after a delay in ms
         var playFrame = function(anim, t) {
             if (callbacks[anim.label]) {
                 _.delay(callbacks[anim.label], t, anim);
@@ -129,7 +121,7 @@ var TimingManager = function(timingInfo, timeUnit) {
 
         // Play each frame
         for (i = t; i < _.last(times); i += increment) {
-            var currentTiming = _.filter(timingInfo, getCurrentTiming(i));
+            var currentTiming = this.frameTiming(i);
             if (currentTiming) {
                 _.each(currentTiming, singleTiming(i));
             }
