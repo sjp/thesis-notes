@@ -3,7 +3,7 @@ body {
   width: 620px;
 }
 
-body p {
+body p, figure figcaption, li {
   font-size: 14px;
   line-height: 20px;
 }
@@ -35,6 +35,10 @@ figure {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+}
+
+figure pre {
+  text-align: left;
 }
 
 button {
@@ -80,8 +84,12 @@ header p.abstract {
   margin-right: 30px;
 }
 
-.output, .js {
+.output, .js, .codeblock {
   background-color: #F7F7F7;
+}
+
+.codeblock {
+  padding: 10px;
 }
 
 .js {
@@ -118,10 +126,14 @@ input {
   font-style: italic;
 }
 
-img, svg {
+img, svg, canvas {
   margin: 20px auto;
   display: block;
   -webkit-box-shadow: 0px 0px 9px black;
   -moz-box-shadow: 0px 0px 9px black;
   box-shadow: 0px 0px 9px black;
+}
+
+th, td {
+  padding: 8px;
 }
