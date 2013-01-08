@@ -5,6 +5,43 @@
 DISCUSS:
 
   + Don't forget to start the thesis writing
+    - Arden Miller says that there are no dept-specific guidelines
+      for thesis writing (that he knows of)
+
+
+FOR NOTING:
+
+  + Interesting way to embed editable R code samples in web pages
+    via Sage
+
+    http://statisfactions.com/2013/interactive-r-code-widget/
+
+  + Blog on using gridSVG for plot with (fancy) tooltips
+
+    http://procomun.wordpress.com/2013/01/04/tooltips-with-r/
+
+  + The 'visnab' project 
+
+    http://www.stat.iastate.edu/centers/CCGS/slides/slides-visnab.pdf
+
+    Specifically for genomics, but uses some R tools that we should
+    keep an eye on (specifically, the Qt suite of packages)
+
+  + blog post on Rook (tutorial)
+
+    http://anythingbutrbitrary.blogspot.co.nz/2012/12/a-simple-web-application-using-rook.html
+
+  + Example use of RGoogleVis
+
+    http://pairach.com/2012/12/21/visualising-tourism-data-using-r-with-googlevis-package/
+
+  + Shiny + R version of D3 brushable scatterplot
+
+    http://timelyportfolio.blogspot.co.nz/2012/12/shinyr-conversion-of-another-one-of-my.html
+
+  + Shiny + gridSVG example (entire plot recreated)
+
+    http://timelyportfolio.blogspot.co.nz/2012/12/shiny-svg-no-d3new-and-improved.html
 
 
 2013-12-19
