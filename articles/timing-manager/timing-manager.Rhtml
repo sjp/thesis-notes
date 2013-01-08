@@ -71,19 +71,18 @@ end.rcode-->
 
         <p>Timing information associated with an animation sequence
         can be exported for use within a web
-        browser. The <em>TimingManager</em> <a href="#ref-1">[1]</a>
+        browser. The <em>TimingManager</em> <a href="#ref-3">[3]</a>
         library provides us with an easy way of using timing
-        information exported from animations in
-        R <a href="#ref-2">[2]</a>.
+        information exported from animations in R
+        by <em>animaker</em>.
 
         <p>This does not allow us to modify exported animations but
         does allow us to be able to use the animations created by
-        the <em>animaker</em> <a href="#ref-3">[3]</a>
-        package. <em>animaker</em> tells us when an animation occurs,
-        and its duration, but it does not assign actions to
-        animations. The <em>TimingManager</em> library not only
-        assigns actions to animation descriptions, it also allows us
-        to play back animations in a simple manner.</p>
+        the <em>animaker</em> package. <em>animaker</em> tells us when
+        an animation occurs, and its duration, but it does not assign
+        actions to animations. The <em>TimingManager</em> library not
+        only assigns actions to animation descriptions, it also allows
+        us to play back animations in a simple manner.</p>
 
         <p>We demonstrate how <em>TimingManager</em> is used for both
         declarative animation and iterative animation by frames. The
@@ -148,7 +147,7 @@ end.rcode-->
         <p>We can see what this timing information looks like by
         calling <code>plot()</code> on our animation description.</p>
 
-<!--begin.rcode plotTimings, fig=TRUE
+<!--begin.rcode plotTimings, fig=TRUE, message=FALSE
 plot(completeAnim)
 end.rcode-->
 
@@ -166,7 +165,7 @@ end.rcode-->
         do this by calling the <code>export()</code> function, as
         shown below.</p>
 
-<!--begin.rcode exportSimple
+<!--begin.rcode exportSimple, message=FALSE
 export(completeAnim,
        jsVar = "simpleAnim",
        file = "simple-anim-timing.js")
@@ -199,9 +198,12 @@ end.rcode-->
         <h2>Using Timing Information in the Browser</h2>
 
         <p>In order to use the exported timing information, we will
-        first begin by instantiating a <em>TimingManager</em> object,
-        noting that it should be using seconds as its unit of
-        time.</p>
+        first begin by instantiating a <em>TimingManager</em>
+        object. There are two parameters of interest when constructing
+        this object; the first of which is simply the timing
+        information that we have previously stored in a JavaScript
+        variable. The second parameter is simply noting that we are
+        using seconds as the base unit of time.</p>
 
 <pre class="js">
 JS&gt; var tm = new TimingManager(simpleAnim, "s");
@@ -313,9 +315,10 @@ JS&gt; tm.play();
 library(animaker)
 end.rcode-->
 
-        <p>By taking some of the code
-        from <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">a
-        technical report</a> we can reconstruct an animation.</p>
+        <p>By taking some of the code from
+        a <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">technical
+        report on <em>animaker</em></a> we can reconstruct an
+        animation.</p>
 
 <!--begin.rcode buildAnims
 a <- atomic(label = "Alpha", durn = 1)
@@ -345,10 +348,10 @@ end.rcode-->
         we can begin to use the timing information in the browser.</p>
 
         <p>The implementation details have been omitted for brevity
-        but we are able to make use of D3 to create much of the plot.
-        Note that the <strong>actions</strong> associated with each
-        atomic animation are going to be appending text below the
-        timing plot. By clicking the &ldquo;Play&rdquo; button we can
+        but we are able to make use of D3 to create the plot. Note
+        that the <strong>actions</strong> associated with each atomic
+        animation are going to be appending text below the timing
+        plot. By clicking the &ldquo;Play&rdquo; button we can
         visualise how the playback is going to occur, along with
         triggering associated actions.</p>
 
@@ -391,7 +394,7 @@ JS+     Delta: deltaFrameAction
 JS+ }, true);
 </pre>
 
-        <p>Note that <code>true</code> has been passed in as an
+        <p>We see that <code>true</code> has been passed in as an
         argument to allow overwriting of definitions. For the sake of
         brevity, we will not show the definitions of each of the
         action functions. However, their definitions are such that
@@ -400,8 +403,8 @@ JS+ }, true);
         plot, so we can see when the &ldquo;frames&rdquo; are being
         drawn.</p>
 
-        <p>Now that we have our timing information, and our actions
-        registered, we can play our frame-based animation. To do this,
+        <p>Now that we have our timing information and our actions
+        registered we can play our frame-based animation. To do this,
         we call the <code>frameApply()</code> method. It requires a
         single parameter, which represents the number of frames to
         draw per second.</p>
@@ -465,9 +468,9 @@ JS&gt; tm.frameApply(10);
         <h2>References</h2>
 
         <ol>
-            <li id="ref-1">Potter, S. (2012). <span class="pkg-desc">TimingManager: A Library for Managing Animation Timing Information</span>. <a href="https://github.com/sjp/TimingManager">https://github.com/sjp/TimingManager</a>.</li>
-            <li id="ref-2">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
-            <li id="ref-3">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">animaker: Generating Animation Timelines</span>. <a href="https://github.com/pmur002/animaker">https://github.com/pmur002/animaker</a>.</li>
+            <li id="ref-1">R Development Core Team (2012). <span class="pkg-desc">R: A Language and Environment for Statistical Computing</span>. R Foundation for Statistical Computing, Vienna, Austria. ISBN 3-900051-07-0.</li>
+            <li id="ref-2">Murrell, P. and Potter, S. (2012). <span class="pkg-desc">animaker: Generating Animation Timelines</span>. <a href="https://github.com/pmur002/animaker">https://github.com/pmur002/animaker</a>.</li>
+            <li id="ref-3">Potter, S. (2012). <span class="pkg-desc">TimingManager: A Library for Managing Animation Timing Information</span>. <a href="https://github.com/sjp/TimingManager">https://github.com/sjp/TimingManager</a>.</li>
             <li id="ref-4">Bostock, M. (2012). <span class="pkg-desc">Data Driven Documents</span>. <a href="http://d3js.org/">http://d3js.org/</a>.</li>
             <li id="ref-5">W3C (2011). <span class="pkg-desc">Scalable Vector Graphics (SVG) 1.1 (Second Edition)</span>. <a href="http://www.w3.org/TR/SVG/">http://www.w3.org/TR/SVG/</a>.</li>
             <li id="ref-6">W3C (2012). <span class="pkg-desc">CSS Transitions (Working Draft)</span>. <a href="http://www.w3.org/TR/css3-transitions/">http://www.w3.org/TR/css3-transitions/</a>.</li>
