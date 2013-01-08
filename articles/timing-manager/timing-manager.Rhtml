@@ -49,7 +49,7 @@ end.rcode-->
         <p>There are many R <a href="#ref-1">[1]</a> packages
         available which generate animations in various formats. A key
         problem when creating animation sequences is the difficulty in
-        coordinating multiple animation actions. For example, a simple
+        coordinating multiple animation actions. Even a simple
         sequence which ensures that action A follows action B can
         become complicated to specify and difficult to maintain. This
         is particularly problematic if those actions are also part of
@@ -63,18 +63,16 @@ end.rcode-->
         labels. The key result from describing an animation sequence
         is the ability to generate timing schemes from it. These
         timing schemes tell us when an animation is to occur, for how
-        long, and what its context is. The context tells us the
-        sequence animation and track animation in which each animation
-        occurs. Additionally, it tells us which iteration in the
-        sequence animation and which track in the track animation the
-        atomic animation represents.</p>
+        long, and what its context is. For example, the context can
+        tell us whether an animation action is the first, second, or
+        third action within a sequence of actions.</p>
 
-        <p>Timing information associated with an animation sequence
-        can be exported for use within a web
-        browser. The <em>TimingManager</em> <a href="#ref-3">[3]</a>
-        library provides us with an easy way of using timing
-        information exported from animations in R
-        by <em>animaker</em>.
+        <p>The timing information that is generated
+        by <em>animaker</em> can be exported for use within a web
+        browser and
+        the <em>TimingManager</em> <a href="#ref-3">[3]</a> library
+        provides us with an easy way of using timing information
+        exported from animations in R by <em>animaker</em>.
 
         <p>This does not allow us to modify exported animations but
         does allow us to be able to use the animations created by
@@ -122,7 +120,8 @@ end.rcode-->
 
         <p>Now that we have described this animation sequence, we
         first need to describe the timings of the animation sequence
-        with <em>animaker</em>. The description is created below:</p>
+        using <em>animaker</em> within R. The description is created
+        below:</p>
 
 <!--begin.rcode simpleAnim, message=FALSE
 library(animaker)
@@ -147,7 +146,7 @@ end.rcode-->
         <p>We can see what this timing information looks like by
         calling <code>plot()</code> on our animation description.</p>
 
-<!--begin.rcode plotTimings, fig=TRUE, message=FALSE
+<!--begin.rcode plotTimings, fig=TRUE, message=FALSE, fig.width=6, fig.height=3
 plot(completeAnim)
 end.rcode-->
 
@@ -198,26 +197,24 @@ end.rcode-->
         <h2>Using Timing Information in the Browser</h2>
 
         <p>In order to use the exported timing information, we will
-        first begin by instantiating a <em>TimingManager</em>
-        object. There are two parameters of interest when constructing
-        this object; the first of which is simply the timing
-        information that we have previously stored in a JavaScript
-        variable. The second parameter is simply noting that we are
-        using seconds as the base unit of time.</p>
+        first begin by instantiating a <em>TimingManager</em> object
+        in JavaScript. There are two parameters of interest when
+        constructing this object; the first of which is simply the
+        timing information that we have previously stored in a
+        JavaScript variable. The second parameter is simply noting
+        that we are using seconds as the base unit of time.</p>
 
 <pre class="js">
 JS&gt; var tm = new TimingManager(simpleAnim, "s");
 </pre>
 
-        <p>Next we will be creating JavaScript functions that we will
-        assign as actions to our atomic animations. For clarity, the
-        code used to generate the initial scene has been
-        ommitted. Note that each of the following functions takes a
-        single parameter which contains the information about the
-        animation as it is being called. For example, it contains the
-        starting time, duration, and the context in which the
-        animation occurred (i.e. to determine whether this is a
-        repeated animation).</p>
+        <p>Next we create JavaScript functions that we will assign as
+        actions to our atomic animations. For clarity, the code used
+        to generate the initial scene has been omitted. Note that each
+        of the following functions takes a single parameter which
+        contains the information about the animation as it is being
+        called. In this case, the timing information is used to set
+        the duration of each animation.</p>
 
 <pre class="js">
 JS&gt; var redAction = function(info) {
@@ -296,10 +293,10 @@ JS&gt; tm.play();
 
         <h2>Complex Examples</h2>
 
-        <p>More complex examples will be shown that demonstrate we do
-        not need R to produce and animate complex animations. The
-        first of these examples is an equivalent
-        of <em>animaker</em>'s <code>dynPlot()</code>
+        <p>More complex examples will be shown that use R to describe
+        animation sequences with <em>animaker</em>, but do not require
+        R to produce any graphics. The first of these examples is an
+        equivalent of <em>animaker</em>'s <code>dynPlot()</code>
         function. <code>dynPlot()</code> produces an animated plot
         showing visually when each atomic animation is due to be
         called. The second is a quick demonstration of frame-based
@@ -316,9 +313,8 @@ library(animaker)
 end.rcode-->
 
         <p>By taking some of the code from
-        a <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">technical
-        report on <em>animaker</em></a> we can reconstruct an
-        animation.</p>
+        <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">the <em>animaker</em>
+        technical report</a> we can reconstruct an animation.</p>
 
 <!--begin.rcode buildAnims
 a <- atomic(label = "Alpha", durn = 1)
@@ -366,7 +362,7 @@ end.rcode-->
         <h3>Framed Animation</h3>
 
         <p>In the case of framed animation, the intention is to
-        provide the illusion of animation be producing several frames
+        provide the illusion of animation by producing several frames
         close together. This effect is employed in films where 24
         individual frames are shown per second, but because they are
         shown close together, the illusion of a moving picture is
@@ -377,13 +373,13 @@ end.rcode-->
         devices.</p>
 
         <p>A frame-based animation has been created, using the same
-        animation sequence description as was first described in this
-        document. The key difference is that we need to overwrite the
-        definitions of actions associated animations with new action
-        functions. In order to do this, we simply register the actions
-        again, but with an additional parameter, which determines
-        whether we can overwrite definitions. The following code
-        demonstrates this:</p>
+        animation sequence description from the previous section. The
+        key difference is that we need to overwrite the definitions of
+        actions associated animations with new action functions. In
+        order to do this, we simply register the actions again, but
+        with an additional parameter, which determines whether we can
+        overwrite definitions. The following code demonstrates
+        this:</p>
 
 <pre class="js">
 JS&gt; tm.register({
@@ -394,14 +390,12 @@ JS+     Delta: deltaFrameAction
 JS+ }, true);
 </pre>
 
-        <p>We see that <code>true</code> has been passed in as an
-        argument to allow overwriting of definitions. For the sake of
-        brevity, we will not show the definitions of each of the
-        action functions. However, their definitions are such that
-        they aim to simply draw a filled rectangle when they are
-        called. Additionally, they append text to a field below the
-        plot, so we can see when the &ldquo;frames&rdquo; are being
-        drawn.</p>
+        <p>For the sake of brevity, we will not show the definitions
+        of each of the action functions. However, their definitions
+        are such that they aim to simply draw a filled rectangle when
+        they are called. Additionally, they append text to a field
+        below the plot, so we can see when the &ldquo;frames&rdquo;
+        are being drawn.</p>
 
         <p>Now that we have our timing information and our actions
         registered we can play our frame-based animation. To do this,
@@ -421,8 +415,7 @@ JS&gt; tm.frameApply(10);
 
         <div id="frame-ex"></div>
 
-        <p>This example is not a particularly demonstrative
-        animation. Instead of each action describing how to perform an
+        <p>Instead of each action describing how to perform an
         animation, the action simply draws to a canvas. We can also
         see that a frame counter is being shown to make it clear that
         we really are drawing multiple times, even if it doesn't
@@ -447,8 +440,9 @@ JS&gt; tm.frameApply(10);
         browser. The use of R&rsquo;s <em>animaker</em> package
         and <em>TimingManager</em> provide a convenient interface to
         describe and apply animations respectively. It allows us to
-        focus less on <em>when</em> things are happening, and more
-        on <em>what</em> the animations are aiming to show.</p>
+        separate the task of describing <em>when</em> things are
+        happening from the task of describing <em>what</em> the
+        animations are aiming to show.</p>
 
         <h2>Downloads</h2>
 
