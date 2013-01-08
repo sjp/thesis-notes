@@ -9,6 +9,77 @@ DISCUSS:
       for thesis writing (that he knows of)
 
 
+PAUL TODO:
+
+  + review latest version of timing-manager doc
+
+
+TODO:
+
+  + Try to start a summary for Chambers Award
+    - "All application materials must be received by 5:00pm EST, Monday,
+       February 18, 2013"
+
+  + Do a 'shiny' version of sampling variation
+
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+    - ESSENTIALLY, some sort of more complete document that gives
+      a wider, overall view of where you have got so far (in terms
+      of dynamically updating graphical content in a web page by
+      communicating with R)
+ 
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + webGL from 'rgl' => dynamically updating 3D web graphics!?
+    - lots of work to not get quite what you want?
+
+
 FOR NOTING:
 
   + Interesting way to embed editable R code samples in web pages
