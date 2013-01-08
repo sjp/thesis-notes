@@ -1,0 +1,145 @@
+#+TITLE: Notes from Interactivity Books
+
+* Cook & Swayne
+
+Primarily this book focused on selection when referring to
+interactivity:
+
++ Brushing/Painting :: Identifying a group of related points by a
+     colour.
++ Point Identification :: Identification of an individual point, as
+     has been done in the past with gridSVG examples where we have
+     added a tooltip to a point.
++ Subset Selection :: By using a subset of a large dataset we may be
+     able to observe features better (no overplotting, no "cloud" of
+     semi-transparent points, etc). Could also subset by levels of a
+     categorical variable or some other criterion (x where x <= 20?)
+     in order to observe features in that subset better.
+
+However, there are other things that can be done interactively to add
+information to a plot:
+
++ Scaling/Zooming :: Often features of a graph are not visible at a
+     particular scale, so zooming in or out can help to identify
+     patterns. The given example is a time series example where the
+     pattern is regular but if we observe too closely, it is just
+     noise, if we observe from too far away it is just a line.
++ Adding Line Segments :: This can be useful if we want to illustrate
+     a relationship between points in a plot. Either temporally in the
+     case of time series or by some other measure.
++ Interactive Drawing :: If we wish to show a particular feature in a
+     plot to an audience, it can often be useful to illustrate this
+     using drawing tools on the plot itself. This is used extensively
+     in lectures in the Stats dept, perhaps this has value for gridSVG
+     plots?
+
+In particular this book seems to suggest that the most useful thing we
+can do with interactivity is to subset a plot to identify interesting
+features. For us, zooming could be useful too because there may be an
+outlier that causes the scales to be too large to properly show
+features of the data and/or trend.
+
+Bibtex for later reference:
+
+: @Book{
+:     author = {Dianne Cook and Deborah F. Swayne},
+:     title = {Interactive and Dynamic Graphics for Data Analysis},
+:     publisher = {Springer New York},
+:     year = {2007},
+:     isbn = {978-0-387-71761-6},
+: }
+
+* Theus & Urbanek
+
+The first chapter covers many of the more straightforward components
+of Interactivity.
+
++ Brushing/Painting :: Also talks about highlighting features in a
+     plot. It does take particular care with *how* highlighting must
+     be done carefully when overplotting. Their example shows a
+     parallel coordinate plot where the appearance of the plot differs
+     greatly depending on the order in which the coloured lines are
+     drawn.
++ Hot-Selection and Shadowing :: Hot-Selection rescales a plot based
+     on a new sub-selection of points. Shadowing simply hides or
+     reduces the visual importance of the unselected points -- it does
+     not rescale.
++ Linking Analyses :: This is where a sub-selection of points is
+     allowing us to perform statistical analyses on the reduced
+     selection. The example in the book shows a sub-selection, where
+     the selection has points highlighted, along with a regression
+     line (and regression output). The advantage is that we can see
+     visually how the regression line of the subset differs from the
+     complete set.
+
+There are also a list of suggestions for possible actions an
+interactive graphic could take:
+
++ Setting anchor points and bin widths of a histogram (bandwidth of a
+  KDE).
++ Changing point sizes.
++ Flipping axes.
++ Setting smoothness of a scatterplot smoother (ALREADY DONE!)
++ Switching representation of histograms between relative and
+  absolute. In other words, are scales 0--MAX or 0-100%?.
++ Changing the amount of alpha blending in a plot (when overplotting
+  is present).
+
+It is suggested that although these might be particular to a given
+plot, the following could be applied to almost any plot:
+
++ Creating and manipulating selections
++ Changing z-order of objects.
++ Changing scales (zooming in/out).
+
+The next chapter in interactivity (7 -- More Interactivity) generally
+discusses the earlier information in more detail, and indeed in
+context with their possible applications.
+
++ Sorting and Ordering :: The example given is that when we have two
+     categorical variables, we would often represent them with stacked
+     barcharts (yes/no or T/F per level). However there are a few ways
+     to sort this: by the name of the level, by absolute "yes" values,
+     by relative "yes" values and of course the reverse of all of
+     these orderings. A drag and drop example is shown for manual
+     ordering.
++ Zooming :: Shows an example where log transformations might be
+             appropriate because there are far more points near the
+             origin. This is reasonably straightforward because as we
+             zoom in near the origin we see more information about the
+             points there. Logical zooming is where more detail is
+             shown as we zoom in (like maps).
++ Censored Zooming :: This approach is where, when zooming in we
+     highlight values too large to be shown, but they will never be
+     smaller than there original size when zooming out. It is possible
+     for the reverse to be true and for there to be a minimum value to
+     be shown.
++ Multiple Views :: Mentions that this is hard because there are so
+                    many possible views and that management of these
+                    views is non-trivial.
++ Dynamic Graphics :: Mentions GGobi and its high-dimensional
+     visualisations. Not useful for us because we're sticking to
+     2D. Even if we were to get WebGL to work, we would not be able to
+     do any 'Grand Tours'.
+
+The examples for sorting and comparing barcharts may be useful to try
+as a demo, even if they may be "boring". The linked analyses would
+also be particularly good to try as it would clearly demonstrate how
+to tie in R's stats with our fancy graphics.
+
+Bibtex for later reference:
+
+: @Book{
+:     author = {Martin Theus and Simon Urbanek},
+:     title = {Interactive Graphics for Data Analysis},
+:     publisher = {Chapman \& Hall/CRC},
+:     year = {2009},
+:     isbn = {978-1-58488-594-8},
+: }
+
+* Additional Notes
+
++ No mention (unless I'm mistaken...) of outlier removal. This could
+  fall under 'Point Identification' though. Maybe it would be a good
+  idea to have a nice way of removing outliers (and perhaps
+  highlighting depending on a point's Cook's Distance).

@@ -2,10 +2,11 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Applying Animations with TimingManager</title>
+        <title>TimingManager: Animation Sequences in JavaScript</title>
         <link rel="stylesheet" href="css/normalize.css">
         <link rel="stylesheet" href="css/main.css">
         <style type="text/css">
+            /* For D3 plots, particularly axes */
             .axis path,
             .axis line {
                 fill: none;
@@ -25,7 +26,7 @@ end.rcode-->
     </head>
     <body>
         <header>
-            <h1>Applying Animations with TimingManager</h1>
+            <h1>TimingManager: Animation Sequences in JavaScript</h1>
             <p>Simon Potter <a href="mailto:simon.potter@auckland.ac.nz"><code>simon.potter@auckland.ac.nz</code></a></p>
             <p>Department of Statistics, University of Auckland</p>
             <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
@@ -45,11 +46,38 @@ end.rcode-->
 
         <h2>Introduction</h2>
 
-        <p>The <em>TimingManager</em> <a href="#ref-1">[1]</a> library
-        provides us with an easy way of using timing information
-        exported from animations in R <a href="#ref-2">[2]</a>. This
-        does not allow us to modify exported animations but does allow
-        us to be able to use the animations created by
+        <p>There are many R <a href="#ref-1">[1]</a> packages
+        available which generate animations in various formats. A key
+        problem when creating animation sequences is the difficulty in
+        coordinating multiple animation actions. For example, a simple
+        sequence which ensures that action A follows action B can
+        become complicated to specify and difficult to maintain. This
+        is particularly problematic if those actions are also part of
+        a larger collection of animation actions that also need to be
+        run either in sequence or in parallel.</p>
+
+        <p>The animaker <a href="#ref-2">[2]</a> package can be used
+        to describe an animation sequence, which allows us to focus on
+        when animation actions should occur. It does not express any
+        description of an animation action, only representing them by
+        labels. The key result from describing an animation sequence
+        is the ability to generate timing schemes from it. These
+        timing schemes tell us when an animation is to occur, for how
+        long, and what its context is. The context tells us the
+        sequence animation and track animation in which each animation
+        occurs. Additionally, it tells us which iteration in the
+        sequence animation and which track in the track animation the
+        atomic animation represents.</p>
+
+        <p>Timing information associated with an animation sequence
+        can be exported for use within a web
+        browser. The <em>TimingManager</em> <a href="#ref-1">[1]</a>
+        library provides us with an easy way of using timing
+        information exported from animations in
+        R <a href="#ref-2">[2]</a>.
+
+        <p>This does not allow us to modify exported animations but
+        does allow us to be able to use the animations created by
         the <em>animaker</em> <a href="#ref-3">[3]</a>
         package. <em>animaker</em> tells us when an animation occurs,
         and its duration, but it does not assign actions to
@@ -68,88 +96,13 @@ end.rcode-->
         approach, rather than SVG's object-based approach to image
         construction.</p>
 
-        <h2>Exporting From R</h2>
+        <h2>Exporting an Animation Sequence</h2>
 
-        <p>To begin, we will first create an animation and export it
-        from R. We first need to load the <em>animaker</em>
-        package.</p>
-
-<!--begin.rcode loadpkg, message=FALSE
-library(animaker)
-end.rcode-->
-
-        <p>By taking some of the code
-        from <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">a
-        technical report</a> we can reconstruct an animation.</p>
-
-<!--begin.rcode buildAnims
-a <- atomic(label = "Alpha", durn = 1)
-b <- atomic(label = "Bravo", durn = 2)
-c <- atomic(label = "Charlie", durn = 3)
-f <- atomic(label = "Delta", durn = NA)
-navec <- vec(a, f, b, f, c, durn = 10)
-# We'll have this repeated 3 times
-navec <- rep(navec, 3)
-end.rcode-->
-
-        <p>We can then observe the timing information that this
-        animation generates in order to use it.</p>
-
-<!--begin.rcode showAnimTiming
-timing(navec)
-end.rcode-->
-
-        <p>In order to export this timing information into a form that
-        is easy to manipulate in the browser, <em>animaker</em> uses
-        the <em>RJSONIO</em> <a href="#ref-8">[8]</a> package. This
-        package translates R data structures into JSON
-        equivalents. This means we can access the data in JavaScript
-        that has been exported from R in a natural
-        manner. <em>TimingManager</em> can export animation timings to
-        a JavaScript variable that is assigned timing information.</p>
-
-<!--begin.rcode exportAnims, message=FALSE
-# Store timing information
-timingData <- timing(navec)
-# Turn it into a JS variable and save
-export(timingData,
-       jsVar = "timingData",
-       file = "timing-data.js")
-end.rcode-->
-
-        <p>The file <code>timing-data.js</code> can now be used within
-        an HTML document so that we can use this timing information
-        within a browser. Now that we have the data exported from R,
-        we can begin to use the timing information in the browser.</p>
-
-        <h2>Declarative Animation</h2>
-
-        <p>When we are creating an animation in the browser, we can
-        use existing facilities within the browser for transitioning
-        between states. This allows us to have smooth animation
-        performed for us without needing to specify how this is to be
-        performed. We can see how this is supposed to look by creating
-        a simple plot using D3. Note that the <strong>actions</strong>
-        associated with each animation are going to be appending text
-        below the timing plot. By clicking the &ldquo;Play&rdquo;
-        button we can visualise how the playback is going to occur,
-        along with triggering associated actions.</p>
-
-        <div id="declarative-timing"></div>
-
-        <p>We can see that actions for each animation are simply to
-        print out their labels, along with the starting times and
-        their durations. This is a trivial example for demonstrating
-        how this can be used, but instead of simply appending some
-        text, we could be performing any task we like within
-        JavaScript.</p>
-
-        <h3>A Simple Example</h3>
-
-        <p>We can provide a simple demonstration of this technique by
-        creating a simple plot where we have 3 squares that move
-        around and change colour. The aim is to perform the following
-        animation sequence:</p>
+        <p>We can provide a simple demonstration of
+        how <em>animaker</em> and <em>TimingManager</em> are to be
+        used by creating a simple plot where we have 3 squares that
+        move around and change colour. The aim is to perform the
+        following animation sequence:</p>
 
         <ol>
             <li>Move a red square from left to right. This starts
@@ -172,7 +125,7 @@ end.rcode-->
         first need to describe the timings of the animation sequence
         with <em>animaker</em>. The description is created below:</p>
 
-<!--begin.rcode simpleAnim, fig=TRUE, message=FALSE
+<!--begin.rcode simpleAnim, message=FALSE
 library(animaker)
 redSq <- atomic(label = "red", durn = 1)
 greenSq <- atomic(label = "green", start = 1, durn = 1)
@@ -181,14 +134,37 @@ final <- atomic(label = "final", start = 1, durn = 3)
 # Combine animations into a sequence
 completeAnim <- vec(redSq, greenSq, blueSq, final,
                     label = "complete")
-# Let's see what this looks like
+end.rcode-->
+
+        <p>The description of the animation has now been created, we
+        can create a timing scheme that tells us when each action is
+        to be called, along with the context in which it is being
+        applied.</p>
+
+<!--begin.rcode showTimings
+timing(completeAnim)
+end.rcode-->
+
+        <p>We can see what this timing information looks like by
+        calling <code>plot()</code> on our animation description.</p>
+
+<!--begin.rcode plotTimings, fig=TRUE
 plot(completeAnim)
 end.rcode-->
 
         <p>Now that the description of the animation sequence has been
         created, we need to be able to export it into a form that a
-        web browser can use. We do this by calling
-        the <code>export()</code> function, as shown below.</p>
+        web browser can use. In order to export this timing
+        information into a form that is easy to manipulate in the
+        browser, <em>animaker</em> uses
+        the <em>RJSONIO</em> <a href="#ref-8">[8]</a> package. This
+        package translates R data structures into JSON
+        equivalents. This means we can access the data in JavaScript
+        that has been exported from R in a natural
+        manner. <em>animaker</em> can export animation timings to
+        a JavaScript variable that is assigned timing information. We
+        do this by calling the <code>export()</code> function, as
+        shown below.</p>
 
 <!--begin.rcode exportSimple
 export(completeAnim,
@@ -196,13 +172,36 @@ export(completeAnim,
        file = "simple-anim-timing.js")
 end.rcode-->
 
-        <p>We can then import that into the browser using the
-        HTML <code>&lt;script&gt;</code> tag. This allows us to make
-        use of <em>TimingManager</em> because we expose a JavaScript
-        variable, <code>simpleAnim</code>, which contains all of the
-        necessary timing information. We will first begin by
-        instantiating a <em>TimingManager</em> object, noting that it
-        should be using seconds as its unit of time.</p>
+        <p>What is happening here is that the timing information is
+        going to be represented as a JavaScript object that is
+        assigned to a variable called <code>simpleAnim</code>. The
+        resulting code is saved to a file
+        called <code>simple-anim-timing.js</code>. The first 20 lines of the
+        file <code>simple-anim-timing.js</code> are the following:</p>
+
+<!--begin.rcode showExportedJSON, echo=FALSE
+exportedJSON <- readLines("simple-anim-timing.js")
+cat(paste(exportedJSON[1:20], collapse="\n"), "\n...\n")
+end.rcode-->
+
+        <p>What we can see here is a close mapping between the timing
+        scheme we printed out earlier and the JSON that was exported
+        from it. The headers in our timing scheme have now become keys
+        in JavaScript objects, each object representing a
+        row in our timing scheme.</p>
+
+        <p>We can import this information into the browser using
+        the HTML <code>&lt;script&gt;</code> tag. This allows us to
+        make use of <em>TimingManager</em> because we exposed a
+        JavaScript variable, <code>simpleAnim</code>, which contains
+        all of the necessary timing information.</p>
+
+        <h2>Using Timing Information in the Browser</h2>
+
+        <p>In order to use the exported timing information, we will
+        first begin by instantiating a <em>TimingManager</em> object,
+        noting that it should be using seconds as its unit of
+        time.</p>
 
 <pre class="js">
 JS&gt; var tm = new TimingManager(simpleAnim, "s");
@@ -211,7 +210,7 @@ JS&gt; var tm = new TimingManager(simpleAnim, "s");
         <p>Next we will be creating JavaScript functions that we will
         assign as actions to our atomic animations. For clarity, the
         code used to generate the initial scene has been
-        ommitted. Note in the following functions that each takes a
+        ommitted. Note that each of the following functions takes a
         single parameter which contains the information about the
         animation as it is being called. For example, it contains the
         starting time, duration, and the context in which the
@@ -255,9 +254,9 @@ JS+         });
 JS+ };
 </pre>
 
-        <p>Note that the only timing calculation we needed to make is
+        <p>The only timing calculation we needed to make is
         to convert seconds to milliseconds. This is because D3, like
-        almost all time-related JavaScript code, uses milliseconds as
+        almost all time related JavaScript code, uses milliseconds as
         its primary unit of time. While the D3 code shown above is
         what we're going to be using to perform animation, it is not
         strictly necessary to understand it, only the resulting
@@ -279,12 +278,89 @@ JS+ });
 </pre>
 
         <p>Now that the actions have been <strong>registered</strong>
-        to atomic animations, we can now <strong>play</strong>
-        them. The result is shown below:</p>
+        to atomic animations, we can <strong>play</strong> them.</p>
+
+<pre class="js">
+JS&gt; tm.play();
+</pre>
+
+        <p>When <code>play()</code> is called, <em>TimingManager</em>
+        begins to call the animation actions at the correct times. The
+        final implementation of the animation sequence is shown
+        below. In order to show the animation that we described
+        earlier, simply click the &ldquo;Play&rdquo; button.</p>
 
         <div id="simple-ex"></div>
 
-        <h2>Framed Animation</h2>
+        <h2>Complex Examples</h2>
+
+        <p>More complex examples will be shown that demonstrate we do
+        not need R to produce and animate complex animations. The
+        first of these examples is an equivalent
+        of <em>animaker</em>'s <code>dynPlot()</code>
+        function. <code>dynPlot()</code> produces an animated plot
+        showing visually when each atomic animation is due to be
+        called. The second is a quick demonstration of frame-based
+        animation in the browser.</p>
+
+        <h3>Animated Timing Plot</h3>
+
+        <p>To begin, we will first create an animation and export it
+        from R. We first need to load the <em>animaker</em>
+        package.</p>
+
+<!--begin.rcode loadpkg, message=FALSE
+library(animaker)
+end.rcode-->
+
+        <p>By taking some of the code
+        from <a href="http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html">a
+        technical report</a> we can reconstruct an animation.</p>
+
+<!--begin.rcode buildAnims
+a <- atomic(label = "Alpha", durn = 1)
+b <- atomic(label = "Bravo", durn = 2)
+c <- atomic(label = "Charlie", durn = 3)
+f <- atomic(label = "Delta", durn = NA)
+navec <- vec(a, f, b, f, c, durn = 10)
+# We'll have this repeated 3 times
+navec <- rep(navec, 3)
+end.rcode-->
+
+        <p>We can then export this timing information into a form that
+        can be used in the browser.</p>
+
+<!--begin.rcode exportAnims, message=FALSE
+# Store timing information
+timingData <- timing(navec)
+# Turn it into a JS variable and save
+export(timingData,
+       jsVar = "timingData",
+       file = "timing-data.js")
+end.rcode-->
+
+        <p>The file <code>timing-data.js</code> can now be used within
+        an HTML document so that we can use this timing information
+        within a browser. Now that we have the data exported from R,
+        we can begin to use the timing information in the browser.</p>
+
+        <p>The implementation details have been omitted for brevity
+        but we are able to make use of D3 to create much of the plot.
+        Note that the <strong>actions</strong> associated with each
+        atomic animation are going to be appending text below the
+        timing plot. By clicking the &ldquo;Play&rdquo; button we can
+        visualise how the playback is going to occur, along with
+        triggering associated actions.</p>
+
+        <div id="declarative-timing"></div>
+
+        <p>We can see that actions for each animation are simply to
+        print out their labels, along with the starting times and
+        their durations. This is a simple diagram demonstrating how
+        this can be used, but instead of simply appending some text,
+        we could be performing any task we like within JavaScript.</p>
+
+        <h3>Framed Animation</h3>
 
         <p>In the case of framed animation, the intention is to
         provide the illusion of animation be producing several frames
@@ -357,7 +433,7 @@ JS&gt; tm.frameApply(10);
         much simpler to write. Another reason is because web browsers
         are able to hardware accelerate declarative animations,
         whereas frame-based animations are not able to receive this
-        benefit. As a result declarative animations are almost always
+        benefit. As a result, declarative animations are almost always
         going to look nicer than an equivalent frame-based
         approach.</p>
 
@@ -510,7 +586,7 @@ JS&gt; tm.frameApply(10);
                     fill: "red",
                     stroke: "none"
                 });
-            
+
             var greensq = plot.append("rect")
                 .attr({
                     id: "greensq",
@@ -521,7 +597,7 @@ JS&gt; tm.frameApply(10);
                     fill: "green",
                     stroke: "none"
                 });
-            
+
             var bluesq = plot.append("rect")
                 .attr({
                     id: "bluesq",
@@ -533,6 +609,5 @@ JS&gt; tm.frameApply(10);
                     stroke: "none"
                 });
         </script>
-
     </body>
 </html>
