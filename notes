@@ -1,5 +1,5 @@
 
-2013-02-??
+2013-02-05
 ----------
 
 FOR NOTING:
@@ -17,6 +17,116 @@ FOR NOTING:
   + Another Shiny + D3 example  (interactive MDS [Multi-dimensional Scaling])
 
     http://bl.ocks.org/4482115
+
+
+TODO:
+
+  + Finalise Chambers Award application
+    - "All application materials must be received by 5:00pm EST, Monday,
+       February 18, 2013"
+    - Remember to give links to relevant Tech Reports
+    - develop an example that shows ALL of gridSVG developments +
+      animaker + TimingManager + selectr + D3
+    - build Windows binary for 'animaker' ?
+
+  + Add general option flag in 'gridSVG' that says whether to
+    "make safe" id values (e.g., all "." and ":" in ids are
+    auto translated to "-" OR maybe "--" to avoid conflict
+    with existing ids!?)
+    NOTE that (because we now produce XML) it is possible to
+    post-process id values AFTER generating the entire document
+    (so you can check for conflicts [among other things like uniqueness!])
+    BUT ideally want the result to be predictable
+    
+    - might generally be useful for gridSVG() to produce a mapping
+      of original grob names to final SVG ids (as part of the list
+      that gridToSVG() returns [plus maybe as JSON])
+      That would allow, e.g., in javascript code using an original
+      grob name and converting it to an SVG id on-the-fly
+
+    - also check whether gTree child grobs get an id with full gPath
+      (they should! because otherwise they are not guaranteed unique)
+
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Do a 'shiny' version of sampling variation
+    See examples/shiny-smoother/run-static.R
+    See examples/shiny-smoother/run-gridSVG.R
+
+    Summary is that Shiny makes some assumptions about how the web
+    app is going to work and those assumptions do not fit well with
+    the incremental-update style that Simon is trying out.
+
+    See examples/shiny-smoother/shiny-smoother.org
+
+  + sampvar (VIT) reflection:
+    - already have examples/sampling-variation/sampling-variation.org
+      which discusses D3 difficulties
+    - could we add reflections on gains over old VIT ?
+    - could we add reflections on comparison wiht what you would
+      have to do if you only had D3 (or raphael) ?
+    - ESSENTIALLY, some sort of more complete document that gives
+      a wider, overall view of where you have got so far (in terms
+      of dynamically updating graphical content in a web page by
+      communicating with R)
+
+    See sampvar-reflections.org
+
+  + Try to start a summary for Chambers Award
+    - "All application materials must be received by 5:00pm EST, Monday,
+       February 18, 2013"
+
+    See jmc/summary.pdf
+
+
+PAUL TODO:
+
+  + Read sampvar-reflections.org
+
+  + Write a letter for Simon's Chamber's Award application
+    - read Simon's summary for application
+    - check what else is required for application
 
 
 2013-01-08
