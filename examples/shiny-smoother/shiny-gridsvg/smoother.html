@@ -1,0 +1,54 @@
+<script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+<script type="text/javascript">
+var smootherOutputBinding = new Shiny.OutputBinding();
+$.extend(smootherOutputBinding, {
+    find: function(scope) {
+        // We need to tell shiny how to find the element but for the most
+        // part we are just going to be ignoring this.
+        return $(scope).find("#smoothempty");
+    },
+    renderValue: function(el, data) {
+        // Run everything after 100ms.
+        //
+        // The main reason for this is because we want to ensure that
+        // the smoother is added *after* the plot has been inserted.
+        //
+        // This can be assumed when *updating*, but not when *inserting*
+        // a smoother line. For simplicity, always wait 100ms
+        setTimeout(function() {
+            // Grabbing the smoother group node
+            var smoothLine = document.querySelector("#smoother");
+            // Parsing the SVG output from the server
+            var smoother = new DOMParser()
+                .parseFromString(data, "image/svg+xml")
+                .documentElement
+                .firstChild;
+
+            // If we have a smoother, update it to a new position
+            if (smoothLine) {
+                // Get the <polyline> from the <g>
+                smoothLine = smoothLine.firstChild;
+                // Get the new points attr from the <polyline> el
+                var newpoints = smoother.firstChild.getAttribute("points");
+                // Update the points attribute over 1s
+                d3.select(smoothLine)
+                    .transition()
+                    .duration(1000)
+                    .attr("points", newpoints);
+            } else {
+                // Find the "panel" viewport, this is usually an SVG group
+                // with a name like "panel.3-4-3-4" so search for something
+                // starting with "panel"
+                var panelvp = d3.select('[id^="panel"]').node();
+                // If we can find such a viewport, append the smoother
+                if (panelvp)
+                    panelvp.appendChild(smoother);
+            }
+        }, 100);
+    }
+});
+
+Shiny.outputBindings.register(smootherOutputBinding, "sjp.smootherOutputBinding");
+</script>
+
+
