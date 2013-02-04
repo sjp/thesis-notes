@@ -1,0 +1,167 @@
+\documentclass[11pt, a4paper, twoside]{book}
+\usepackage{graphicx, color, natbib}
+
+% Allowing dots in graphical filenames
+\usepackage{grffile}
+
+% Nice tables
+\usepackage{booktabs}
+
+% Remove headers and footers from pages that are just empty
+\usepackage{emptypage}
+
+% While microtype produces nice results,
+% change font size by no more than 1%.
+\usepackage{microtype}
+
+% Might want to mess with page geometry at some point.
+% Handy to have just in case.
+\usepackage{geometry}
+
+% Nice monospaced font
+\usepackage{inconsolata}
+
+% Using these packages for vector graphics, e.g. the package
+% relationship diagram.
+\usepackage{pgf, tikz}
+\usetikzlibrary{arrows, positioning, fit, shapes}
+
+% Ensuring we get hyperlinks and that natbib plays nicely with it.
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{hypernat}
+
+% Don't want `Chapter X` to appear
+% Instead, `1 Introduction` will appear for example
+\usepackage{titlesec}
+\titleformat{\chapter}[hang]{\bfseries \huge}{\thechapter}{2pc}{}
+
+% Defining the file/font/lang formats we want.
+\usepackage[utf8]{inputenc}
+\usepackage[OT1]{fontenc}
+\usepackage[newzealand]{babel}
+
+% Will need subfloats for before & after comparisons
+% \usepackage{caption}
+% \usepackage[list = true]{subcaption}
+
+% Required to use either 1.5x or 2x spacing
+% Using 1.5x
+\usepackage{setspace}
+\onehalfspacing
+
+\newcommand{\blankpage}{
+\newpage
+\thispagestyle{empty}
+\mbox{}
+}
+
+% Saving myself from repeatedly having to format text.
+\newcommand{\grid}{\textsf{grid}}
+\newcommand{\gridSVG}{\textsf{gridSVG}}
+\newcommand{\R}{\textsf{R}}
+
+% Renaming the bibliography section with the name `References`.
+\addto{\captionsnewzealand}{\renewcommand{\bibname}{References}}
+
+% Document properties.
+\newcommand{\doctitle}{Dynamic, Interactive and Reactive Graphics for the Web}
+\newcommand{\docauthor}{Simon J. Potter}
+\newcommand{\docdate}{June 1, 2013}
+\title{\doctitle{}}
+\author{\docauthor{}}
+\date{\docdate{}}
+\hypersetup{pdftitle = {\doctitle{} | \docauthor{}},
+            pdfauthor = {\docauthor{}},
+            pdfborder = {0 0 0.5}}
+
+
+% Configuring the page headers
+\usepackage{fancyhdr}
+\setlength{\headheight}{15pt}
+ 
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{#1}{}}
+ 
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{\thechapter{}~ \nouppercase{\leftmark}}
+\fancyhead[LO]{\thesection{}~ \nouppercase{\rightmark}}
+ 
+\fancypagestyle{plain}{ %
+\fancyhf{} % remove everything
+\renewcommand{\headrulewidth}{0pt} % remove lines as well
+\renewcommand{\footrulewidth}{0pt}}
+
+
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%
+% BEGIN FRONT MATTER %
+%%%%%%%%%%%%%%%%%%%%%%
+
+\frontmatter
+
+% Title page
+\input{./title.tex}
+\thispagestyle{empty}
+
+\cleardoublepage{}
+\setcounter{page}{1}
+
+%\thispagestyle{empty}
+%\cleardoublepage
+
+\input{./abstract.tex}
+
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%
+% END FRONT MATTER %
+%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%
+% BEGIN MAIN MATTER %
+%%%%%%%%%%%%%%%%%%%%%
+
+\mainmatter
+
+\setcounter{page}{1}
+\renewcommand{\thepage}{\arabic{page}}
+
+\input{./aim.tex}
+\input{./introduction.tex}
+\input{./conclusion.tex}
+
+%%%%%%%%%%%%%%%%%%%
+% END MAIN MATTER %
+%%%%%%%%%%%%%%%%%%%
+ 
+%\appendix
+%\input{./appendix.tex}
+
+\backmatter
+ 
+%%%%%%%%%%%%%%%%%%%%
+% BEGIN REFERENCES %
+%%%%%%%%%%%%%%%%%%%%
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{References}
+
+\bibliographystyle{apa}
+\bibliography{references.bib}
+
+%%%%%%%%%%%%%%%%%%
+% END REFERENCES %
+%%%%%%%%%%%%%%%%%%
+
+\end{document}
