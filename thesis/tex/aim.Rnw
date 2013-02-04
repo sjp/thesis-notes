@@ -1,0 +1,11 @@
+\chapter{Aim}
+
+The statistical software package \R{} \citep{R11} is freely available and widely used amongst statisticians.
+The intention of this project is to produce animated and interactive plots on web pages using \R{}.
+These plots can convey more information and engage a reader better than regular static graphics.
+Currently, the creation of these plots is not possible in \R{} without difficulty.
+A package for \R{} does exist that can create the type of plots we want, but it is not capable of producing any but the most basic of statistical graphics.
+This package, \gridSVG{} \citep{Mur11}, needs to be improved upon in order to create useful animated and interactive graphics.
+
+As a first step the \gridSVG{} package requires extending so that it is capable of reproducing the appearance of plots created by \R{}'s native graphics devices.
+Once this is accomplished, further work can be done to improve \gridSVG{}'s capacity to include animation and interactivity to its plots.

@@ -1,0 +1,197 @@
+#+TITLE: A Reflection on Building the Sampling Variation Example
+
+* Introduction
+
+This document aims to discuss the merits of building the Sampling
+Variation example using our combination of ~Rook~, ~animaker~,
+~gridSVG~ and D3. These will be compared with alternative approaches
+to see what we end up building that is different to existing
+solutions.
+
+* Reference Implementation
+
+The reference implementation is the existing Visual Inference Tools
+package. It has a module that demonstrates sampling variation by using
+a GTK GUI to change parameters and an "interactive" graphics device
+(typically ~windows()~) to show animations.
+
+In order to build this requires knowing only one programming language,
+R. This saves us from having to spend time learning a new
+language. However, it is perhaps just as time consuming to learn and
+understand how to build GTK GUIs using the ~gWidgets~. One issue is
+that when building a complex application like VIT, the event handlers
+associated with GUI elements (e.g. buttons) can become very complex.
+
+In order to plot the graphics, we simply use the facilities that are
+provided with R. In VIT's case we use the grid package to draw our
+scene. To create an animation we simply modify the state of our image
+as necessary and draw again. The repeated drawing creates the illusion
+of animation. However, there are limitations to this approach.
+
+The first limitation is that we cannot easily control *at what time*
+things are animated, as we are more or less performing a drawing
+operating inside a large ~for~ loop. The problem here is that we don't
+know how long it takes to draw each frame. This is a particular
+concern because we would often like to give a *time* at which an
+animation occurs, but instead of saying that a particular animation
+sequence occurs at the 5 second mark, we have to say that it occurs
+roughly after 30 iterations. On faster computers/devices this may be
+occurring after 3 seconds, while on slower computers/devices closer to
+10 seconds. Not only is the time taken for each iteration inconsistent
+in different environments, it is also inconsistent as the scene
+becomes more or less complex.
+
+The next limitation is that instead of providing a declarative means of
+animation we are limited to manually modifying an image in an
+iterative manner. For example, instead of describing an animation by
+saying that a point moves from x = 5 to x = 25, we have to say how
+many frames this is to be drawn over and interpolate as required.
+
+Another limitation is the way in which VIT is required to animate. We
+need to be able to have an entire scene ready for VIT to draw. The
+problem with this is we cannot just draw what has changed, we need to
+draw an entirely new (slightly modified) plot.
+
+The approach we have created overcomes these limitations. For
+starters, we no longer rely on estimating *when* animation sequences
+occur, we can actually give a valid time to start animating at. This
+is simply a consequence of using an image format capable of
+declarative animation. SVG can not only use SMIL animations that are
+"hard-coded" animations, but also CSS3 transitions which allow us to
+modify the image once it has been drawn. This means we can not only
+define as we construct a plot, but also *after* the plot has been
+constructed too.
+
+A consequence of using declarative animation facilities is that we no
+longer need to perform manual tasks like interpolation
+ourselves. Instead we can simply say how long an animation should take
+and when. An added bonus is that we can specify non-linear easing
+functions, VIT only uses linear animations/transitions.
+
+The final limitation, that we need to describe an entire scene each
+time we need to animate is no longer necessary. This is because if we
+already know what a plot looks like, and how it needs to be modified,
+all we need to be able to describe is the modifications from the
+original state. This means that a *lot* less graphical information
+needs to be drawn to the screen, most of it is probably only going to
+be "drawn" once.
+
+An added bonus is that now we can easily use ~animaker~ to describe
+*when* our animations are due to happen. This allows us to more easily
+"storyboard" an animation and implement it quickly in code without
+having to worry about hard-coded timings (as is currently the case).
+
+We can see that there are clear advantages to what we have created
+with, in comparison to the reference implementation.
+
+* Alternative Approaches
+
+** Low-level JavaScript Libraries
+
+The advantage of using a low-level library like D3 is that if we know
+SVG, we have the knowledge to be able to construct any type of
+interactive plot we like. Unfortunately much of this needs to be
+created ourselves from scratch. So while we ultimately get a lot of
+flexibility from building a plot using D3, there is a lot of code to
+write to produce the simplest of plots.
+
+Consider the case where we just want to produce a simple
+scatterplot. In R, this is as simple as just typing the following:
+
+: xs <- 1:10
+: ys <- rnorm(10)
+: plot(ys ~ xs)
+
+A *lot* of work here is being done for us. In D3 we need to define the
+following things:
+
++ The boilerplate to actually have an ~<svg>~ image.
++ Create and position a rectangle to place our points within.
++ Define ~x~ and ~y~ axis scales relative to our dataset.
++ Draw axis tickmarks and labels.
++ Draw the points themselves (including sizing and colouring).
+
+This is a lot of work for something that R does so simply for us. If
+we want to produce something more complex, like any of the ~lattice~
+or ~ggplot2~ plots, we are going to have to implement a lot of that
+functionality ourselves. To avoid reinventing the wheel it seems clear
+that we can save ourselves a lot of time by using R's powerful
+graphics facilities instead of attempting to write our own.
+
+However, D3 also provides great facilities for animation and
+interactivity. The animation is implemented via CSS3 transitions, but
+is exposed to the user in a very convenient way. The interactivity is
+largely introduced in the same way that is done in gridSVG via
+~grid.garnish()~. However, because D3 is a JavaScript library, it
+doesn't seem as "tacked-on" as gridSVG's approach. This is because D3
+is working in its native language, JavaScript, while gridSVG is
+attempting to mix R, SVG and JavaScript.
+
+By building everything in D3, we do gain a lot of flexibility, but
+there are no mature graphing libraries for D3 as of yet. Assuming
+there were such libraries, there are still gains to be had by using
+R. This is because although D3 may be able to actually draw in an
+appropriate manner, it wouldn't provide us with the data that we would
+like to draw. By data I mean something like the output from a loess
+smoother, or a GAM, or residuals from a linear model, etc. These are
+all results from *statistical* operations that D3 cannot possibly be
+expected to know about or perform. This is where R excels for
+*statistical graphics*.
+
+With the advent of ~shiny~, ~Rook~, ~rApache~, etc it may not be
+necessary to use R for graphics because it is capable of sending the
+right information to the browser. With the right data, D3 is capable
+of plotting everything R is able to (and more). It has no concept of
+primitives like "viewports" and "gTrees", but this is because SVG
+itself has no concept of it (besides grouping). Again, it seems to be
+the case that although D3 *can* draw all the plots we want, they have
+not been implemented yet so at least for now, R (with gridSVG) still
+seems like a good choice for web-based graphics.
+
+** High-Level JavaScript Libraries
+
+There are high-level libraries like RaphaelJS which allow us to
+quickly draw an image in the browser. In particular there is even a
+graphing library for it. It allows us to simply supply the right data
+(which could be via R if necessary), and it will draw a plot, e.g. a
+line chart.
+
+The problem with using a library like this is the lack of convenient
+customisation. If we want to change the colour scheme, or add/remove a
+legend we run into problems. In fact, we often have to resort to using
+plain JavaScript to modify or enhance these plots. This largely
+defeats the purpose of using them.
+
+Because we're likely to need a lot of customisation in what we intend
+to plot, animate and interact with, it seems that high level libraries
+are unlikely to be our saviour. This is often the case because once
+something has been drawn in a high level library, we are unlikely to
+be able to easily find out *what* was just drawn (in SVG). This is a
+necessary feature because if we tell the high level library to draw
+points, we need to have the option of being able to interact with the
+points in some way. Animation is also dependent on this functionality,
+how are we supposed to animate something that we are no longer able to
+reference?
+
+* Summary
+
+It seems clear that the work so far has provided us with large
+benefits over the existing VIT implementation for drawing animated and
+interactive statistical images. However, it is not as clear that there
+is indeed a benefit to exporting graphics via gridSVG. If we can
+provide the same statistical data to the browser via R, then D3 (in
+theory) can draw any plot that gridSVG can export. The large amount of
+work required to re-invent the wheel with D3 suggests that this may
+not be practical. If a mature graphics system or graphing library can
+be built upon D3, then it seems that that *may* be preferable to
+gridSVG. This is because we are "natively" working in JavaScript and
+SVG, avoiding any leaky abstractions or other such behaviour that we
+might encounter with gridSVG.
+
+For now it seems to be the case that for most plots, the gridSVG
+approach is ideal. This is particularly the case with complex
+graphics. In simpler cases gridSVG may not provide sufficient
+benefits. However, in the case where D3 were used for graphics our
+work is still useful because ~animaker~ is still a good tool for
+describing animation sequences, even if the final implementation is in
+D3.

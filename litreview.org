@@ -334,7 +334,7 @@
 
 ** RStudio Shiny
 
-   + URL :: http://rstudio.org/, http://rstudio.github.com/shiny/tutorial/,[[https://github.com/rstudio/shiny][ https://github.com/rstudio/shiny]], [[http://cran.stat.auckland.ac.nz/web/packages/shiny/index.html][CRAN Shiny]]
+   + URL :: http://rstudio.org/, http://rstudio.github.com/shiny/tutorial/, [[https://github.com/rstudio/shiny]], [[http://cran.stat.auckland.ac.nz/web/packages/shiny/index.html][CRAN Shiny]]
    + Author :: Josh Paulson, Joe Cheng, JJ Allaire
    + Status :: Active
    + Category :: Application Server

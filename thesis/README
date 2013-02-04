@@ -1,0 +1,47 @@
+--------------------------------------------
+|                                          |
+|    Masters Thesis for Simon J. Potter    |
+|                                          |
+--------------------------------------------
+
+
+Requirements:
+-------------
+
+This thesis requires:
+
+    + Inkscape
+    + pdflatex and several LaTeX packages:
+
+        - babel
+        - booktabs
+        - caption
+        - color
+        - float
+        - fontenc
+        - geometry
+        - graphicx
+        - grffile
+        - hypernat
+        - hyperref
+        - inputenc
+        - microtype
+        - natbib
+        - parskip
+        - pgf
+        - subcaption
+        - tikz
+        - titlesec
+
+      Most of these packages will be available by default with any texlive
+      installation on Linux.
+
+    + python-pygments (for code listings)
+    + R (at least 2.15)
+    + Sweave
+
+
+Usage:
+------
+
+In order to generate the resulting report.pdf file simply run `make`.

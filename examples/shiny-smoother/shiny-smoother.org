@@ -1,0 +1,149 @@
+#+TITLE: Shiny Smoother Example with gridSVG
+
+* Introduction
+
+An attempt has been made to integrate both gridSVG and D3 with
+RStudio's ~shiny~. This simple example contains a ggplot2 plot, which
+has a loess smoother added to it. A parameter called 'span' determines
+the size of the spanning window that loess uses to perform
+smoothing. Higher values of 'span' create smoother loess estimates.
+
+It is already known that gridSVG can be used to generate SVG graphics
+using ~shiny~
+(http://glimmer.rstudio.com/timelyportfolio/shiny-grid-svg-v2) but
+there are a few limitations with the previous example. For starters,
+it is touching the hard disk by having to write out a file, rather
+than building it in-memory, meaning that ~shiny~ still has to do some
+file manipulation before pushing out the results to the
+browser. Secondly, the plots being generated are still largely static,
+the only real advantage being that they are vector images. There is no
+animation or interactivity present.
+
+We'll attempt to improve upon this example in order to get the most
+out of ~gridSVG~ and ~shiny~. For comparison purposes the
+~shiny-static~ app was also created which performs no interactivity
+and makes use of ~shiny~'s built-in facilities.
+
+Shiny uses two key files to build up an application. They are
+~server.R~, for describing R's server-side behaviour and ~ui.R~ for
+describing how the user interface (browser) should look and
+behave. We'll first examine ~server.R~.
+
+* ~server.R~
+
+The first thing that is done is to generate random data to be
+plotted. This is just ~rnorm~ data with a polynomial
+transformation. The next thing to generate is the ~ggplot2~ plot that
+will display this data. It is important to note that I have also saved
+the coordinate information that gridSVG saved while exporting to
+SVG. This means we can re-plot into the same SVG locations as
+was the case in the original plot.
+
+With the saved coordinate information, I also stored the name of
+ggplot2's "panel" viewport. This is the name of the viewport where all
+of the relevant drawing occurs, so we need to know how to plot into it
+again.
+
+The ~shinyServer()~ code requires some explanation. There are two
+parameters to this function, and they are of large importance. They
+are both lists, ~input~ is the list of input parameters received from
+the browser, while ~output~ is the list of output parameters that are
+going to be sent to the browser from R. The ~input~ list is already
+populated, while you need to populate the ~output~ list in order to
+produce any useful output in the browser.
+
+In our example, the single *reactive* input is that of the spanning
+parameter. With this, wrap it in a ~reactive()~ function. This allows
+us to cache the results so we only react to the spanning parameter if
+it has indeed changed.
+
+Because our ggplot2 plot is constant, we just wrap the resulting SVG
+in a ~reactiveText~ function, because the output that we are giving to
+the browser is simply the SVG text.
+
+The only true reactive *output* is that of the generated smoother
+line. In order to generate this I performed the following steps:
+
++ Opened a ~NULL~ ~pdf()~ device.
++ Recreated the panel viewport by using ~gridSVG~'s
+  ~viewportCreate()~. Because ggplot2 doesn't use native scales, this
+  needs to be done manually, but is simple with the use of
+  ~extendrange()~, which ggplot2 does internally anyway.
++ Created a loess smoother, with the span parameter controlled by our
+  reactive input parameter.
++ Draw a red line based on the fitted values of the loess
+  smoother. This line is named ~smoother~ so we can find it later.
++ Store the result of ~gridToSVG()~
++ Find the smoother fragment and grab that node via ~selectr~.
++ Return the smoother fragment, wrapped in ~<svg>~ elements so that it
+  can be parsed by the browser's ~DOMParser()~ object.
+
+This can then be added to our output list. We name this value in the
+list ~smoothempty~ for reasons that will be explained later.
+
+* ~ui.R~
+
+The user interface for shiny is largely constructed using HTML-like R
+functions. From this, convenience functions have been provided that
+build a reasonably attractive set of default page layouts. For this
+example I'm using the ~pageWithSidebar~ layout that is comprised of a
+header panel, a sidebar panel (to the left) and a main panel.
+
+The header panel simply contains a header message.
+
+The sidebar panel contains a ~sliderInput~. This slider is a numeric
+slider that gives us control over minimum, maximum and step sizes to
+control the possible input parameters. It is given the ~id~ of
+~spanalpha~ so that we know how to refer to it in R with our shiny
+inputs.
+
+The main panel is where I have chosen to display all of our
+outputs. The first output to be displayed is the ggplot2
+output. Because the plot is just SVG text and is designed to be
+inserted as HTML, we are displaying the output using ~htmlOutput~.
+
+The next output, aimed at storing the loess smoother, is more of a
+~NULL~ output. It should not directly draw anything itself, but
+instead should store the data necessary to draw the smoother. As a
+result we have just drawn an empty ~<div>~ with an ID to hold this
+information.
+
+In order to actually display the loess smoother, we need to create a
+shiny output binding. These are created with the use of JavaScript. To
+include this in our ~ui.R~ we import the contents of ~smoother.html~
+using ~includeHTML()~.
+
+* ~smoother.html~
+
+This file is solely here to create a working output binding for shiny
+so that we can insert a loess smoother, and transition existing
+smoothers if a smoother already exists. Because this file is expected
+to be HTML, it is very familiar to us already.
+
+The first thing we do is to make D3 available to us. Next we begin to
+write the actual shiny output binding.
+
+There are two relevant methods are need to implement. The first of
+these is the ~find()~ method, which tells shiny how to find the
+element which stores all of the data needed for our output. All we
+need to do here is search using a CSS selector and return the matching
+node.
+
+The next method, which requires the most effort to implement is the
+~renderValue()~ method. It tells us how to draw the data that we have
+found that is bound to our element. Because we're not interested in
+the element itself (it's just a null value for storing data), we are
+solely concerned with being able to draw our data.
+
+What is important to note is that because shiny tries to draw all of
+its responses at once, we run into problems adding a loess
+smoother. The primary reason for this is because we need to ensure
+that the smoother is added to an *existing* plot. To work around this
+issue we simply wait an additional 100ms for our output binding to
+render content.
+
+When the 100ms delay has elapsed, we try adding the smoother. If the
+smoother does not already exist in the plot, we use ~DOMParser()~ to
+parse the shiny response data as SVG, and then insert at the correct
+place in the SVG plot. If the smoother does already exist, we make use
+of D3 to transition the line's ~points~ attribute over one second.
