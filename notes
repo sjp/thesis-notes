@@ -4,6 +4,16 @@
 
 FOR NOTING:
 
+  + Shiny Server now available
+
+    http://blog.rstudio.org/2013/01/22/shiny-server-now-available/
+
+  + voxel.js javascript 3D (voxel) game engine for browsers
+
+    Possible basis for interactive 3D visualisations ?
+
+    http://voxeljs.com/
+
   + Another Shiny + D3 example  (interactive MDS [Multi-dimensional Scaling])
 
     http://bl.ocks.org/4482115
