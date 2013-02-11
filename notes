@@ -1,4 +1,64 @@
 
+2013-02-12
+----------
+
+DISCUSS:
+
+  + Chambers Award 
+    - Simon's application
+    - Paul's letter of support
+      + Have I mentioned everything that Simon has mentioned ?
+
+
+FOR NOTING:
+
+  + A "silly" D3 + R example
+
+    http://bl.ocks.org/4731053
+
+    Interesting because it provides an example where D3 
+    is being used to draw the plot.
+
+  + More R + D3
+
+    http://rud.is/b/2013/02/08/extended-simple-example-asn-graph-visualization-example-r-to-d3/
+
+    Networks (graphs) this time;  interesting one to look into?
+    See 'gridGraphviz' integration with 'gridSVG' then D3 to make
+    animation/interaction ???
+
+
+PAUL DONE:
+
+  + Read sampvar-reflections.org 
+    - nice summary of pros and cons (this will be VERY useful when
+      it comes time to write your thesis discussion)
+
+  + Read shiny-smoother.org 
+    - can confirm that the 'shiny' implementation of this example is NOT
+      straightforward.  At least as complicated as the 'Rook' version and
+      I think the Rook version would be simpler now anyway because we have
+      better tools for handling the 'grid' coordinate systems (?)
+
+  + Simon's Chamber's Award application
+    - write a letter of support
+      See ../ChambersAward/JMCsupport.doc
+    - read Simon's summary for application
+    - check what else is required for application
+      + Simon's CV
+      + letter of support from me
+      + brief description of software
+      + the software itself (with enough info to install it)
+        - can include links to tech reports
+        - include the BSc Honours report too
+
+FOR PAUL:
+
+  + Guidelines for the Appointment of Examiners of Doctoral Theses and Masters Research Theses/Portfolios
+    http://www.auckland.ac.nz/webdav/site/central/shared/for/current-students/postgraduate-students/documents/policies-guidelines-forms/guidelines-for-the-appointment-of-examiners.pdf
+    Copy in ../
+
+
 2013-02-05
 ----------
 
