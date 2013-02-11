@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Hexagonal Binning Example</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+              <div class="span8">
+                <h1>Hexagonal Binning Example</h1>
+                <p>
+                    Hexagonal binning is a technique used to show the
+                    density of a large number of points. We can encode
+                    the density of the data in two ways. The first of
+                    which is by <em>colour</em>, this means that more
+                    dense areas of the plot are encoded with darker
+                    hexagons. The second is where we set
+                    the <em>area</em> of each hexagon to correspond to
+                    the density within its locality. This means that
+                    more dense regions have larger hexagons.
+                </p>
+                <p>
+                    To use this example, click one of the buttons on
+                    the side to transition between the two encodings.
+                </p>
+                </div>
+            </div>
+            <div class="row">
+                <!-- Add margin-top to space right next to the plot -->
+                <div class="span2" style="margin-top:180px">
+                    <button class="btn btn-large btn-block">Colour</button>
+                    <button class="btn btn-large btn-block">Area</button>
+                </div>
+                <div class="span5">
+                    <%= brew("svg") %>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script type="text/javascript">
+            <%= brew("data") %>
+        </script>
+        <script type="text/javascript" src="../js/main.js"></script>
+    </body>
+</html>

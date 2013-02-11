@@ -34,24 +34,35 @@
 \maketitle
 
 A collection of tools has been developed to create and present
-web-based graphics via the popular statistical software, \R{}. The
-primary motivation for this is that web browsers have become a
-powerful and flexible tool for building rich user interfaces. They
-feature many capabilities that are difficult, if not impossible to do
-in \R{}. Many packages, notably RStudio's \pkg{shiny}, are able to
-present a reactive user interface based on input from users. However,
-no \R{} packages are able to provide a way of generating reactive
-\emph{graphics} from \R{}. Instead, entirely new plots must be drawn
-to show changes in state, rather than being modified themselves.
+web-based graphics via the popular statistical software, \R{}.
+
+\begin{itemize}
+  \item \gridSVG{} --- Export \grid{} graphics to \tsc{SVG}.
+  \item \pkg{selectr} --- Translate CSS Selectors to XPath Expressions.
+  \item \pkg{animaker} --- Generate Animation Sequence Descriptions.
+\end{itemize}
+
+The primary motivation for the development of these packages is that
+web browsers have become a powerful and flexible tool for building
+rich user interfaces. They feature many capabilities that are
+difficult, if not impossible to do in \R{}. Many packages, notably
+RStudio's \pkg{shiny}, are able to present a reactive user interface
+based on input from users. However, no \R{} packages are able to
+provide a way of generating reactive \emph{graphics} from
+\R{}. Instead, entirely new plots must be drawn to show changes in
+state, rather than being modified themselves.
 
 The \gridSVG{} package exports \pkg{grid} plots as \tsc{SVG}
-images. It has been extensively modified to support the goal of
-generating reactive graphics. In the past, it has been able to
-generate images that were capable of animation and interactivity (via
-\JS{} event handlers and hyperlinking). However, it did not easily
-allow manipulation of the image after it had been created. To correct
-this, two major features have been added; exporting of a \gridSVG{}
-coordinate system and node based \tsc{SVG} document generation.
+images. It has been developed from a proof-of-concept to a usable
+solution where it is capable of exporting all \grid{}
+graphics. \gridSVG{} is able to generate images that are capable of
+animation and interactivity (via \JS{} event handlers and
+hyperlinking). However, originally it did not easily allow
+manipulation of the image after it had been created. Now \pkg{gridSVG}
+has been extensively modified to support the goal of generating
+reactive graphics. Two major features have been added; exporting of a
+\gridSVG{} coordinate system and node based \tsc{SVG} document
+generation.
 
 The node based approach to drawing \tsc{SVG} is a result of using the
 \pkg{XML} package. The two main reasons for rewriting to use \pkg{XML}

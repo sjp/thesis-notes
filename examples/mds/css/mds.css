@@ -1,0 +1,7 @@
+.table th, .table td {
+  padding: 1px;
+}
+
+.nav-list > li > a {
+  padding: 1px 15px;
+}

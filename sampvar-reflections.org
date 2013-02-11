@@ -138,6 +138,16 @@ all results from *statistical* operations that D3 cannot possibly be
 expected to know about or perform. This is where R excels for
 *statistical graphics*.
 
+There are some areas in which D3 clearly excels. An example where this
+is the case is an interactive globe
+(http://mbostock.github.com/d3/talk/20111018/azimuthal.html) where one
+can choose different projections and spin a globe around by clicking
+and dragging. To do this using R simply isn't a realistic
+possibility. Even if we were able to calculate any projections, no
+interactivity (i.e. spinning the globe) would be possible without
+first calling back to R to find out what the projection should look
+like at a given position.
+
 With the advent of ~shiny~, ~Rook~, ~rApache~, etc it may not be
 necessary to use R for graphics because it is capable of sending the
 right information to the browser. With the right data, D3 is capable

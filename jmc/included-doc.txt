@@ -1,0 +1,83 @@
+Packages:
+
+- gridSVG: Latest version available on R-Forge
+  install.packages("gridSVG", repos="http://R-Forge.R-project.org")
+- selectr: Latest version available on CRAN
+  install.packages("selectr")
+- animaker: Latest version available on GitHub
+  https://github.com/pmur002/animaker
+  Windows binary:
+
+Additionally it must be noted because the XML package is required for
+gridSVG, it is recommended that it is installed in the following
+manner.
+
+R CMD INSTALL --configure-args='--enable-nodegc=no' XML_3.95-0.1.tar.gz
+
+This this because the XML package can often cause segfaults otherwise
+(due to both R and libxml2 attempting to free the same piece of
+memory).
+
+Documentation:
+
+Documentation is included within each of the R packages for each
+function.
+
+A draft journal article has been submitted to the Journal of
+Statistical Software. The draft is available at:
+http://www.stat.auckland.ac.nz/~paul/gridSVG/gridsvg.pdf
+Associated resources at:
+http://www.stat.auckland.ac.nz/~paul/gridSVG/
+
+Technical reports have also been published which show
+example usage of each package.
+
+- For gridSVG, the following technical reports are available:
+
+  -  Post-Processing grid Graphics - Paul Murrell
+     http://www.stat.auckland.ac.nz/~paul/Reports/ggplotSlider/ggplotSlider.html
+  -  Working with the gridSVG Coordinate System - Simon Potter, Paul Murrell
+     http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGcoords/coordinates.html
+  -  A Structured Approach for Generating SVG - Simon Potter, Paul Murrell
+     http://www.stat.auckland.ac.nz/~paul/Reports/gridSVGviaXML/generating-svg.html
+
+- For selectr, the following technical report is available:
+
+  -  Introducing the 'selectr' Package - Simon Potter
+     http://sjp.co.nz/projects/selectr/selectr.html
+
+- For animaker, the following technical reports are available:
+
+  -  Generating Animation Sequence Descriptions - Paul Murrell, Simon Potter
+     http://www.stat.auckland.ac.nz/~paul/Reports/animaker/animaker.html
+  -  TimingManager: Animation Sequences in JavaScript - Simon Potter
+     http://sjp.co.nz/projects/timing-manager/timing-manager.html
+
+Examples:
+
+The previously mentioned technical reports contain some example usage
+of the software but no interactive examples where R is present. It is
+recommended for best results that Google Chrome is used to view these
+examples. Mozilla Firefox will work but its performance is not as good
+with my testing. Any up-to-date browser should be capable of viewing
+these examples.
+
+- Interactive Loess Smoothing: http://...
+
+  Features: gridSVG, shiny, selectr and D3.
+
+- Hexagonal Binning: http://...
+
+  Features: gridSVG, Rook, selectr, hexbin and D3.
+
+- Multidimensional Scaling: http://...
+
+  Features: gridSVG, Rook, D3.
+
+- Interactive ARMA Modelling: http://...
+
+  Features: gridSVG, Rook, D3.
+
+- Sampling Variation: http://...
+
+  Features: gridSVG, Rook, selectr, animaker, D3.

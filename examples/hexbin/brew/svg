@@ -1,0 +1,1 @@
+<%= saveXML(hexbincol, file = NULL, indent = FALSE) %>
