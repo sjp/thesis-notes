@@ -12,7 +12,7 @@ Additionally it must be noted because the XML package is required for
 gridSVG, it is recommended that it is installed in the following
 manner.
 
-R CMD INSTALL --configure-args='--enable-nodegc=no' XML_3.9-4.tar.gz
+R CMD INSTALL --configure-args='--enable-nodegc=no' XML_3.95-0.1.tar.gz
 
 This this because the XML package can often cause segfaults otherwise
 (due to both R and libxml2 attempting to free the same piece of
@@ -66,18 +66,18 @@ these examples.
 
   Features: gridSVG, shiny, selectr and D3.
 
-- Hexagonal Binning:
+- Hexagonal Binning: http://...
 
-  Features: gridSVG, Rook, selectr, hexbin and D3
+  Features: gridSVG, Rook, selectr, hexbin and D3.
 
-- Multidimensional Scaling:
-
-  Features: gridSVG, Rook, D3.
-
-- Interactive ARMA Modelling:
+- Multidimensional Scaling: http://...
 
   Features: gridSVG, Rook, D3.
 
-- Sampling Variation:
+- Interactive ARMA Modelling: http://...
+
+  Features: gridSVG, Rook, D3.
+
+- Sampling Variation: http://...
 
   Features: gridSVG, Rook, selectr, animaker, D3.
