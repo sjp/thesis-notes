@@ -45,12 +45,11 @@ web-based graphics via the popular statistical software, \R{}.
 The proliferation of \emph{reactive} web-based graphics using
 libraries such as D3 (\url{http://d3js.org/}) shows that there is
 significant interest in creating reactive graphics in web
-browsers. These reactive graphics are simply not possible to draw in R
-as R is only capable of drawing \emph{static} graphics. However, the
-great strength of R is its wealth of statistical functions and
-graphics, which are not present within web browsers. The collective
-aim of the developed packages is to act as a bridge between R and D3
-for reactive, statistical graphics to be created.
+browsers. The great strength of R is its wealth of statistical
+functions and graphics, but only for static graphics. The collective
+aim of the packages described in this application is to act as a
+bridge between R and D3 for reactive, statistical graphics for the
+web.
 
 The \gridSVG{} package exports \pkg{grid} plots as \tsc{SVG}
 images. It has been developed from a proof-of-concept to a complete
@@ -108,14 +107,14 @@ If we have an image within the browser that we wish to animate, we
 first need to determine how the image is to be animated. A problem
 with animation is that actions are often influenced by previous
 animations, and thus need to be sequenced in a particular order. Using
-a \JS{} library like D3 (\url{http://d3js.org/}), we would have to
-hard-code the sequencing ourselves, but this has limitations. The
-first of these limitations is that we have to keep track of the
-relationships between animations ourselves. For example, consider a
-sequence of animations that happens one after the other. If one of the
-earlier animations requires a longer period of time, it will affect
-any following animations. Without any animation management, we would
-need to modify all following animations to account for this.
+a \JS{} library like D3, we would have to hard-code the sequencing
+ourselves, but this has limitations. The first of these limitations is
+that we have to keep track of the relationships between animations
+ourselves. For example, consider a sequence of animations that happens
+one after the other. If one of the earlier animations requires a
+longer period of time, it will affect any following
+animations. Without any animation management, we would need to modify
+all following animations to account for this.
 
 To manage these sequences of animations, the \pkg{animaker} package
 was created. It allows us to describe in \R{} how an animation should
