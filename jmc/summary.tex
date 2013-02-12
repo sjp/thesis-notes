@@ -42,18 +42,18 @@ web-based graphics via the popular statistical software, \R{}.
   \item \pkg{animaker} --- Generate Animation Sequence Descriptions.
 \end{itemize}
 
-The primary motivation for the development of these packages is that
-web browsers have become a powerful and flexible tool for building
-rich user interfaces. They feature many capabilities that are
-difficult, if not impossible to do in \R{}. Many packages, notably
-RStudio's \pkg{shiny}, are able to present a reactive user interface
-based on input from users. However, no \R{} packages are able to
-provide a way of generating reactive \emph{graphics} from
-\R{}. Instead, entirely new plots must be drawn to show changes in
-state, rather than being modified themselves.
+The proliferation of \emph{reactive} web-based graphics using
+libraries such as D3 (\url{http://d3js.org/}) shows that there is
+significant interest in creating reactive graphics in web
+browsers. These reactive graphics are simply not possible to draw in R
+as R is only capable of drawing \emph{static} graphics. However, the
+great strength of R is its wealth of statistical functions and
+graphics, which are not present within web browsers. The collective
+aim of the developed packages is to act as a bridge between R and D3
+for reactive, statistical graphics to be created.
 
 The \gridSVG{} package exports \pkg{grid} plots as \tsc{SVG}
-images. It has been developed from a proof-of-concept to a usable
+images. It has been developed from a proof-of-concept to a complete
 solution where it is capable of exporting all \grid{}
 graphics. \gridSVG{} is able to generate images that are capable of
 animation and interactivity (via \JS{} event handlers and
