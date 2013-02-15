@@ -4,6 +4,7 @@ library(hexbin)
 library(selectr)
 
 # This takes a while...
+cat("Please wait while this example loads...\n")
 source("hexbin-data.R")
 
 ws <- Rhttpd$new()
@@ -17,6 +18,7 @@ ws$add(name = "hexbin",
                              root = '.'),
                  Redirect$new("/brew/index.html")))
 
-print(ws)
-
-
+cat("\n--------------------------")
+cat("\n\nTo run this example, visit the following URL:\n")
+cat(ws$full_url("hexbin"), "\n\n")
+cat('Alternatively run the following command:\nws$browse("hexbin")\n\n')
