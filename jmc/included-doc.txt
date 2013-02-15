@@ -64,7 +64,8 @@ with my testing. Additionally, Firefox does not appear to support some
 HTML5 input elements (i.e. numeric pickers). Regardless, any
 up-to-date browser should be capable of viewing these examples.
 
-The included examples are found in the includes.zip file.
+The included examples are found in the includes.zip file. Each example
+contains a small README file. The examples are the following:
 
 - Interactive Loess Smoothing: 'examples/shiny-smoother'
   Features: gridSVG, shiny, selectr and D3.
