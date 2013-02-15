@@ -1,0 +1,7 @@
+<%
+output <- plotAcfs()
+plotsvg <- saveXML(output$svg, file = NULL)
+# Registering a coordinate system
+gridSVGCoords(output$coords)
+%>
+<%= plotsvg %>

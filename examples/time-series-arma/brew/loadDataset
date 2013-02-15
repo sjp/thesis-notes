@@ -1,0 +1,63 @@
+<%
+
+dataset <- req$POST()[["dataset"]]
+
+dataset <- Utils$unescape(dataset$tempfile)
+# Assume it has been read in as a tab delimited text file
+armaDataset(read.table(dataset))
+
+newSVG <- plotAcfs(df = armaDataset())
+svgDoc <- newSVG$svg
+
+# Establishing the coordinate system, wiping out existing definitons
+gridSVGCoords(NA)
+gridSVGCoords(newSVG$coords)
+
+# Writing a convenience function to collect pieces of our SVG doc
+svgQS <- function(selector, all = FALSE) {
+    if (all)
+        querySelectorAllNS(svgDoc, selector,
+                           c(svg = "http://www.w3.org/2000/svg"))
+    else
+        querySelectorNS(svgDoc, selector,
+                        c(svg = "http://www.w3.org/2000/svg"))
+}
+
+# Grabbing the axes
+acfAxis <- svgQS("#acfyaxis")
+pacfAxis <- svgQS("#pacfyaxis")
+
+# We also need the points attributes for a bunch of pieces
+# First let's get the line which represents y = 0
+acfZero <- xmlGetAttr(svgQS("#acfzeroline svg|polyline"), "points")
+pacfZero <- xmlGetAttr(svgQS("#pacfzeroline svg|polyline"), "points")
+# Now we need the confidence interval limits
+acfClims <- sapply(svgQS("#acfclims svg|polyline", all = TRUE),
+                   function(x) xmlGetAttr(x, "points"))
+pacfClims <- sapply(svgQS("#pacfclims svg|polyline", all = TRUE),
+                    function(x) xmlGetAttr(x, "points"))
+# And now, the heights of each of the ACF/PACF lines
+acfHeights <- sapply(svgQS("#acfheights svg|polyline", all = TRUE),
+                     function(x) xmlGetAttr(x, "points"))
+pacfHeights <- sapply(svgQS("#pacfheights svg|polyline", all = TRUE),
+                      function(x) xmlGetAttr(x, "points"))
+
+# Convenience function for us to more easily parse SVG text in JS
+# using the DOMParser() function.
+wrapSVG <- function(x) {
+    paste0(
+        '<svg xmlns="http://www.w3.org/2000/svg">',
+        saveXML(x, indent = FALSE),
+        '</svg>'
+    )
+}
+
+%>
+<%= toJSON(list(acfAxis = wrapSVG(acfAxis),
+                pacfAxis = wrapSVG(pacfAxis),
+                acfZero = acfZero,
+                pacfZero = pacfZero,
+                acfClims = acfClims,
+                pacfClims = pacfClims,
+                acfHeights = acfHeights,
+                pacfHeights = pacfHeights)) %>

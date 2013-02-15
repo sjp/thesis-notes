@@ -1,0 +1,61 @@
+<%
+
+getVars <- req$GET()
+p <- if (! is.null(getVars$p)) as.numeric(getVars$p) else 0
+d <- if (! is.null(getVars$d)) as.numeric(getVars$d) else 0
+q <- if (! is.null(getVars$q)) as.numeric(getVars$q) else 0
+
+# In the case where we have been given some coordinate information
+# to use *per request*, set gridSVGCoords(), also assume for this
+# example that the only thing that could be posted is coordinates
+# information
+if (req$post()) {
+  cinfo <- Utils$unescape(req$POST()[["coords"]])
+  gridSVGCoords(fromJSON(cinfo))
+}
+
+acfLinePoints <- function(p, d, q) {
+  heights <- acf(residuals(arima(armaDataset(), order = c(p, d, q))),
+                 plot = FALSE, lag.max = 48)$acf
+  xs <- 1:length(heights) / (length(heights) + 1) 
+  xs <- c(rbind(xs, xs))
+  xs <- viewportConvertX("acfvp::acfwindowvp.1", xs, "npc")
+  ys <- c(rbind(rep(0, length(heights)), heights))
+  ys <- viewportConvertY("acfvp::acfwindowvp.1", ys, "native")
+  points <- paste(xs, ys, sep = ",")
+
+  line.pairs <- character(length(points) / 2)
+  for (i in 1:(length(points) / 2)) {
+    line.pairs[i] <- paste0(points[2 * i - 1], " ", points[2 * i])
+  }
+
+  line.pairs
+}
+
+pacfLinePoints <- function(p, d, q) {
+  heights <- pacf(residuals(arima(armaDataset(), order = c(p, d, q))),
+                  plot = FALSE, lag.max = 48)$acf
+  xs <- 1:length(heights) / (length(heights) + 1) 
+  xs <- c(rbind(xs, xs))
+  xs <- viewportConvertX("pacfvp::pacfwindowvp.1", xs, "npc")
+  ys <- c(rbind(rep(0, length(heights)), heights))
+  ys <- viewportConvertY("pacfvp::pacfwindowvp.1", ys, "native")
+  points <- paste(xs, ys, sep = ",")
+
+  line.pairs <- character(length(points) / 2)
+  for (i in 1:(length(points) / 2)) {
+    line.pairs[i] <- paste0(points[2 * i - 1], " ", points[2 * i])
+  }
+
+  line.pairs
+}
+
+acfLinePairs <- acfLinePoints(p, d, q)
+pacfLinePairs <- pacfLinePoints(p, d, q)
+
+# Now lets return this as JSON
+lineData <- list(acf = acfLinePairs,
+                 pacf = pacfLinePairs)
+
+%>
+<%= toJSON(lineData) %>
