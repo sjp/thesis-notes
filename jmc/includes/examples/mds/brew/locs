@@ -1,0 +1,9 @@
+<%
+writeJSVar <- function(varname, data) {
+    paste("var ", varname, " = ", toJSON(data), ";\n", sep = "")
+}
+%>
+<%= writeJSVar("dists", unname(as.matrix(eurodist))) %>
+<%= writeJSVar("locs", locs) %>
+<%= writeJSVar("xlocs", xlocs) %>
+<%= writeJSVar("ylocs", ylocs) %>

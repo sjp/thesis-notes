@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Interactive ARMA Models</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="../css/main.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <h1>Interactive ARMA Models</h1>
+            </div>
+            <div class="row">
+                <div class="span4">
+                    <form class="form-horizontal well">
+                        <div class="control-group">
+                            <label class="control-label" for="dataset">Import Dataset</label>
+                            <div class="controls">
+                                <input id="dataset" class="input-small" size="3" type="file" value="Load Dataset">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="arma-p">AR(p)</label>
+                            <div class="controls">
+                                <input id="arma-p" class="input-small" type="number" min="0" max="5" step="1" value="0" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="arma-d">Differencing (d)</label>
+                            <div class="controls">
+                                <input id="arma-d" class="input-small" type="number" min="0" max="5" step="1" value="0" />
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label" for="arma-q">MA(q)</label>
+                            <div class="controls">
+                                <input id="arma-q" class="input-small" type="number" min="0" max="5" step="1" value="0" />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="span8">
+                    <%= brew("initialPlot") %>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="../js/jquery.min.js"></script>
+        <script type="text/javascript" src="../js/d3.v3.min.js"></script>
+        <script type="text/javascript" src="../js/main.js"></script>
+    </body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Multidimensional Scaling Example</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="../css/mds.css" rel="stylesheet">
+        <% brew("mds") %>
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+              <div class="span8">
+                <h1>Multidimensional Scaling Example</h1>
+                <p>
+                    Each of the cities are positions so that the
+                    distances between each of them approximate the
+                    distances by road. The source of the data comes
+                    from the <code>eurodist</code> dataset,
+                    distributed with R. We calculate the positions of
+                    the cities using multidimensional
+                    scaling. The <code>cmdscale</code> function was
+                    used to perform this task.
+                </p>
+                <p>
+                    A consequence of multidimensional scaling is that
+                    distances between points are approximated and no
+                    longer represent their true distances. As a
+                    result, the distances between cities can be
+                    distorted from their true distances. Significant
+                    examples of distances which are inaccurate are
+                    Athens - Rome, and Cologne - Geneva. The
+                    visualisation that has been created demonstrates
+                    this effect by visualising the true distances
+                    between a reference city and all other cities.
+                </p>
+                <p>
+                    To use this visualisation, simply click one of the
+                    city names on the left, or hover over one of the
+                    city labels in the plot. This will show the true
+                    distances in a table on the right. Optionally, one
+                    can use the 'Animate' option to automatically
+                    iterate through all options.
+                </p>
+                <p>
+                    This example is an R-based re-implementation of a
+                    similar visualisation created by Simon Barthelmé
+                    at <a href="http://bl.ocks.org/4482115">http://bl.ocks.org/4482115</a>.
+                </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span2">
+                    <label class="checkbox">
+                        <input type="checkbox"> Animate
+                    </label>
+                    <ul class="nav nav-list">
+                        <li class="active"><a>All</a></li>
+                        <li><a>Athens</a></li>
+                        <li><a>Barcelona</a></li>
+                        <li><a>Brussels</a></li>
+                        <li><a>Calais</a></li>
+                        <li><a>Cherbourg</a></li>
+                        <li><a>Cologne</a></li>
+                        <li><a>Copenhagen</a></li>
+                        <li><a>Geneva</a></li>
+                        <li><a>Gibraltar</a></li>
+                        <li><a>Hamburg</a></li>
+                        <li><a>Hook of Holland</a></li>
+                        <li><a>Lisbon</a></li>
+                        <li><a>Lyons</a></li>
+                        <li><a>Madrid</a></li>
+                        <li><a>Marseilles</a></li>
+                        <li><a>Milan</a></li>
+                        <li><a>Munich</a></li>
+                        <li><a>Paris</a></li>
+                        <li><a>Rome</a></li>
+                        <li><a>Stockholm</a></li>
+                        <li><a>Vienna</a></li>
+                    </ul>
+                </div>
+                <div class="span5">
+                    <%= brew("svg") %>
+                </div>
+                <div class="span3">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>City</th>
+                                <th>Distance (km)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Athens</td><td></td></tr>
+                            <tr><td>Barcelona</td><td></td></tr>
+                            <tr><td>Brussels</td><td></td></tr>
+                            <tr><td>Calais</td><td></td></tr>
+                            <tr><td>Cherbourg</td><td></td></tr>
+                            <tr><td>Cologne</td><td></td></tr>
+                            <tr><td>Copenhagen</td><td></td></tr>
+                            <tr><td>Geneva</td><td></td></tr>
+                            <tr><td>Gibraltar</td><td></td></tr>
+                            <tr><td>Hamburg</td><td></td></tr>
+                            <tr><td>Hook of Holland</td><td></td></tr>
+                            <tr><td>Lisbon</td><td></td></tr>
+                            <tr><td>Lyons</td><td></td></tr>
+                            <tr><td>Madrid</td><td></td></tr>
+                            <tr><td>Marseilles</td><td></td></tr>
+                            <tr><td>Milan</td><td></td></tr>
+                            <tr><td>Munich</td><td></td></tr>
+                            <tr><td>Paris</td><td></td></tr>
+                            <tr><td>Rome</td><td></td></tr>
+                            <tr><td>Stockholm</td><td></td></tr>
+                            <tr><td>Vienna</td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        <script type="text/javascript" src="../js/d3.v3.min.js"></script>
+        <script type="text/javascript">
+            <%= brew("locs") %>
+        </script>
+        <script type="text/javascript" src="../js/main.js"></script>
+    </body>
+</html>

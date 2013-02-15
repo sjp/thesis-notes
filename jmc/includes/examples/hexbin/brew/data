@@ -1,0 +1,21 @@
+<%
+writeJSVar <- function(varname, data) {
+    paste("var ", varname, " = ",
+          toJSON(data),
+          ";\n", sep = "")
+}
+
+wrapSVG <- function(data) {
+    paste('<svg xmlns="http://www.w3.org/2000/svg">',
+          saveXML(data, file = NULL, indent = FALSE),
+          "</svg>", sep = "")
+}
+
+%>
+<%= writeJSVar("colData", list(legend = wrapSVG(colLegend),
+                               fill = colFills,
+                               points = colPoints)) %>
+<%= writeJSVar("areaData", list(legend = wrapSVG(areaLegend),
+                                fill = areaFills,
+                                points = areaPoints)) %>
+
