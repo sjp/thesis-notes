@@ -1,0 +1,11 @@
+<%
+
+# Getting the original plot
+output <- firstSVG(dataset())
+
+# Wiping out existing coords defs and inserting our own
+gridSVGCoords(NA)
+gridSVGCoords(output$coords)
+
+%>
+<%= saveXML(output$svg, indent = FALSE) %>

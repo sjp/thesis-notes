@@ -1,0 +1,43 @@
+<%
+
+# Generating the animation sequence and associated timing info
+
+sampSelect <- atomic(label = "sampleSelect",
+                     start = 1.5,
+                     durn = 1.5)
+sampDrop <- atomic(label = "sampleDrop",
+                   durn = 1.5)
+sampStat <- atomic(label = "sampleStat",
+                   durn = 1)
+sampStatDrop <- atomic(label = "sampleStatDrop",
+                       durn = 1.5)
+sampRemove <- atomic(label = "sampleRemove")
+statPoint <- atomic(label = "statPoint",
+                    durn = 0.5)
+
+# Collect all of the animations into a single iteration
+singleIter <- vec(sampSelect,
+                  sampDrop,
+                  sampStat,
+                  sampStatDrop,
+                  sampRemove,
+                  statPoint,
+                  label = "singleIter")
+
+# Lets do this for *20* iterations, could be more if desired
+final <- rep(vec(singleIter, label = "total"), 20)
+
+# Now that we have our description, lets speed up the final 10 iterations
+# (11-20) because we already know what the animation is doing
+for (i in 11:length(final)) {
+    # Just reduce the delay from the previous animation
+    start(final[[i]]) <- c(0.5, 0, 0, 0, 0, 0)
+    # Try and speed up the duration of animations by 2x or 3x,
+    # whichever is most convenient
+    durn(final[[i]]) <- c(0.5, 0.5, 0.5, 0.5, 0, 0.5)
+}
+
+# saving to a char with a timing var in JS
+%>
+<%= export(final, file = NULL) %>
+

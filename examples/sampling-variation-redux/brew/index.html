@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Sampling Variation</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="../css/main.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <div class="row">
+                <div class="span8">
+                    <h1>Sampling Variation</h1>
+                    <p>
+                        This example is taken from
+                        the <a href="http://www.stat.auckland.ac.nz/~/wild/VIT">VIT
+                        package</a> and its Sampling Variation
+                        module. The idea that the Sampling Variation
+                        example attempts to show is how the statistic
+                        you calculate from a population of data varies
+                        with repeated sampling, especially when the
+                        size of the sample changes.
+                    </p>
+                    <p>
+                        The demonstration that has been prepared here
+                        is divided into three panels which are (from
+                        top to bottom): Data, Sample, Statistic. The
+                        animation that is performed attempts to
+                        perform the following:
+                    </p>
+                    <ol>
+                        <li>Selecting a sample from a population in the
+                        Data panel</li>
+                        <li>Pulling the currently selected sample into the
+                        Sample panel</li>
+                        <li>Generate a sample statistic, and leaving a
+                        &ldquo;ghost&rdquo; statistic behind.</li>
+                        <li>Pull the sample statistic into the statistic
+                        panel and turn it into a point.</li>
+                        <li>Repeat to build up a distribution of sample
+                        statistics.</li>
+                    </ol>
+                    <p>
+                        For this quick demonstration, we will be
+                        performing 10 slow iterations, followed by 10
+                        fast iterations.
+                    </p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="span2 well">
+                    <button id="go-btn" class="btn btn-large btn-block">Start!</button>
+                </div>
+                <div class="span8">
+                    <%= brew("mainPlot") %>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://underscorejs.org/underscore-min.js"></script>
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script type="text/javascript" src="../js/timing.js"></script>
+        <script type="text/javascript">
+            <%= brew("timings") %>
+        </script>
+        <script type="text/javascript" src="../js/main.js"></script>
+    </body>
+</html>
