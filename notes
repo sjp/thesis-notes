@@ -1,4 +1,107 @@
 
+2013-02-19
+----------
+
+DISCUSS:
+
+  + Remind Paul why we don't like RServe and FastRWeb
+    - someone also mentioned "Flask" and 'pyServe' (?)
+
+
+TODO:
+
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+  + gridSVG id generation
+    - PROBLEMS:
+      + need to include gPaths (like vpPaths) because can have
+        grobs with same name (as long as they have different
+        parents OR are at the top level)
+      + need to keep track of whether we are generating id for
+        grob or viewport because grobs and viewports can have the
+        same name!
+    - SOLUTION (?)
+      + add grob id transforms to the viewport id transform data frame
+        BUT add a column that indicates whether transform is for 
+        grob or viewport
+      + on export, split data frame into TWO tables (one for grobs
+        and one for viewports)
+      + in javascript, have TWO mapping functions, one from gPath to    
+        id and one from vpPath to id;  the return value is a base id
+        PLUS one or more numeric suffixes (NOT necessarily contiguous)
+        (OR just all matching ids ?)
+    - NOTE this has to wait until April (when R 3.0 comes out and
+      new grid makeContent() methods can be incorporated into gridSVG
+      [so that naming for ggplot2 (gtable) grobs becomes sane])
+
+
+DONE:
+
+  + Chambers Award 
+
+  + Add general option flag in 'gridSVG' that says whether to
+    "make safe" id values (e.g., all "." and ":" in ids are
+    auto translated to "-" OR maybe "--" to avoid conflict
+    with existing ids!?)
+    NOTE that (because we now produce XML) it is possible to
+    post-process id values AFTER generating the entire document
+    (so you can check for conflicts [among other things like uniqueness!])
+    BUT ideally want the result to be predictable
+    
+    - might generally be useful for gridSVG() to produce a mapping
+      of original grob names to final SVG ids (as part of the list
+      that gridToSVG() returns [plus maybe as JSON])
+      That would allow, e.g., in javascript code using an original
+      grob name and converting it to an SVG id on-the-fly
+
+    - also check whether gTree child grobs get an id with full gPath
+      (they should! because otherwise they are not guaranteed unique)
+
+    - Simon has patches for this BUT also see "id generation" above
+      (needs to wait until April to commit these patches)
+
+  + another example 
+    See examples/mixture-models
+
+
 2013-02-12
 ----------
 
@@ -8,9 +111,6 @@ DISCUSS:
     - Simon's application
     - Paul's letter of support
       + Have I mentioned everything that Simon has mentioned ?
-
-  + Remind Paul why we don't like RServer and FastRWeb
-    - someone also mentioned "Flask" and 'pyServe' (?)
 
 
 TODO:
