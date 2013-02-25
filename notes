@@ -6,6 +6,9 @@ DISCUSS:
 
   + Remind Paul why we don't like RServe and FastRWeb
     - someone also mentioned "Flask" and 'pyServe' (?)
+    - See "Passing R code from webpage" from Simon Urbanek 2013-02-19
+      (in NetscapeMail/Teaching/Simon2012/)
+    - The answer is that RServe requires MUCH more set up than Rook
 
 
 TODO:
