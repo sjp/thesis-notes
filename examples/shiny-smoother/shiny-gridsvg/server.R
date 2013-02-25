@@ -23,10 +23,10 @@ svgplot <- {
 panelvp <- grep("^layout::panel.*", names(gridSVGCoords()), value = TRUE)
 
 shinyServer(function(input, output) {
-    spanPar <- reactive(function() as.numeric(input$spanalpha))
+    spanPar <- reactive({ as.numeric(input$spanalpha) })
 
     # Generate loess smoother lines based on the span parameter
-    loessLine <- reactive(function() {
+    loessLine <- reactive({
         # Opening a null device with a new page
         pdf(file = NULL)
         grid.newpage()
@@ -52,7 +52,7 @@ shinyServer(function(input, output) {
         paste('<svg xmlns="http://www.w3.org/2000/svg">', saveXML(loesssvg, file = NULL, indent = FALSE), "</svg>", sep = "")
     })
 
-    output$smoothempty <- reactiveText(function() loessLine())
+    output$smoothempty <- renderText({ loessLine() })
 
-    output$svggrid <- reactiveText(function() svgplot)
+    output$svggrid <- renderText({ svgplot })
 })
