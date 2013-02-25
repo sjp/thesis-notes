@@ -1,0 +1,20 @@
+\documentclass[11pt, a4paper]{article}
+
+\begin{document}
+
+<<echo = FALSE>>=
+library(knitr)
+source("knitr-gridsvg.R")
+knit_hooks$set(gridSVG = gridsvg_hook)
+@
+
+This is a test.
+
+<<testingGRIDSVG, gridSVG = TRUE>>=
+library(grid)
+library(ggplot2)
+qplot(mpg, wt, data=mtcars, colour=cyl)
+@
+
+
+\end{document}

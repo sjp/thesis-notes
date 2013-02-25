@@ -1,0 +1,25 @@
+\documentclass[11pt, a4paper]{article}
+
+\begin{document}
+
+<<gendata, eval = FALSE>>=
+x <- rnorm(100)
+y <- rnorm(100)
+@
+
+<<modifydata, eval = FALSE>>=
+y <- y^2
+@
+
+<<plotsquared>>=
+<<gendata>>
+<<modifydata>>
+plot(y ~ x)
+@
+
+<<plotoriginal>>=
+<<gendata>>
+plot(y ~ x)
+@
+
+\end{document}

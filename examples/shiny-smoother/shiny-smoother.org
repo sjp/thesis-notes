@@ -53,12 +53,12 @@ populated, while you need to populate the ~output~ list in order to
 produce any useful output in the browser.
 
 In our example, the single *reactive* input is that of the spanning
-parameter. With this, wrap it in a ~reactive()~ function. This allows
-us to cache the results so we only react to the spanning parameter if
-it has indeed changed.
+parameter. With this, wrap it in a ~reactive()~ expression. This
+allows us to cache the results so we only react to the spanning
+parameter if it has indeed changed.
 
 Because our ggplot2 plot is constant, we just wrap the resulting SVG
-in a ~reactiveText~ function, because the output that we are giving to
+in a ~renderText~ function, because the output that we are giving to
 the browser is simply the SVG text.
 
 The only true reactive *output* is that of the generated smoother
