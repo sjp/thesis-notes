@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>TESTING</title>
+</head>
+<body>
+<!--begin.rcode echo=FALSE
+library(knitr)
+source("knitr-gridsvg.R")
+knit_hooks$set(gridSVGinline = gridsvg_inline_hook)
+end.rcode-->
+
+<p>This is a test</p>
+
+<!--begin.rcode testingGRIDSVG, fig.keep="none", gridSVGinline = TRUE, results="asis", fig.cap = "this is a test"
+library(grid)
+grid.newpage()
+grid.rect()
+grid.text("test")
+end.rcode-->
+
+</body>
+</html>
