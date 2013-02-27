@@ -1,4 +1,149 @@
 
+2013-02-26
+----------
+
+TODO:
+
+  + Tech Reports: (?)
+    - a discussion of gridSVG 'id' generation (from grob and viewport names)
+    - a discussion of how significant it is that 'gridSVG' documents
+      are VERY structured and WELL-LABELLED 
+    - knitr hook for gridSVG
+    - new elementGrob in gridSVG
+    
+  + create grobToSVG() function ?
+    - x = a grob or gTree
+    - width + height give you where to draw
+    - gridToSVG() would call this (?)
+
+  + gridSVG id generation
+    - documentation:
+      + In 'usePaths', change ...
+        "gridSVG will set the name to the current ‘vpPath’
+         instead of the current viewport"
+        ... to ...
+        "gridSVG will set the SVG element id to the current ‘vpPath’
+         instead of the current viewport name."
+       + Ditto for grobs
+       + In 'uniqueNames' (or Details), mention how this is different
+         from 'usePaths' (grobs with same name at top level OR
+         grob and viewport with same name)
+    - document the problem that ...
+        push(viewport(name="a"))
+        up()
+        down("a")
+      ... is indistuishable (in terms of SVG 'id's) from ...
+        push(viewport(width=.5, name="a"))
+        up()
+        down("a")
+      ... i.e., DIFFERENT viewport, SAME name
+    - getSVGMappings():  add another mapping column with just original vp/grob
+      names (no paths) so can query on original name (don't have to 
+      give path)
+
+  + Fill patterns:  WTF ?   How ???  (ids that you can rely on)
+    - create elementGrob() ?
+      + documentation:  'asis' should say ...
+        "asis: If ‘TRUE’, SVG id attributes will be generated from 
+         the 'name' with no modification so that we
+         can easily refer to the generated elements.
+         Otherwise, normal name mangling occurs (see gridToSVG())."
+ 
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+FUTURE PLANNING:
+      
+  + When R 3.0 comes out, can merge SOME of the R2.16 branch of 'gridSVG'
+    to simplify code for things in 'grid' like xaxis grobs
+    BUT do NOT merge the changes that rely on the fork of 'gtable' 
+    (at least not until that fork is merged into the master 'gtable')
+    SO keep the custom code in 'gridSVG' that mirrors 'gtable' drawing 
+  + Also wait for R 3.0 to merge the github 'gridSVG' because
+    that changes LOTS of grob-name-to-id mappings
+    (which will break lots of people's examples)
+  + Move to 'gridSVG3' package with R 3.0 ??
+    So that old examples still work with 'gridSVG' and new development
+    can work with gridSVG3 ???
+
+
+CSS selectors:
+
+  + If gridSVG generates ids with dots, it gets messy writing
+    CSS selectors to target those ids (because a dot is treated
+    as a class separator)
+  + Do NOT worry about this in terms of *generating* ids because
+    can provide support in places like getSVGMappings() and provide
+    auto escape feature there (?)
+
+
+DONE:
+
+  + gridSVG id generation
+    SEE new arguments in gridToSVG(), plus new javascript functions
+        getSVGmappings() [?]
+        NOTE these features are not yet on R-forge because of problems
+        with ggplot2 (gtable)
+    - PROBLEMS:
+      + need to include gPaths (like vpPaths) because can have
+        grobs with same name (as long as they have different
+        parents OR are at the top level)
+      + need to keep track of whether we are generating id for
+        grob or viewport because grobs and viewports can have the
+        same name!
+    - SOLUTION (?)
+      + add grob id transforms to the viewport id transform data frame
+        BUT add a column that indicates whether transform is for 
+        grob or viewport
+      + on export, split data frame into TWO tables (one for grobs
+        and one for viewports)
+      + in javascript, have TWO mapping functions, one from gPath to    
+        id and one from vpPath to id;  the return value is a base id
+        PLUS one or more numeric suffixes (NOT necessarily contiguous)
+        (OR just all matching ids ?)
+    - NOTE this has to wait until April (when R 3.0 comes out and
+      new grid makeContent() methods can be incorporated into gridSVG
+      [so that naming for ggplot2 (gtable) grobs becomes sane])
+
+
 2013-02-19
 ----------
 
