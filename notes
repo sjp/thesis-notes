@@ -1,5 +1,9 @@
 
-2013-02-26
+2013-03-04
+----------
+
+
+2013-02-26/27/28
 ----------
 
 TODO:
@@ -48,6 +52,10 @@ TODO:
          the 'name' with no modification so that we
          can easily refer to the generated elements.
          Otherwise, normal name mangling occurs (see gridToSVG())."
+   - also use this for ... ?
+     + filters
+     + clipping paths
+     + masks
  
   + Some ideas ...
     - scale up sampling variation to longer animation;  does it scale?
