@@ -2,14 +2,30 @@
 2013-03-04
 ----------
 
+FOR NOTING:
+
+  + Slightly old, but still useful list of javascript plotting libraries
+
+    http://webdesignledger.com/resources/13-useful-javascript-solutions-for-charts-and-graphs
+
 
 2013-02-26/27/28
 ----------
 
 TODO:
 
+  + Check out javascript libraries to see if any are automatically 
+    imposing structure and labelling on SVG output (D3, highcharts, etc)
+    - there are also potentially other non-javascript tools that
+      generate SVG (plot2svg [matlab])
+
   + Tech Reports: (?)
     - a discussion of gridSVG 'id' generation (from grob and viewport names)
+    - a discussion of how to select SVG elements produced by 'gridSVG'
+      + by id (refer to separate doc)
+      + by class (?)
+      + by SVG element
+      + by structure (nesting)
     - a discussion of how significant it is that 'gridSVG' documents
       are VERY structured and WELL-LABELLED 
     - knitr hook for gridSVG
@@ -56,7 +72,10 @@ TODO:
      + filters
      + clipping paths
      + masks
- 
+
+  + 'gridSVG':  
+    Export R class() of objects as SVG element 'class' attribute ?
+
   + Some ideas ...
     - scale up sampling variation to longer animation;  does it scale?
     - can you provide a simpler interface for describing the
