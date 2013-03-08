@@ -33,8 +33,17 @@ end.rcode-->
             <p>Department of Statistics, University of Auckland</p>
             <p><!--rinline I(format(Sys.Date(), "%B %e, %Y")) --></p>
             <p class="abstract">
-                <strong>Abstract:</strong> The <em>gridSVG</em>
-                package...
+                <strong>Abstract:</strong> The <em>gridSVG</em> package exports
+                <em>grid</em> images to an <em>SVG</em> format for
+                viewing on the web. This article describes the
+                problems associated with retaining <em>grid</em>
+                object names in <em>SVG</em> element <code>id</code>
+                attributes. In addition, new features
+                in <em>gridSVG</em> that allow manipulation and
+                retrieval of the generated <code>id</code> attributes
+                is discussed. These new features allow for easier
+                development of interactivity in plots generated
+                by <em>gridSVG</em>.
             </p>
         </header>
 
@@ -501,13 +510,13 @@ end.rcode-->
           option. We will first look at the output when we only want
           viewport paths to be used.
         </p>
-<!--begin.rcode, echo = FALSE, fig.keep = "none"
+<!--begin.rcode usePathsvpPaths, echo = FALSE, fig.keep = "none"
 cat('R> gridToSVG(... usePaths = "vpPaths")') # clunky...
 tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
 cat(printEscape(tmpsub))
 end.rcode-->
 
-<!--begin.rcode, echo = FALSE, fig.keep = "none"
+<!--begin.rcode usePathsgPaths, echo = FALSE, fig.keep = "none"
 cat('R> gridToSVG(... usePaths = "gPaths")') # clunky...
 pushViewport(vpt)
 grid.draw(gt)
@@ -516,7 +525,7 @@ tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
 cat(printEscape(tmpsub))
 end.rcode-->
 
-<!--begin.rcode, echo = FALSE, fig.keep = "none"
+<!--begin.rcode usePathsNone, echo = FALSE, fig.keep = "none"
 cat('R> gridToSVG(... usePaths = "none")') # clunky...
 pushViewport(vpt)
 grid.draw(gt)
@@ -525,7 +534,7 @@ tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
 cat(printEscape(tmpsub))
 end.rcode-->
 
-<!--begin.rcode, echo = FALSE, fig.keep = "none"
+<!--begin.rcode usePathsBoth, echo = FALSE, fig.keep = "none"
 cat('R> gridToSVG(... usePaths = "both")') # clunky...
 pushViewport(vpt)
 grid.draw(gt)
@@ -585,7 +594,7 @@ end.rcode-->
           function that gives us the value of a single
           separator. Example usage is shown below:
         </p>
-<!--begin.rcode
+<!--begin.rcode demoSeparators
 # See what the current id separator is
 getSVGoption("id.sep")
 
@@ -603,7 +612,7 @@ end.rcode-->
           with <code>usePaths</code> being set
           to <code>"both"</code>. The relevant output is shown below:
         </p>
-<!--begin.rcode fig.keep = "none"
+<!--begin.rcode svgSeparators, fig.keep = "none"
 pushViewport(vpt)
 grid.draw(gt)
 tmp <- gridToSVG("", "n", "n", "n", usePaths = "both")$svg
@@ -650,7 +659,7 @@ end.rcode-->
           demonstration of the effect of <code>uniqueNames</code> is
           shown below:
         </p>
-<!--begin.rcode, eval = -4, echo = -(5), fig.keep = "none"
+<!--begin.rcode showDirectUniqueNames, eval = -4, echo = -(5), fig.keep = "none"
 grid.circle(name = "circle")
 grid.ls()
 
@@ -676,7 +685,7 @@ end.rcode-->
           names, but it will provide a warning in this case because
           invalid <em>SVG</em> is being produced. See the following:
         </p>
-<!--begin.rcode, fig.keep = "none"
+<!--begin.rcode showNonUniqueNames, fig.keep = "none"
 # Giving a rect, and a viewport the same "name" when exported
 pushViewport(viewport(name = "a"))
 grid.rect(name = "a.1")
@@ -737,7 +746,7 @@ end.rcode-->
           that <em>gridSVG</em> is exporting. We start with the
           following image:
         </p>
-<!--begin.rcode eval = -5, fig.keep = "none", warning = FALSE
+<!--begin.rcode mappingSimpleImage, eval = -5, fig.keep = "none", warning = FALSE
 grid.newpage()
 pushViewport(viewport(name = "a"))
 grid.rect(name = "b")
@@ -751,7 +760,7 @@ end.rcode-->
           format that is convenient for use within a web browser. The
           mapping information from this plot is shown below:
         </p>
-<!--begin.rcode echo = FALSE
+<!--begin.rcode showMappingJSON, echo = FALSE
 cat(toJSON(tmp$mappings, pretty = TRUE))
 end.rcode-->
         <p>
@@ -781,7 +790,7 @@ end.rcode-->
           both R and JavaScript. To demonstrate, we will be building
           upon the mapping information shown earlier.
         </p>
-<!--begin.rcode
+<!--begin.rcode showMappingFunctions
 gridSVGMappings(tmp$mappings)
 getSVGMappings("a", "vp") # getting 'a', which is a viewport
 getSVGMappings("b", "grob") # getting 'b', which are grobs
@@ -819,7 +828,7 @@ JS&gt; getSVGMappings("b", "grob");
           the R and JavaScript implementations of the function. This
           is shown below:
         </p>
-<!--begin.rcode
+<!--begin.rcode mappingFnFormats
 getSVGMappings("a", "vp", "selector")
 getSVGMappings("a", "vp", "xpath")
 
@@ -855,7 +864,7 @@ JS+     ...
           In R, the use of the XML package is more familiar, so we
           should use XPath expressions instead.
         </p>
-<!--begin.rcode
+<!--begin.rcode xmlWithMappings
 xp <- getSVGMappings("a", "vp", "xpath")
 vpa <- getNodeSet(tmp$svg, xp)[[1]]
 cat(printEscape(vpa))
@@ -863,7 +872,13 @@ end.rcode-->
         <h2>Conclusion</h2>
         <p>
           It has been demonstrated that <em>grid</em> grob and
-          viewport names are required to be modified.
+          viewport names are required to be modified as they are
+          translated to <em>SVG</em> <code>id</code>
+          attributes. <em>gridSVG</em> provides two parameters which
+          affect how modification of these names occurs. Despite this
+          modification, it is easy to retrieve possible
+          matching <code>id</code>s using convenience functions that
+          access <em>gridSVG</em>'s name mapping information.
         </p>
         <h2>Downloads</h2>
         <p>
