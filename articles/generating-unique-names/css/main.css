@@ -134,6 +134,10 @@ img, svg, canvas {
   box-shadow: 0px 0px 9px black;
 }
 
+svg {
+  background-color: white;
+}
+
 th, td {
   padding: 8px;
 }
