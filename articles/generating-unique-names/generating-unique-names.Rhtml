@@ -8,8 +8,9 @@
 <!--begin.rcode echo = FALSE, message = FALSE
 # Setting knitr options
 options(prompt = "R> ", continue = "R+ ")
-opts_chunk$set(tidy = FALSE, prompt = TRUE, comment = NA)
-
+opts_chunk$set(tidy = FALSE, prompt = TRUE, comment = NA, highlight = FALSE)
+#thm = knit_theme$get('print')
+#knit_theme$set(thm)
 # Because we're changing gridSVG separators throughout this document
 # reset to original values just in case to ensure everything behaves
 # as expected.
@@ -555,7 +556,7 @@ end.rcode-->
           viewport paths to be used.
         </p>
 <!--begin.rcode usePathsvpPaths, echo = FALSE, fig.keep = "none"
-cat('R> gridToSVG(... usePaths = "vpPaths")') # clunky...
+cat('R> gridToSVG(usePaths = "vpPaths")') # clunky...
 tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
 cat(printEscape(tmpsub))
 end.rcode-->
@@ -571,7 +572,7 @@ end.rcode-->
           and <code>d.1</code> respectively.
         </p>
 <!--begin.rcode usePathsgPaths, echo = FALSE, fig.keep = "none"
-cat('R> gridToSVG(... usePaths = "gPaths")') # clunky...
+cat('R> gridToSVG(usePaths = "gPaths")') # clunky...
 pushViewport(vpt)
 grid.draw(gt)
 tmp <- gridToSVG("", "n", "n", "n", usePaths = "gPaths")$svg
@@ -592,7 +593,7 @@ end.rcode-->
           named <code>gt</code>.
         </p>
 <!--begin.rcode usePathsNone, echo = FALSE, fig.keep = "none"
-cat('R> gridToSVG(... usePaths = "none")') # clunky...
+cat('R> gridToSVG(usePaths = "none")') # clunky...
 pushViewport(vpt)
 grid.draw(gt)
 tmp <- gridToSVG("", "n", "n", "n", usePaths = "none")$svg
@@ -606,7 +607,7 @@ end.rcode-->
           longer present in any of our <code>id</code> attributes.
         </p>
 <!--begin.rcode usePathsBoth, echo = FALSE, fig.keep = "none"
-cat('R> gridToSVG(... usePaths = "both")') # clunky...
+cat('R> gridToSVG(usePaths = "both")') # clunky...
 pushViewport(vpt)
 grid.draw(gt)
 tmp <- gridToSVG("", "n", "n", "n", usePaths = "both")$svg
@@ -693,9 +694,10 @@ end.rcode-->
           with <code>usePaths</code> being set
           to <code>"both"</code>. The relevant output is shown below:
         </p>
-<!--begin.rcode svgSeparators, fig.keep = "none"
+<!--begin.rcode svgSeparators, fig.keep = "none", echo = c(1:2, 7:8)
 pushViewport(vpt)
 grid.draw(gt)
+cat('R> gridToSVG(usePaths = "both")')
 tmp <- gridToSVG("", "n", "n", "n", usePaths = "both")$svg
 tmp <- getNodeSet(tmp, "//*[@id='a-1']")[[1]]
 cat(printEscape(tmp))
@@ -745,11 +747,10 @@ end.rcode-->
           demonstration of the effect of <code>uniqueNames</code> is
           shown below:
         </p>
-<!--begin.rcode showDirectUniqueNames, eval = -4, echo = -(5), fig.keep = "none"
+<!--begin.rcode showDirectUniqueNames, echo = -(3:6), fig.keep = "none"
 grid.circle(name = "circle")
 grid.ls()
-
-gridToSVG(... uniqueNames = FALSE)
+cat("R> gridToSVG(uniqueNames = FALSE)")
 tmp <- gridToSVG("", "n", "n", "n", uniqueNames = FALSE)$svg
 tmp <- getNodeSet(tmp, "//*[@id='circle']")[[1]]
 cat(printEscape(tmp))
@@ -771,11 +772,12 @@ end.rcode-->
           names, but it will provide a warning in this case because
           invalid <em>SVG</em> is being produced. See the following:
         </p>
-<!--begin.rcode showNonUniqueNames, fig.keep = "none"
+<!--begin.rcode showNonUniqueNames, fig.keep = "none", echo = -(5:8)
 # Giving a rect, and a viewport the same "name" when exported
 pushViewport(viewport(name = "a"))
 grid.rect(name = "a.1")
 grid.ls(viewports = TRUE, fullNames = TRUE)
+cat("R> gridToSVG(uniqueNames = FALSE)")
 tmp <- gridToSVG("", "n", "n", "n", uniqueNames = FALSE)$svg
 tmp <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
 cat(printEscape(tmp))
@@ -832,12 +834,12 @@ end.rcode-->
           that <em>gridSVG</em> is exporting. We start with the
           following image:
         </p>
-<!--begin.rcode mappingSimpleImage, eval = -5, fig.keep = "none", warning = FALSE
+<!--begin.rcode mappingSimpleImage, echo = -(5:7), fig.keep = "none", warning = FALSE
 grid.newpage()
 pushViewport(viewport(name = "a"))
 grid.rect(name = "b")
 grid.circle(name = "b")
-gridToSVG()
+cat("R> gridToSVG()")
 tmp <- gridToSVG("", "n", "n", "n")
 cat(saveXML(tmp$svg))
 end.rcode-->
@@ -876,17 +878,22 @@ end.rcode-->
           both R and JavaScript. To demonstrate, we will be building
           upon the mapping information shown earlier.
         </p>
-<!--begin.rcode showMappingFunctions
+<!--begin.rcode showMappingFunctions, echo = -(1:2)
 gridSVGMappings(tmp$mappings)
+cat('R> mappings <- readMappingsJS("mappings.js")\nR> gridSVGMappings(fromJSON(mappings))')
 getSVGMappings("a", "vp") # getting 'a', which is a viewport
 getSVGMappings("b", "grob") # getting 'b', which are grobs
 end.rcode-->
         <p>
-          The first thing that occurs is that we store mapping
-          information by passing it into
-          the <code>gridSVGMappings</code> function. Once this has
-          been done we can retrieve information from it
-          using <code>getSVGMappings</code>.
+          The first thing that occurs is that because mapping
+          information is stored in a file as JSON, we need to read it
+          into R. The <code>readMappingsJS</code> function takes the
+          filename of mapping information, and gives us the JSON data
+          within the file. We then translate it into an R object from
+          JSON text by calling the <code>fromJSON</code> function and
+          passing the result into the <code>gridSVGMappings</code>
+          function. Once this has been done we can retrieve
+          information from it using <code>getSVGMappings</code>.
         </p>
         <p>
           It is important to note that when a name has been used more
@@ -958,9 +965,10 @@ JS+     ...
           In R, the use of the <em>XML</em> package is more familiar,
           so we can use XPath expressions instead of CSS selectors.
         </p>
-<!--begin.rcode xmlWithMappings
+<!--begin.rcode xmlWithMappings, echo = 1:2
 xp <- getSVGMappings("a", "vp", "xpath")
 vpa <- getNodeSet(tmp$svg, xp)[[1]]
+cat("R> vpa")
 cat(printEscape(vpa))
 end.rcode-->
         <p>
