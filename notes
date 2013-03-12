@@ -9,6 +9,138 @@ FOR NOTING:
     http://webdesignledger.com/resources/13-useful-javascript-solutions-for-charts-and-graphs
 
 
+TODO:
+
+  + Tech Reports: (?)
+    - a discussion of gridSVG 'id' generation (from grob and viewport names)
+    - a discussion of how to select SVG elements produced by 'gridSVG'
+      + by id (refer to separate doc)
+      + by class (?)
+      + by SVG element
+      + by structure (nesting)
+    - a discussion of how significant it is that 'gridSVG' documents
+      are VERY structured and WELL-LABELLED 
+    - knitr hook for gridSVG
+    - new SVG features in gridSVG
+      + including elementGrob()
+    
+  + create grobToSVG() function ?
+    - x = a grob or gTree
+    - width + height give you where to draw
+    - gridToSVG() would call this (?)
+
+  + Fill patterns (take II)
+    - separate table of fill pattern information
+      fillPattern(label, ...) function
+    - grid.fill(grob, patternid) -> "filled.grob" object
+    - export fill pattern table at start of SVG export to <pattern> elements
+      (use "usage table" to ensure unique ids as for grobs and vps)
+    - export of "filled.grob" resolves reference to <pattern> element
+    
+  + Still have elementGrob() for low-level expert use
+    - create elementGrob() ?
+      + documentation:  'asis' should say ...
+        "asis: If ‘TRUE’, SVG id attributes will be generated from 
+         the 'name' with no modification so that we
+         can easily refer to the generated elements.
+         Otherwise, normal name mangling occurs (see gridToSVG())."
+
+  + Clipping paths
+    - Does grid.clip() currently export ?
+    - Can it ?
+    - separate table of clipping paths as per fill patterns
+    - grid.clipPath() function ?  that refers to path in clipping path table
+
+  + Other SVG features to look at:
+     + filters
+     + clipping paths
+     + masks
+
+  + 'gridSVG':  
+    Export R class() of objects as SVG element 'class' attribute ?
+
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + Check out javascript libraries to see if any are automatically 
+    imposing structure and labelling on SVG output (D3, highcharts, etc)
+    - there are also potentially other non-javascript tools that
+      generate SVG (plot2svg [matlab])
+    See naming-scheme-usage.org
+
+  + Tech Reports: (?)
+    - a discussion of gridSVG 'id' generation (from grob and viewport names)
+    See articles/generating-unique-names/
+
+  + gridSVG id generation
+    - documentation:
+      + In 'usePaths', change ...
+        "gridSVG will set the name to the current ‘vpPath’
+         instead of the current viewport"
+        ... to ...
+        "gridSVG will set the SVG element id to the current ‘vpPath’
+         instead of the current viewport name."
+       + Ditto for grobs
+       + In 'uniqueNames' (or Details), mention how this is different
+         from 'usePaths' (grobs with same name at top level OR
+         grob and viewport with same name)
+      See git-gridsvg/
+    - document the problem that ...
+        push(viewport(name="a"))
+        up()
+        down("a")
+      ... is indistuishable (in terms of SVG 'id's) from ...
+        push(viewport(width=.5, name="a"))
+        up()
+        down("a")
+      ... i.e., DIFFERENT viewport, SAME name
+      See articles/generating-unique-names/
+    - getSVGMappings():  add another mapping column with just original vp/grob
+      names (no paths) so can query on original name (don't have to 
+      give path)
+      See git-gridsvg/
+
+
 2013-02-26/27/28
 ----------
 
