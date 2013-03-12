@@ -2,12 +2,12 @@
 2013-03-04
 ----------
 
-FOR NOTING:
+PAUL TODO:
 
-  + Slightly old, but still useful list of javascript plotting libraries
-
-    http://webdesignledger.com/resources/13-useful-javascript-solutions-for-charts-and-graphs
-
+  + Read 
+    - naming-scheme-usage.org
+    - articles/generating-unique-names/
+    
 
 TODO:
 
@@ -139,6 +139,12 @@ DONE:
       names (no paths) so can query on original name (don't have to 
       give path)
       See git-gridsvg/
+
+FOR NOTING:
+
+  + Slightly old, but still useful list of javascript plotting libraries
+
+    http://webdesignledger.com/resources/13-useful-javascript-solutions-for-charts-and-graphs
 
 
 2013-02-26/27/28
