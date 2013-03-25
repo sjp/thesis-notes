@@ -1,4 +1,76 @@
 
+2013-03-19
+----------
+
+DISCUSS:
+
+  + Draft article on "Generating Structured and Labelled SVG"
+    http://www.stat.auckland.ac.nz/~paul/Reports/labels/labels.html
+
+  + Fill pattern motivating example 
+    R-help 2013-03-22 from Etienne Low-Decarie
+
+  + Possible example of fancy annotation to justify some of the
+    more exotic SVG features:
+
+    R-help 2013-03-14 from Ohagen Patrik 
+    in NetscapeMail/Teaching/Simon2012/
+
+  + A possible gradient-fill example
+    R-help 2013-02-13 from Elisabeth wever
+    in NetscapeMail/Teaching/Simon2012/
+
+  + Need to document somewhere KNOWN 'grid' features that
+    CANNOT be replicated by gridSVG
+    - e.g., pushViewport(viewport(clip="on"),
+                         viewport(clip="off"))
+
+  + Submit a gridSVG_1.0-something to CRAN as last pre-3.0 
+    version ?
+    See "preparing for R 3.0.0" email
+    in NetscapeMail/Teaching/Simon2012/
+
+    Start new gridSVG3 on R-forge ?
+
+  + Possible idea for "useful" filter effect:
+    The "engraved metallic" raster treatment
+
+  + Addition to 'gridSVG':  
+    - write a normal R graphics device interface so that the user
+      can do something like ...
+      
+      gridsvg()
+      # grid or lattice or ggplot drawing
+      dev.off()
+
+      Would require some C code to satisfy the generic R device
+      API, but most of it would be empty.  The device would open        
+      a pdf(file=NULL) device to record all of the drawing 
+      and then all of the (export) action would happen at dev.off()
+
+
+2013-03-26
+----------
+
+Servers down so just looked at git-gridsvg online
+
+
+TODO list rolls over to next time
+
+
+DONE:
+
+  + Fill patterns (take II)
+    ... ongoing ...
+
+
+PAUL DONE:
+
+  + Read 
+    - naming-scheme-usage.org
+    - articles/generating-unique-names/
+
+
 2013-03-04
 ----------
 
