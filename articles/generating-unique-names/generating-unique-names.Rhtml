@@ -1036,9 +1036,10 @@ JS+     ...
           package <a href="#ref-12">[12]</a> is more familiar, so we
           can use XPath expressions instead of CSS selectors.
         </p>
-<!--begin.rcode xmlWithMappings, echo = 1:2
+<!--begin.rcode xmlWithMappings, echo = c(1, 3)
 xp <- getSVGMappings("a", "vp", "xpath")
-vpa <- getNodeSet(tmp$svg, xp)[[1]]
+image <- tmp$svg
+vpa <- getNodeSet(image, xp)[[1]]
 cat("R> vpa")
 cat(printEscape(vpa))
 end.rcode-->
