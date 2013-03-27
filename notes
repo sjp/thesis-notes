@@ -1,4 +1,33 @@
 
+2013-04-09
+----------
+
+DISCUSS:
+
+  + Are we agreed that ...
+    - SVG does NOT support making the clipping region larger
+      http://www.w3.org/TR/SVG/masking.html#EstablishingANewClippingPath
+    - This means that we CANNOT support 'grid' behaviour that makes
+      the clip region larger, e.g., ...
+
+      pushViewport(viewport(width=.5, clip="on"))
+      pushViewport(viewport(clip="off"))
+
+    - BUT we CAN still reproduce 'grid' behaviour for ...
+      
+      pushViewport()
+      grid.clip()
+      pushViewport()
+
+      ... so we WILL support that.
+    - We need to document this somewhere
+
+  + Allow prefix on all SVG 'id's produced by gridToSVG()
+    (so that can embed SVG in HTML, say, and still avoid name collisions)
+
+  + Add 'lex' support to 'gridSVG' ?
+     
+
 2013-03-19
 ----------
 
