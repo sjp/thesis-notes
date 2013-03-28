@@ -872,12 +872,42 @@ end.rcode-->
           this parameter from the default of <code>TRUE</code> is
           rarely necessary when we use mapping information.
         </p>
+        <h3>Output Annotation</h3>
         <p>
-          The settings used for controlling <em>SVG</em> output are
+          We have shown how <em>gridSVG</em> can be used to modify its
+          resulting SVG output. These settings can be particularly
+          useful for deriving the structure of a source image. For
+          example, we might like to know whether an <code>id</code>
+          attribute is part of a grob path or a viewport path. If we
+          know the values of separators used when exporting, we can
+          make more sense of a <em>gridSVG</em> generated <em>SVG</em>
+          document. This is also particularly useful for debugging
+          a <em>gridSVG</em> image.
+        </p>
+        <p>
+          Settings used for controlling <em>SVG</em> output are
           exported as metadata in the <em>SVG</em>
-          that <em>gridSVG</em> creates. This makes it possible to
-          inspect the <em>SVG</em> code to see how the <code>id</code>
-          attributes were controlled when the image was generated.
+          that <em>gridSVG</em> creates. To demonstrate this, we will
+          draw a simple <em>grid</em> image (not shown), but show only
+          the <em>SVG</em> metadata that was exported
+          by <em>gridSVG</em>.
+        </p>
+<!--begin.rcode showMetadata, echo = FALSE, fig.keep = "none"
+grid.rect()
+tmp <- gridToSVG("", "n", "n", "n")$svg
+#cat(saveXML(tmp, file = NULL))
+tmp <- getNodeSet(tmp, "//metadata")[[1]]
+cat(printEscape(tmp))
+end.rcode-->
+        <p>
+          The metadata shows us exactly how the image was drawn. In
+          particular, the <code>gridsvg:argument</code> elements which
+          tell us how the <code>id</code> attributes were
+          controlled. We can see that as this particular image was
+          exported it was ensuring that unique names were being used
+          and the only paths it was generating were for viewport
+          paths. Additionally, we can also see the values of the
+          separators when the image was being exported.
         </p>
         <h2>Mappings</h2>
         <p>
