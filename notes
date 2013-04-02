@@ -1,8 +1,28 @@
 
+
 2013-04-09
 ----------
 
 DISCUSS:
+
+  + DUE DATE for submission of thesis is *** May 1 ***
+
+    Submission = "Two hardbound copies of your thesis must be submitted to 
+                  the Graduate Centre by the due date"
+
+    Masters Handbook:
+    http://www.auckland.ac.nz/webdav/site/central/shared/for/current-students/postgraduate-students/documents/publications/masters-handbook.pdf
+
+    Guide to Theses and Dissertations:
+    http://www.auckland.ac.nz/webdav/site/central/shared/for/current-students/postgraduate-students/documents/policies-guidelines-forms/guide-to-theses-and-dissertations.pdf
+
+    PLAN:
+    + Aim for June 7 (end of Sem 1 lectures)
+    + Get extension from Chris T (BEFORE May 1)
+    + Do seminar (rather than graduate project talk)
+
+  + What next for Simon Potter ?
+    - Paul can talk to RStudio or Robert Gentleman 
 
   + Are we agreed that ...
     - SVG does NOT support making the clipping region larger
@@ -21,12 +41,49 @@ DISCUSS:
 
       ... so we WILL support that.
     - We need to document this somewhere
+    - NOTE:  should we just NOT have a 'clip-path' when clip="off" ?
+
+  + How to incorporate Paul's changes to R-forge gridSVG
+    - primToDev.gTree() now draws children in 'childrenOrder' (!)
+    - Added (partial) support for rotated viewports 
+      (See Research/Rstuff/SVG/gridsvg/)
+      + Still needs "rastergrob" support (order of transformations tricky)
+      + Animation code will need changing (because animating x/y/width/height
+        will all affect the origin of rotation);  also support animating
+        rotation angle??  
+
+    PLAN:
+      + WAIT until github (post 3.0) repo has been ported back to R-Forge
+        then update my SVN repo and deal with the conflicts
 
   + Allow prefix on all SVG 'id's produced by gridToSVG()
     (so that can embed SVG in HTML, say, and still avoid name collisions)
 
   + Add 'lex' support to 'gridSVG' ?
-     
+
+  + Another deviation from 'grid':
+    text justification clamped to the 0 to 1 range.
+    (as mentioned in "NEWS.Rd" file)
+
+
+FOR NOTING:
+
+  + The RIGHT project "R-Interactive-Graphics-via-HTml"
+    (proposed for GSoC 2013)
+
+  + The 'clickme' package
+    https://github.com/nachocab/clickme
+
+  + Dex:  The Data Explorer
+    http://dexvis.com/doku.php
+
+  + NVD3 
+    Chart library on top of D3
+    http://nvd3.org/
+
+  + Parallel coordinate plot implementation on top of D3
+    http://syntagmatic.github.com/parallel-coordinates/
+
 
 2013-03-19
 ----------
