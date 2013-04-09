@@ -5,6 +5,31 @@
 
 DISCUSS:
 
+  + Clipping paths:
+    - problem is that can only use basic shapes to define a clipping path
+      (e.g., no <g> elements)
+    - possible solution:  restrict definition of clipping path to only
+      simple grobs (rects, circles, ...)
+      + problems with this solution:
+        - have to write special export to SVG code?
+        - unnecessarily limiting
+    - possible solution:  write a "flattener" that takes normal gridSVG
+      output and strips out everything that is not allowed.
+      + problems with this solution:
+        - have to incorporate top-level transform into <clipPath> (doable)
+        - have to incorporate transforms in <g> elements around <text> 
+          into <text> itself (doable)
+        - CANNOT export math annotation (implemented as <foreignObject>)
+        - May not be able to use clipping in clip path drawing (?)
+        - Might be a real hassle to handle rotated viewports (when they come)
+        - May have to incorporate other attributes from parent <g> to
+          child element that is being kept (doable?)
+
+  + Nancy needs project title
+
+  + What should 'gridSVG' do if someone has already garnished a
+    grob with an 'id' attribute ???
+
   + DUE DATE for submission of thesis is *** May 1 ***
 
     Submission = "Two hardbound copies of your thesis must be submitted to 
@@ -66,11 +91,39 @@ DISCUSS:
     text justification clamped to the 0 to 1 range.
     (as mentioned in "NEWS.Rd" file)
 
+  + Another diviation:
+    rotated viewports
+    (Paul has begun work, but it looks nasty)
+
+  + Uses for gradient fills:
+    - ggplot2 scale_color legend
+    - opens up the possibility of representing numeric data as
+      gradient fills (ever been done before?);  i.e., mind-expanding
+    - pin-cushion effect for voronoi diagrams as per
+      http://graphics.uni-konstanz.de/publikationen/2005/voronoi_treemaps/Balzer%20et%20al.%20--%20Voronoi%20Treemaps.pdf
+
+
+DONE:
+
+  + work on ...
+    - gradient fills
+    - masks
+    - clipping paths
+    - filters
+
 
 FOR NOTING:
 
+  + The 'vega' project 
+    https://github.com/trifacta/vega/wiki/Documentation
+
+  + The 'DexCharts' project
+    https://github.com/PatMartin/DexCharts
+
   + The RIGHT project "R-Interactive-Graphics-via-HTml"
     (proposed for GSoC 2013)
+
+    https://code.google.com/p/r-interactive-graphics-via-html
 
   + The 'clickme' package
     https://github.com/nachocab/clickme
