@@ -1,4 +1,162 @@
 
+2013-04-16
+----------
+
+NOTE:
+
+  + feComposite filter effect allows Porter Duff compositing operators
+
+  + example of usefulness of programmatic control of SVG features:
+    - batch run through all R pch symbols to generate set of 
+      (nasty) glowing 3D button pch symbols (using single filter
+      like http://www.w3.org/TR/SVG/filters.html#AnExample).
+
+
+DISCUSS:
+
+  + We have clearance (from the Chambers Award judges) to move back
+    to R-Forge (from github)
+
+  + The perils of implementing pushMask() as "viewport" sub-class
+    are evident in the number of "viewport" methods within 'grid'.
+
+    grep '[.]viewport' Files/Research/Rstuff/r-devel/trunk/src/library/grid/R/*.R
+
+  + Check list from last time
+
+
+TODO:
+
+  + If someone has already garnished a grob with an 'id' attribute 
+    we should LEAVE IT ALONE
+
+  + Add to gridSVG id generation tech report the fact that there is
+    now a 'prefix' argument for ids
+
+  + bump gridSVG version to 1.1-0 on the github repo
+    (and get the NEWS file sorted out for that change)
+
+    (bump again to 1.2-0 after merge R-forge R2.16 branch
+     AND make sure that this has 'depends:  R (>= 3.0)')
+
+    fillPattern and filter stuff goes in 1.2-0 (?)
+
+  + push version 1.1-0 to CRAN 
+    (WITH 'depends:  R (< 3.0)')
+    - waiting for fix to 'XML' bug
+
+  + merge github version back to R-Forge
+
+  + push version 1.2-0 to CRAN 
+
+  + 'gridSVG':  
+    Export R class() of objects as SVG element 'class' attribute ?
+    - as part of version 1.1-0 (?)
+
+  + Tech Reports: (?)
+    - a discussion of how to select SVG elements produced by 'gridSVG'
+      + by id (refer to separate doc)
+      + by class (?)
+      + by SVG element
+      + by structure (nesting)
+    - knitr hook for gridSVG
+    - new SVG features in gridSVG
+      + including fill patterns, filters, path clipping, elementGrob(), ...
+    
+  + create grobToSVG() function ?
+    - x = a grob or gTree
+    - width + height give you where to draw
+    - gridToSVG() would call this (?)
+
+  + Clipping paths
+    - separate table of clipping paths as per fill patterns
+    - grid.clipPath() function ?  that refers to path in clipping path table
+    - DOCUMENT differences between grid and gridSVG semantics
+
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE: 
+
+  + FIX UP   generating-unique-names.Rhtml
+
+  + READ http://www.stat.auckland.ac.nz/~paul/Reports/labels/labels.html
+    (and send comments to Paul)
+
+  + push version 1.0-0 to CRAN
+
+  + Tech reports:
+    - a discussion of how significant it is that 'gridSVG' documents
+      are VERY structured and WELL-LABELLED 
+
+  + Clipping paths
+    - Does grid.clip() currently export ?
+    - Can it ?
+
+  + Other SVG features to look at:
+     + filters
+     + clipping paths
+     + masks
+
+  + create gridsvg() function/device so can do
+
+    gridsvg()
+    # draw
+    dev.off
+
+    - Simon noticed that this would only make sense if you are generating
+      an SVG file (NOT generating SVG in memory)
+    - While we're at it, a better name than gridToSVG() would be nice
+      gridExport() ??
+
+  + Add 'lex' support to 'gridSVG' 
+
+
+FOR NOTING:
+
+  + Simple "interactive" data viz using R (to generate heaps of static plots)
+    and then javascript to switch between them.
+
+    http://www.rodrigozamith.com/2013/03/27/going-under-the-hood-of-the-ncaa-tournament-visualization/
+
 
 2013-04-09
 ----------
