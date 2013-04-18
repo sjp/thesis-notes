@@ -1,0 +1,66 @@
+#+TITLE: Inconsistencies between grid and gridSVG
+
+* Viewport clipping
+
+The clipping in grid cannot be exported to what is present in SVG
+because of the way the SVG document is structured. We implement a
+viewport as an SVG group (~<g>~) and all children of the viewport are
+drawn as children of the SVG group.
+
+This is often beneficial when we wish to set a graphical parameter
+setting on a viewport than all children will then inherit. However, in
+the case of clipping paths, all parent clipping paths will be
+inherited or become smaller. In SVG we do not have an equivalent of
+grid's ~clip="off"~. grid implements this by making a larger clipping
+path at least as large as the graphics device itself but this cannot
+be replicated in SVG.
+
+The SVG specification says that all clipping paths will be inherited
+from a group, and any children that set their own clipping paths
+(e.g. in an attempt to set a clipping path as large as the graphics
+device), will have the clipping region set to the *intersection* of
+the two clipping regions. In other words, we cannot make the clipping
+region larger for children of viewports with clipping paths, only
+smaller.
+
+* Viewport rotation
+
+This is not yet implemented, primarily due to the difficulty in
+implementing this correctly, e.g. for animation and referenced
+content.
+
+* Clipping and Masking
+
+The ~grid.clip~ functionality can be implemented. However,
+non-rectangular clipping paths and opacity masks are inconsistent with
+the way in which ~grid.clip~ is implemented. This occurs because a
+~clipGrob~ will open a group, which will eventually be closed when we
+leave the viewport. Clipping paths and masks are different in that
+while they can also open a group (via ~pushClipPath~ and ~pushMask~)
+and are also ended when a viewport is popped, we have additional
+control over them via ~popContext~.
+
+~popContext~ allows us to leave the context of a clipping path or mask
+before popping a viewport. This is consistent until the point at which
+a gTree is used. In this case, a ~popContextGrob~, when drawn as a
+child of a gTree will have its effect be ignored, unless the children
+also set a context. The condition for ~popContext~ to work is that the
+parent of the drawn content must be something that sets a context.
+
+This means that you can push a context, draw a gTree and then pop a
+context. It is also possible to draw a gTree with children that set a
+context and then pop out of them. It is not possible to mix and match.
+
+In general it is not advised that ~popContextGrob~s should be used
+like grobs, and more like operations on a viewport, because like
+viewport trees, where we push and pop contexts is important. It is
+easier to use them when thinking about them like ~push~, ~draw~,
+~pop~, just like you can do with viewports.
+
+* Justification
+
+When justifying grobs and viewports using the ~hjust~ and ~vjust~
+parameters, we can use any real number (though typically [0,
+1]). However, because SVG justification does not work in a numeric
+manner, we are required to round justification to be one of 0, 0.5 or
+1, whichever is closest.
