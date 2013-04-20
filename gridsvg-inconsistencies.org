@@ -57,6 +57,9 @@ viewport trees, where we push and pop contexts is important. It is
 easier to use them when thinking about them like ~push~, ~draw~,
 ~pop~, just like you can do with viewports.
 
+For this reason we do not expose any high-level way of creating this
+strange behaviour.
+
 * Justification
 
 When justifying grobs and viewports using the ~hjust~ and ~vjust~
