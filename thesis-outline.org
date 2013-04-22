@@ -1,0 +1,91 @@
+#+TITLE: Thesis Outline
+
+* Introduction
+
+Talk about what dynamic, interactive, reactive statistical graphics are.
+
+** Motivation
+
+Talk a little bit about VIT and where it falls short (maybe a little
+bit where it shines too).
+
+** Existing Software
+
+Show where each tool fits in and why they are useful.
+
+List categories and include a brief summary.
+
+Explain a little bit at the end about how the transport mechanism
+doesn't matter but we *do* need gridSVG for cool graphics.
+
+* gridSVG using XML
+
+Talk about how gridSVG needs to use the XML package if it is able to
+deliver graphics as part of a web-page. Talk about in-memory images
+and also the advantages of using node-based graphics.
+
+Borrow from tech report
+
+* Coordinate Systems
+
+gridSVG can now export its coordinate system so that we can manipulate
+a plot without having to speak to grid to find out where things are in
+their viewports.
+
+Borrow from tech report.
+
+* selectr
+
+see tech report
+
+* animaker
+
+see tech reports - animaker itself and 'TimingManager'.
+
+* Name Mapping
+
+see tech report, covers (almost) everything.
+
+Maybe mention why this is important by talking a little bit about the
+tech report Paul wrote?
+
+* Referenced Content
+
+SVG features: filters, gradients, clipping, masking (mention
+listSVGdefinitions).
+
+Pull out into a tech report at some point.
+
+* Examples
+
+Maybe just include a brief description for each and then show
+screenshots. Also talk a little bit about how they work if it is
+valuable.
+
+- Loess
+- ARMA
+- Sampling Variation VIT
+- MDS
+
+* Discussion
+
+Pros and cons of this approach.
+
+Pros - Cool stuff possible!
+
+Cons:
+   - slow
+   - grid only
+   - need to know HTML, CSS, JS, R to get a web app going
+   - some things *can't* work (e.g. clipping)
+
+What is now possible. What problems have been fixed. What
+opportunities does this open up (mention Shiny and R web-apps becoming
+viable?).
+
+* Conclusion
+
+gridSVG can now do a whole bunch of cool stuff that it couldn't do
+before and with selectr and animaker, we can now more easily build
+VIT-like applications, or indeed any cool statistical graphics for the
+browser.
