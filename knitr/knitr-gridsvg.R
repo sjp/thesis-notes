@@ -31,9 +31,9 @@ gridsvg_hook <- function(before, options, envir) {
         args$res <- options$dpi
         for (arg in names(gridSVG_args))
             args[[arg]] <- gridSVG_args[[arg]]
-        do.call("gridToSVG", args)
+        do.call("grid.export", args)
     } else {
-        gridToSVG(svg_name, "none", "none", "none", res = options$dpi)
+        grid.export(svg_name, "none", "none", "none", res = options$dpi)
     }
 
     # If we're exporting SVG we're already done
@@ -83,9 +83,9 @@ gridsvg_inline_hook <- function(before, options, envir) {
         args$res <- options$dpi
         for (arg in names(gridSVG_args))
             args[[arg]] <- gridSVG_args[[arg]]
-        image <- do.call("gridToSVG", args)$svg
+        image <- do.call("grid.export", args)$svg
     } else {
-        image <- gridToSVG(NULL, "none", "none", "none", res = options$dpi)$svg
+        image <- grid.export(NULL, "none", "none", "none", res = options$dpi)$svg
     }
 
     if (is.null(options$fig.cap))
