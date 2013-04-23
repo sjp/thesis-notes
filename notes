@@ -1,4 +1,147 @@
 
+2013-04-23
+----------
+
+DISCUSS:
+
+  + New thesis submission rules (3 soft-cover copies NOT 2 hard-cover)
+
+  + Does the 'prefix' go on the 'id' for the top-level <svg> element?
+
+  + Useful area of application for fancy graphics tricks is drawing
+    node-and-edge graphs;  they often like to draw fancy-looking nodes
+    (e.g., that look like buttons with drop shadows)
+
+    - See ../Resources/journal.pcbi.1000385.pdf
+
+  + Teaching demo wanted by Andrew Balemi:
+    "scatterplot of bivariate normal;  slider on x-axis;  
+     histogram of marginal distribution (based on x-pos of slider)
+     to the left (or right) of scatterplot"
+
+  + Make sure examples of "real" use get put into thesis:
+    - Tim Brocks' "datatodisplay" http://datatodisplay.com/
+    - Jay Emerson's stuff (look up link)
+    - Paul Behren's zoomable maps for Royal Society
+
+  + Take a look at Ben Fry's PhD Thesis (on "processing")
+    to help with defining the "context" and "relevance" of some
+    of Simon's work on 'gridSVG'
+    + Computational Information Design
+    + The "refine" step in his "Process"
+
+  + Processing examples may provide some useful examples of applications
+    of fancier graphics (?)
+
+    - http://www.processing.org/exhibition/
+
+    Also see Flowing Data ?
+
+    - http://flowingdata.com/
+
+  + Google Summer of Code
+
+
+TODO:
+
+  + Write thesis
+
+  + Add the 'prefix' as 'id' for the top-level <svg> (if specified)
+
+  + Add to gridSVG id generation tech report the fact that there is
+    now a 'prefix' argument for ids
+
+    - Also add section describing addition of "class" information
+
+  + push version 1.1-0 to CRAN 
+    (WITH 'depends:  R (< 3.0)')
+    - waiting for fix to 'XML' bug
+
+  + merge github version back to R-Forge
+
+  + push version 1.2-0 to CRAN 
+
+  + Tech Reports: (?)
+    - a discussion of how to select SVG elements produced by 'gridSVG'
+      + by id (refer to separate doc)
+      + by class (?)
+      + by SVG element
+      + by structure (nesting)
+    - knitr hook for gridSVG
+    - new SVG features in gridSVG
+      + including fill patterns, filters, path clipping, elementGrob(), ...
+    
+  + create grobToSVG() function ?
+    - x = a grob or gTree
+    - width + height give you where to draw
+    - gridToSVG() would call this (?)
+
+  + Some ideas ...
+    - scale up sampling variation to longer animation;  does it scale?
+    - can you provide a simpler interface for describing the
+      animation actions?
+    - can you abstract out another step in the animation description?
+      e.g., WHAT you are animating from HOW you are animating it
+
+  + Ideas for another dynamically updating web graphic welcome!
+    - interactive graphics (e.g., linking and brushing and zooming)?
+      + select points on a plot and have the linear regression line
+        ONLY for the selected points (?)
+    - Explore ways to do the d3 linked scatterplot matrix?
+      See examples/brushing/d3/
+      - NOTE: to run, you can start an HTTP server to serve the files in
+            that directory by ...
+            python -m SimpleHTTPServer
+            ... then you get something like ...
+            Serving HTTP on 0.0.0.0 port 8000 ...
+            ... so you open a browser and point it at ...
+            http://0.0.0.0:8000/iris-splom.html
+      - is it possible to orthogonalise the description of linkages
+        in a similar way to which animaker orthogonalised the 
+        dscription of timing information for animations ??
+    - Adding *transitions* to existing manipulation tools
+      e.g., change order of bars in barplot, BUT bars
+      transition from one position to another rather than
+      instantly reappear;  may require callback to R just to get
+      new positions for transition
+    - Linked scatterplot and analysis (regression) with ability
+      to identify outliers via brushing;  callback to R to 
+      update regression line and output with outliers removed
+
+  + Embellishing sampling-variation
+    - choose your own data set
+    - choose your own statistic
+    - granularity of sampling
+
+    - as well as "start", allow "pause", or even "rewind"
+      (or even a slider!)
+
+
+DONE:
+
+  + If someone has already garnished a grob with an 'id' attribute 
+    we should LEAVE IT ALONE
+
+  + bump gridSVG version to 1.1-0 on the github repo
+    (and get the NEWS file sorted out for that change)
+
+    (bump again to 1.2-0 after merge R-forge R2.16 branch
+     AND make sure that this has 'depends:  R (>= 3.0)')
+
+    fillPattern and filter stuff goes in 1.2-0 (?)
+
+  + 'gridSVG':  
+    Export R class() of objects as SVG element 'class' attribute ?
+    - as part of version 1.2-0
+
+  + Clipping paths
+    - separate table of clipping paths as per fill patterns
+    - grid.clipPath() function ?  that refers to path in clipping path table
+    - DOCUMENT differences between grid and gridSVG semantics
+
+  + Implement masks, filter effects, gradients, ...
+
+
 2013-04-16
 ----------
 
