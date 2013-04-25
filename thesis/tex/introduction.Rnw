@@ -2,78 +2,130 @@
 
 \section{What are web-based interactive graphics?}
 
-It must be established what are web-based interactive graphics in order to illustrate the intended goal of this project.
-Web-based graphics are images that are able to be viewed within a web page by a web browser.
-The graphics we intend to produce are not only web-based, but also have the properties of animation and interactivity.
-Interactivity involves changing the behaviour or appearance of an image, most commonly by the use of a mouse or keyboard.
+It must be established what are web-based interactive graphics in
+order to illustrate the intended goal of this project.  Web-based
+graphics are images that are able to be viewed within a web page by a
+web browser.  The graphics we intend to produce are not only
+web-based, but also have the properties of animation and
+interactivity.  Interactivity involves changing the behaviour or
+appearance of an image, most commonly by the use of a mouse or
+keyboard.
 
 \section{Existing solutions}
 
-There are currently a few notable packages for \R{} that do allow for the creation of web-based interactive graphics.
-A description of how these packages work follows, in order to explain why \gridSVG{} is being improved upon.
+There are currently a few notable packages for \R{} that do allow for
+the creation of web-based interactive graphics.  A description of how
+these packages work follows, in order to explain why \gridSVG{} is
+being improved upon.
 
-The \textsf{animation} package \citep{Xie11} can create animated graphics in many image and video formats, most of which are not provided by \R{}.
-In order to produce animated graphics, the \textsf{animation} package generates a series of static plots.
-Each plot shows the animation at a specific point in time.
-This means that long and fluid animations will generate a large amount of static plots in comparison to shorter, ``choppy" animations.
-By piecing all of the static plots together, the illusion of animation is created.
+The \textsf{animation} package \citep{Xie11} can create animated
+graphics in many image and video formats, most of which are not
+provided by \R{}.  In order to produce animated graphics, the
+\textsf{animation} package generates a series of static plots.  Each
+plot shows the animation at a specific point in time.  This means that
+long and fluid animations will generate a large amount of static plots
+in comparison to shorter, ``choppy" animations.  By piecing all of the
+static plots together, the illusion of animation is created.
 
-\textsf{animation} relies heavily on the use of software not present within the package to produce many of the different graphics formats it supports.
-In fact, the only formats that do not have any dependencies on third-party software are on-screen animations and HTML pages.
-On-screen animations have the drawback of being unable to be stored in any way.
-The GIF, Flash, PDF and video formats that \textsf{animation} supports all require software additional to \R{}.
+\textsf{animation} relies heavily on the use of software not present
+within the package to produce many of the different graphics formats
+it supports.  In fact, the only formats that do not have any
+dependencies on third-party software are on-screen animations and HTML
+pages.  On-screen animations have the drawback of being unable to be
+stored in any way.  The GIF, Flash, PDF and video formats that
+\textsf{animation} supports all require software additional to \R{}.
 
-Other packages have been released but they leverage other graphics systems to implement any animation or interactivity.
-These packages include \textsf{webvis}, \textsf{googleVis} and \textsf{gWidgetsWWW}.
+Other packages have been released but they leverage other graphics
+systems to implement any animation or interactivity.  These packages
+include \textsf{webvis}, \textsf{googleVis} and \textsf{gWidgetsWWW}.
 
-The \textsf{webvis} package \citep{Con10} currently uses the Protovis JavaScript library to produce its plots.
-The approach that \textsf{webvis} takes is to translate the graphical functions that \R{} provides into equivalents that utilise the Protovis library.
-Use of the \texttt{plot.webvis} function is expected to produce similar results to a plot that is created using \R{}'s \texttt{plot} function.
-It is also possible to construct a graph using Protovis-specific functions, e.g. using \texttt{pv.line} to add a line.
-This approach requires knowledge of Protovis and the code to produce plots within \R{} will be very similar to equivalent JavaScript code.
+The \textsf{webvis} package \citep{Con10} currently uses the Protovis
+JavaScript library to produce its plots.  The approach that
+\textsf{webvis} takes is to translate the graphical functions that
+\R{} provides into equivalents that utilise the Protovis library.  Use
+of the \texttt{plot.webvis} function is expected to produce similar
+results to a plot that is created using \R{}'s \texttt{plot} function.
+It is also possible to construct a graph using Protovis-specific
+functions, e.g. using \texttt{pv.line} to add a line.  This approach
+requires knowledge of Protovis and the code to produce plots within
+\R{} will be very similar to equivalent JavaScript code.
 
-The \textsf{googleVis} package \citep{Ges11} provides an interface for \R{} to Google's Visualisation API.
-\textsf{googleVis} allows the creation of plots that use Google's graphics library.
-This means that any plot that can be created with this library can be used by \textsf{googleVis}.
-An example of the graphics that \textsf{googleVis} can create is an interactive map that places markers at locations on the map.
-Many of the types of plots available in \textsf{googleVis} are widely used in highly visible Google products.
-This ensures that the plots are going to be highly polished in both appearance and behaviour.
+The \textsf{googleVis} package \citep{Ges11} provides an interface for
+\R{} to Google's Visualisation API.  \textsf{googleVis} allows the
+creation of plots that use Google's graphics library.  This means that
+any plot that can be created with this library can be used by
+\textsf{googleVis}.  An example of the graphics that
+\textsf{googleVis} can create is an interactive map that places
+markers at locations on the map.  Many of the types of plots available
+in \textsf{googleVis} are widely used in highly visible Google
+products.  This ensures that the plots are going to be highly polished
+in both appearance and behaviour.
 
-\textsf{gWidgetsWWW} \citep{Ver11} is a package that provides an HTML and JavaScript implementation of the \textsf{gWidgets} package for \R{}.
-\textsf{gWidgets} implements a generic interface for creating interactive GUIs allowing the same \R{} code to work in multiple GUI toolkits.
-This means that we can use \textsf{gWidgetsWWW} to create a graphical user interface that responds to user input.
-When used in conjunction with \textsf{RApache}, an \R{} module for the Apache HTTP Server, \textsf{gWidgetsWWW} can add interactivity to a web page.
+\textsf{gWidgetsWWW} \citep{Ver11} is a package that provides an HTML
+and JavaScript implementation of the \textsf{gWidgets} package for
+\R{}.  \textsf{gWidgets} implements a generic interface for creating
+interactive GUIs allowing the same \R{} code to work in multiple GUI
+toolkits.  This means that we can use \textsf{gWidgetsWWW} to create a
+graphical user interface that responds to user input.  When used in
+conjunction with \textsf{RApache}, an \R{} module for the Apache HTTP
+Server, \textsf{gWidgetsWWW} can add interactivity to a web page.
 
-A package developed by \citet{Lan10} that generates animated, interactive graphics via the \R{} graphics system is \textsf{SVGAnnotation}.
-It leverages \R{}'s \texttt{svg()} graphics device by post-processing its output to see which SVG elements correspond with specific components of a plot.
-After performing the post-processing, animation can occur along with interactivity via JavaScript.
-Many functions have been provided that allow for interactivity in processed plots.
-Examples of these functions include adding tooltips, animating graphical elements and linking related points.
+A package developed by \citet{Lan10} that generates animated,
+interactive graphics via the \R{} graphics system is
+\textsf{SVGAnnotation}.  It leverages \R{}'s \texttt{svg()} graphics
+device by post-processing its output to see which SVG elements
+correspond with specific components of a plot.  After performing the
+post-processing, animation can occur along with interactivity via
+JavaScript.  Many functions have been provided that allow for
+interactivity in processed plots.  Examples of these functions include
+adding tooltips, animating graphical elements and linking related
+points.
 
 \section{Motivation for \textsf{gridSVG}}
 
-Here we discuss why the currently available \R{} packages are not suitable for our needs when creating web-based interactive graphics.
+Here we discuss why the currently available \R{} packages are not
+suitable for our needs when creating web-based interactive graphics.
 
-We deem \textsf{animation} to be unsuitable for our needs because it does not provide any means of interactivity, only animation.
-Moreover, the animation is does produce is unsuitable.
-Rather than drawing several plots to generate an animated image, we would rather draw a plot only once that has animation embedded within it.
-The distinction is similar to the difference between a cartoonist who has to draw every single frame, and a director that simply tells people what to do.
+We deem \textsf{animation} to be unsuitable for our needs because it
+does not provide any means of interactivity, only animation.
+Moreover, the animation is does produce is unsuitable.  Rather than
+drawing several plots to generate an animated image, we would rather
+draw a plot only once that has animation embedded within it.  The
+distinction is similar to the difference between a cartoonist who has
+to draw every single frame, and a director that simply tells people
+what to do.
 
-The packages \textsf{webvis} and \textsf{googleVis} are also unsuitable because they do not use \R{}'s graphics system to create their plots.
-We would like to use the facilities \R{} provides with its powerful graphics system to create animated and interactive graphics.
-This method ensures that the graphics we see in \R{} are what is actually going to be drawn when we create our interactive plots.
+The packages \textsf{webvis} and \textsf{googleVis} are also
+unsuitable because they do not use \R{}'s graphics system to create
+their plots.  We would like to use the facilities \R{} provides with
+its powerful graphics system to create animated and interactive
+graphics.  This method ensures that the graphics we see in \R{} are
+what is actually going to be drawn when we create our interactive
+plots.
 
-\textsf{gWidgetsWWW} does create the kind of graphics we want to create, with facilities present for powerful interactivity.
-What it does not provide is any means of animating a plot once it has been created.
-It can only be done in a manner similar to \textsf{animation}, which is impractical to serve frame by frame over the internet due to latency and network speed.
+\textsf{gWidgetsWWW} does create the kind of graphics we want to
+create, with facilities present for powerful interactivity.  What it
+does not provide is any means of animating a plot once it has been
+created.  It can only be done in a manner similar to
+\textsf{animation}, which is impractical to serve frame by frame over
+the internet due to latency and network speed.
 
-\textsf{SVGAnnotation} can also create the kind of graphics we desire, but it is difficult to understand how it works.
-The approach \textsf{SVGAnnotation} takes to match SVG elements with graphical objects in \R{} requires knowledge of the expected SVG output of the \texttt{svg()} device.
-This introduces a lack of transparency because it relies on reverse engineering \R{}'s \texttt{svg()} device's output.
-Because of this, it is challenging to extend \textsf{SVGAnnotation}'s features to create animated and interactive graphics that are not provided out-of-the-box.
-Another issue to consider is that if \textsf{SVGAnnotation} does not work as expected then there is little that a user can do.
+\textsf{SVGAnnotation} can also create the kind of graphics we desire,
+but it is difficult to understand how it works.  The approach
+\textsf{SVGAnnotation} takes to match SVG elements with graphical
+objects in \R{} requires knowledge of the expected SVG output of the
+\texttt{svg()} device.  This introduces a lack of transparency because
+it relies on reverse engineering \R{}'s \texttt{svg()} device's
+output.  Because of this, it is challenging to extend
+\textsf{SVGAnnotation}'s features to create animated and interactive
+graphics that are not provided out-of-the-box.  Another issue to
+consider is that if \textsf{SVGAnnotation} does not work as expected
+then there is little that a user can do.
 
-None of the existing solutions produce the kind of graphics we wish to create.
-However, a package exists that has the potential to create animated and interactive graphics in a transparent manner.
-This package, \gridSVG{}, can only produce basic plots as it is currently little more than a proof-of-concept.
-By extending \gridSVG{} to be capable of producing more complex plots we should be able to create sophisticated web-based interactive graphics.
+None of the existing solutions produce the kind of graphics we wish to
+create.  However, a package exists that has the potential to create
+animated and interactive graphics in a transparent manner.  This
+package, \gridSVG{}, can only produce basic plots as it is currently
+little more than a proof-of-concept.  By extending \gridSVG{} to be
+capable of producing more complex plots we should be able to create
+sophisticated web-based interactive graphics.
