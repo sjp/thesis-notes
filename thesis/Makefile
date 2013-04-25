@@ -22,7 +22,7 @@ tex/%.tex: tex/%.Rnw
 	R -e "knitr::knit('$<', '$@')"
 
 clean:
-	-ls | grep -E -v '(.*tex|images|Makefile|README|.*bib)' | xargs rm
+	-ls | grep -E -v '(.*tex|bin|images|Makefile|README|.*bib)' | xargs rm
 	-rm $(CHAPTER_TEXS) tex/figures/*
 
 .PHONY: show
