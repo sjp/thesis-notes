@@ -1,0 +1,429 @@
+<<echo = FALSE, results = "hide", message = FALSE>>=
+source("../knitr-settings.R")
+@
+
+\chapter{The \pkg{selectr} Package}
+
+\section{Introduction}
+
+% Abstract
+Abstract: The \pkg{selectr} package translates a CSS selector into an
+equivalent XPath expression. This allows the use of CSS selectors to
+query XML documents using the \pkg{XML} package. Convenience functions
+are also provided to mimic functionality present in modern web
+browsers.
+
+% Introduction
+When working with XML documents, a common task is to be able to search
+for parts of a document that match a search query. For example, if we
+have a document representing a collection of books, we might want to
+search through for a book matching a certain title or author. A
+language exists that constructs search queries on XML documents,
+called XPath \autocite{}. XPath is capable of constructing complex
+search queries but this is often at the cost of readability and
+terseness of the resulting expression.
+
+An alternative way of searching for parts of a document is using CSS
+selectors \autocite{}. These are most commonly used in web browsers to
+apply styling information to components of a web page. We can use the
+same language that selects which nodes to style in a web page to
+select nodes in an XML document. This often produces more concise and
+readable queries than the equivalent XPath expression. It must be
+noted however that XPath expressions are more flexible than CSS
+selectors, so although all CSS selectors have an equivalent XPath
+expression, the reverse is not true.
+
+An advantage of using CSS selectors is that most people working with
+web documents such as HTML and SVG also know CSS. XPath is not
+employed anywhere beyond querying XML documents so is not a commonly
+known query language. Another important reason why CSS selectors are
+widely known is due to the common use of them in popular JavaScript
+libraries. jQuery and D3 are two examples where they select elements
+of a page to perform operations on using CSS selectors, rather than
+XPath. This is mostly due to the complexity of performing an XPath
+query in the browser in addition to the more verbose expressions. An
+example of how one would use CSS selectors to retrieve content using
+popular JavaScript libraries is with the following code:
+
+<<showJSExs, echo = FALSE>>=
+jsLine('// jQuery')
+jsLine('$("#listing code");')
+jsLine('// D3')
+jsLine('d3.selectAll("#listing code");')
+jsLine('// The equivalent XPath expression')
+jsLine('"descendant-or-self::*[@id = \'listing\']/descendant-or-self::*/code"')
+@
+
+Selecting all \code{code} elements that are descendants of the element
+with the ID ``listing''.
+
+The \pkg{XML} package for \R{} is able to parse XML documents, which
+can later be queried using XPath. No facility exists for using CSS
+selectors on XML documents in the \pkg{XML} package. This limitation
+is due to the \pkg{XML} package's dependence on the \pkg{libxml2}
+library which can only search using XPath. For reasons mentioned
+above, it would be ideal if we had the option of using CSS selectors
+to query such documents as well as XPath. If we can translate a CSS
+selector to XPath, then the restriction to only using XPath no longer
+applies and we can therefore use a CSS selector whenever an XPath
+expression is required.
+
+A mature Python package exists that performs translation of CSS
+selectors to XPath expressions. Unfortunately this package,
+\pkg{cssselect}, cannot be used in \R{} because it would require
+Python to be present on a user's system which cannot be guaranteed,
+particularly on Windows. The \pkg{selectr} package is a translation of
+\pkg{cssselect} to \R{} so that we have the same functionality within
+\R{} as we would have using Python.
+
+The rest of this article describes the process that \pkg{selectr}
+takes to translate CSS selectors to XPath expressions along with
+example usage.
+
+\section{Parsing}
+
+The first step in translating any language to another is to first
+\emph{tokenise} an expression into individual words, numbers,
+whitespace and symbols that represent the core structure of an
+expression. These pieces are called tokens. The following code shows
+character representation of tokens that have been created from
+tokenising a CSS selector expression:
+
+<<tokenizeCode, eval = -1, echo = 1>>=
+tokenize("body > p")
+library(selectr)
+tokens <- selectr:::tokenize("body > p")
+for (i in seq_along(tokens))
+  tokens[[i]]$show()
+@
+
+The selector \code{body > p} is a query that looks for all ``p''
+elements within the document that are also direct descendants of a
+``body'' element. We can see that the selector has been tokenised into
+\Sexpr{length(tokens)} tokens. Each token has the following structure:
+type, value, position. The type is the type of token it is, an
+identifier, whitespace, a number or a delimiter. The value is the
+actual text that a token represents, while the position is simply the
+position along the string at which the character was found.
+
+Once we have the required tokens, it is necessary to \emph{parse}
+these tokens into a form that applies meaning to the tokens. For
+example, in CSS a \code{\#} preceding an identifier means that we are
+looking for an element with an ID matching that identifier. After
+parsing our tokens, we have an understanding of what the CSS selector
+means and therefore have the correct internal representation prior to
+translation to XPath. The following code shows what our example
+selector is understood to mean:
+
+<<parsedExprCode, eval = -1, echo = 1>>=
+parse("body > p")
+selectr:::parse("body > p")[[1]]$show()
+@
+
+This shows that the selector is understood to be a combined selector
+that matches when a ``p'' element is a direct descendant of a ``body''
+element. Once the parsing step is complete, it is necessary to
+translate this internal representation of a selector into its
+equivalent XPath expression.
+
+\section{Translating}
+
+XPath is a superset of the functionality of CSS selectors, so we can
+ensure that there is a mapping from CSS to XPath. Given that we
+already know the parsed structure of the selector, we work from the
+outer-most selector inwards. This means with the parsed selector
+\code{body > p} we look at the \code{CombinedSelector} first, then the
+remaining \code{Element} components. In this case we know that the
+\code{CombinedSelector} is going to map to
+\code{Element[body]/Element[p]}, which in turn produces \code{body/p}.
+
+Some of these mappings are straightforward as was the case in the
+given example, but others are more complex. The table below shows a
+sample of the translations that occur:
+
+% Ideally would have this generated automatically but escaping is a pain.
+% Consider revising later?
+\begin{table}[H]
+\centering
+\begin{tabular}{l l l}
+CSS Selector & Parsed Structure & XPath Expression \\
+\midrule
+\code{\#test} & \code{Hash[Element[*]\#test]} & \code{descendant-or-self::*[@id = 'test']} \\
+\code{.test} & \code{Class[Element[*].test]} & \code{descendant-or-self::*[\@class and contains(concat(' ', normalize-space(\@class), ' '), ' test ')]} \\
+\code{body p} & \code{CombinedSelector[Element[body] <followed> Element[p]]} & \code{"descendant-or-self::body/descendant-or-self::*/p"} \\
+\code{a[title]} & \code{Attrib[Element[a][title]]} & \code{descendant-or-self::a[\@title]} \\
+\code{div[class\textasciicircum='btn']} & \code{Attrib[Element[div][class \textasciicircum= 'btn']]} & \code{descendant-or-self::div[\@class and starts-with(\@class, 'btn')]} \\
+\code{li:nth-child(even)} & \code{Function[Element[li]:nth-child(['even'])]} & \code{descendant-or-self::*/*[name() = 'li' and ((position() +0) mod 2 = 0 and position() >= 0)]} \\
+\code{\#outer-div :first-child} & \code{CombinedSelector[Hash[Element[*]\#outer-div] <followed> Pseudo[Element[*]:first-child]]} & \code{descendant-or-self::*[@id = 'outer-div']/descendant-or-self::*/*[position() = 1]}
+\end{tabular}
+\caption{Examples of translations from CSS selectors to XPath expressions, including intermediary parsed structures.}
+\label{tbl:css-xpath-trans}
+\end{table}
+
+These only touch on the possible translations, but it demonstrates
+that a mapping from CSS selectors to XPath expressions exists.
+
+\section{Usage}
+
+The \pkg{selectr} package becomes most useful when working with the
+\pkg{XML} package. Most commonly \pkg{selectr} is used to simplify the
+task of searching for a set of nodes. In the browser, there are two
+\proglang{JavaScript} functions that perform this task using CSS
+selectors, \code{querySelector} and \code{querySelectorAll}. These
+functions are methods on a document or element object. Typical usage
+in the browser using \proglang{JavaScript} might be the following:
+
+<<jsQSEx, echo = FALSE>>=
+jsLine('document.querySelector("ul li.active");')
+jsLine('document.querySelectorAll("p > a.info");')
+@
+
+Retrieving content from a document using CSS selectors in
+\proglang{JavaScript}.
+
+Because these are so commonly used in popular \proglang{JavaScript}
+libraries, the behaviour has been mimicked in \pkg{selectr}. The
+\pkg{selectr} package also provides these functions but instead of
+being methods on document or element objects, they are
+functions. These functions typically take two parameters, the XML
+object to be searched on, and the CSS selector to query with,
+respectively.</p>
+
+The difference between the two functions is that \code{querySelector}
+will attempt to return the \emph{first} matching node or \code{NULL}
+in the case that no matches were found. \code{querySelectorAll} will
+always return a list of matching nodes, this list will be empty when
+there are no matches. To demonstrate the usage of these functions, the
+following XML document will be used:
+
+<<parseExDoc, results="hide">>=
+library(XML)
+exdoc <- xmlRoot(xmlParse('<a><b class="aclass"/><c id="anid"/></a>'))
+exdoc
+@
+
+We will first see how \code{querySelector} is used.
+
+<<qsEx>>=
+library(selectr)
+querySelector(exdoc, "#anid")   # Returns the matching node
+querySelector(exdoc, ".aclass") # Returns the matching node
+querySelector(exdoc, "b, c")    # First match from grouped selection
+querySelector(exdoc, "d")       # No match
+@
+
+
+Now compare this to the results returned by \code{querySelectorAll}:
+
+<<qsAllEx>>=
+querySelectorAll(exdoc, "b, c") # Grouped selection
+querySelectorAll(exdoc, "b")    # A list of length one
+querySelectorAll(exdoc, "d")    # No match
+@
+
+The main point to get across is that \code{querySelector} returns a
+\emph{node}, and \code{querySelectorAll} returns a \emph{list} of
+nodes.
+
+Both \code{querySelector} and \code{querySelectorAll} are paired with
+namespaced equivalents, \code{querySelectorNS} and
+\code{querySelectorAllNS} respectively. These functions will be
+demonstrated in more detail later in this article.
+
+While the aforementioned functions are certainly useful, they do not
+cover all possible use cases. For other uses of CSS selectors, the
+\code{css\_to\_xpath} function can be used where an XPath expression
+would normally be expected. The \code{css\_to\_xpath} function has
+three parameters. The first parameter is simply the CSS selector, then
+a prefix on the resulting XPath expression. This prefix is useful in
+the circumstance when you already know some XPath and know where the
+selector should be scoped to. The final parameter determines the
+translator to use when translating selectors to XPath expressions. The
+generic translator is sufficient in most cases except when (X)HTML is
+used; in those cases a translator can be used which is aware of
+(X)HTML pseudo-selectors. A case where \code{css\_to\_xpath} may be
+used is when using \pkg{XML}'s \code{*apply} functions, as shown
+below.
+
+<<css_to_xpathEx>>=
+# Let's see all tag names present in the doc
+xpathSApply(exdoc, css_to_xpath("*"), xmlName)
+# What is the value of the class attribute on all "b" elements?
+xpathSApply(exdoc, css_to_xpath("b"),
+            function(x) xmlGetAttr(x, "class"))
+@
+
+Rather than returning nodes, we are processing each node using a given
+function from the \pkg{XML} package, but specifying paths using CSS
+selectors instead.
+
+\section{Examples}
+
+While the example usage of the \pkg{selectr} package has been
+demonstrated earlier, the real-world usage may not be clear, or indeed
+the benefits over just using the \pkg{XML} package. To show how
+succinct it can be, we will try to create a data frame in \R{} that
+lists the titles and URLs of technical reports hosted on the
+\href{http://stattech.wordpress.fos.auckland.ac.nz}{Department of
+  Statistics Technical Report Blog}, along with their publishing
+dates. First, lets examine part of the HTML that comprises the page to
+see how we're going to be selecting content.
+
+<<echo = FALSE>>=
+htmlText <- '...
+<article>
+  <header>
+    <h1 class="entry-title">
+      <a href="http://stattech.wordpress.fos.auckland.ac.nz/2012-9-writing-grid-extensions/"
+         title="Permalink to 2012-9 Writing grid Extensions"
+         rel="bookmark">2012-9 Writing grid Extensions</a>
+    </h1>
+    <div class="entry-meta">
+      <span class="sep">Posted on </span>
+        <a href="http://stattech.wordpress.fos.auckland.ac.nz/2012-9-writing-grid-extensions/"
+           title="9:48 pm"
+           rel="bookmark">
+          <time class="entry-date"
+                datetime="2012-11-06T21:48:17+00:00" pubdate>
+            November 6, 2012
+          </time>
+        </a>
+...'
+cat(paste0(sapply(strsplit(htmlText, "\n")[[1]], lineTrim), collapse = "\n"))
+@
+
+This fragment shows us that we have the information available to us,
+we just need to know how to query it. For example, we can see that the
+URL to each technical report is in the \code{href} attribute within an
+\code{a} element. In particular, this \code{a} element has an
+\code{h1} parent with a class of \code{entry-title}. The \code{a}
+element also contains the title of the technical report. Similarly we
+can see a \code{time} element that tells us via the \code{datetime}
+attribute when the post was published. We first start by loading the
+required packages and retrieving the data so that we can work with
+it.
+
+<<exHTML>>=
+library(XML)
+library(selectr)
+page <- htmlParse("http://stattech.wordpress.fos.auckland.ac.nz/")
+@
+
+Now that the page has been parsed into a queryable form, we can write
+the required CSS selectors to retrieve this information using
+\code{querySelectorAll}.
+
+<<exHTMLGetNodes>>=
+# CSS selector to get titles and URLs: "h1.entry-title > a"
+links <- querySelectorAll(page, "h1.entry-title > a")
+# Now lets get all of the publishing times
+timeEls <- querySelectorAll(page, "time")
+@
+
+Now that we have gathered the correct elements, it is reasonably
+simple to manipulate them using the \pkg{XML} package. We want to
+extract the correct attributes and values from the selected nodes. The
+code below shows how we would do this.
+
+<<exHTMLParseLinkTimes>>=
+# Collect all URLs
+urls <- sapply(links, function(x) xmlGetAttr(x, "href"))
+# Collect all titles
+titles <- sapply(links, xmlValue)
+# Collect all datetime attributes
+dates <- sapply(timeEls, function(x) xmlGetAttr(x, "datetime"))
+# To play nice with R, lets parse it as a Date
+dates <- as.Date(dates)
+# Create a data frame of the results
+technicalReports <- data.frame(title = titles,
+                               url = urls,
+                               date = dates,
+                               stringsAsFactors = FALSE)
+# and show one column at a time
+technicalReports$title
+technicalReports$url
+technicalReports$date
+@
+
+\subsection{A Complex Example}
+
+An example written for the \pkg{gridSVG} package will be
+revisited. The example first shows a \pkg{ggplot2} plot that has been
+exported to SVG using \pkg{gridSVG}. The aim is to then remove the
+legend from the plot by removing the node containing all legend
+information. Once the node has been removed, the resulting document
+can be saved to produce an image with a legend removed.
+
+What is of particular interest with this example is that it uses SVG,
+which is a namespaced XML document. This provides some challenges that
+require consideration, but the \pkg{selectr} package can handle this
+case.
+
+<<showggEx, fig.keep = "first", warning = FALSE, message = FALSE>>=
+library(ggplot2)
+library(gridSVG)
+qplot(mpg, wt, data=mtcars, colour=cyl)
+svgdoc <- grid.export(NULL)$svg
+@
+
+So far we have simply reproduced the original plot and stored the
+resulting XML in a node tree called \code{svgdoc}. In order to
+remove the legend from the plot we first need to select the legend
+node from the SVG document. We will compare the \pkg{XML}-only
+approach with one enhanced with \code{selectr}. The comparison is
+shown below:
+
+<<compareXPathCSS, results = "hide">>=
+# XPath
+legendNode <- getNodeSet(svgdoc,
+                         "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+                         c(svg = "http://www.w3.org/2000/svg"))[[1]]
+# CSS
+legendNode <- querySelector(svgdoc,
+                            "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+                            c(svg = "http://www.w3.org/2000/svg"),
+                            prefix = "//svg:*/descendant-or-self::")
+@
+
+This particular example demonstrates a case where the XPath approach
+is more concise. This is because the \code{id} attribute that we're
+searching for needs to have its CSS selector escaped (due to \code{:}
+and \code{.} being special characters in CSS), while the XPath
+expression remains unchanged. Additionally, we also need to specify a
+namespace-aware prefix for the XPath that is generated. To use CSS
+selectors in this case required knowledge of XPath that would rather
+be avoided.
+
+To work around this issue, a namespace-aware function should be used
+instead to abstract away the XPath dependent code. The following code
+demonstrates the use of \pkg{selectr}'s namespace-aware function
+\code{querySelectorNS}:
+
+<<qsNS>>=
+legendNode <- querySelectorNS(svgdoc,
+                              "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+                              c(svg = "http://www.w3.org/2000/svg"))
+@
+
+The resulting use of CSS selection is now as concise as the XPath
+version, with the only special consideration being the requirement of
+escaping the CSS selector.
+
+Now that the legend has been selected, we can remove it from the SVG
+document to produce an image with a legend omitted.
+
+<<removeLegend, results = "hide">>=
+removeChildren(xmlParent(legendNode), legendNode)
+#saveXML(svgdoc, file = NULL)
+@
+
+\section{Conclusion}
+
+This article describes the new \pkg{selectr} package. Its main purpose
+is to allow the use of CSS selectors in a domain which previously only
+allowed XPath. In addition, convenience functions have also been
+described; allowing easy use of CSS selectors for the purpose of
+retrieving parts of an XML document. It has been demonstrated that the
+\pkg{selectr} package augments the \pkg{XML} package with the ability
+to use a more concise language for selecting content from an XML
+document.

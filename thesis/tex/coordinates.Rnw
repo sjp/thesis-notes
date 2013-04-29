@@ -1,0 +1,440 @@
+<<echo = FALSE, results = "hide", message = FALSE>>=
+source("../knitr-settings.R")
+@
+
+\chapter{Working with the gridSVG{} Coordinate System}
+
+% Abstract
+The \gridSVG{} package exports \grid{} images to an SVG format for
+viewing on the web. This article describes new features in \gridSVG{}
+that allow \grid{} coordinate system information to be exported along
+with the image.  This allows the SVG image to be modified dynamically
+in a web browser, with full knowledge of coordinate system
+information, such as the scales on plot axes.  As a consequence, it is
+now possible to create more complex and sophisticated dynamic and
+interactive \R{} graphics for the web.
+
+\section{Introduction}
+
+\grid{} is an alternative graphics system to the traditional base
+graphics system provided by \R{}. Two key features of \grid{}
+distinguish it from the base graphics system, graphics objects (grobs)
+and viewports.
+
+Viewports are how \grid{} defines a drawing context and plotting
+region. All drawing occurs relative to the coordinate system within a
+viewport. Viewports have a location and dimension and set scales on
+the horizontal and vertical axes. Crucially, they also have a name so
+we know how to refer to them.
+
+Graphics objects (grobs) store information necessary to describe how a
+particular object is to be drawn. For example, a \grid{}
+\code{circleGrob{}} contains the information used to describe a
+circle, in particular its location and its radius. As with viewports,
+graphics objects also have names.
+
+The following code provides a simple demonstration of these \grid{}
+facilities. A viewport is pushed in the centre of the page with
+specific x- and y-scales, then axes are drawn on the bottom and left
+edges of this viewport, and a set of data symbols are drawn within the
+viewport, relative to the scales. The viewport is given the name
+\code{panelvp} and the data symbols are given the name
+\code{datapoints}.
+
+<<gridsetup, fig.keep="last", message=FALSE, results="hide", fig.cap = "A basic plot produced by \\pkg{grid}.">>=
+library(grid)
+
+x <- runif(10, 5, 15)
+y <- runif(10, 5, 15)
+panelvp <- viewport(width = 0.8, height = 0.8,
+                    xscale = c(0, 20),
+                    yscale = c(0, 20),
+                    name = "panelvp")
+
+pushViewport(panelvp)
+grid.xaxis()
+grid.yaxis()
+grid.points(x, y, pch = 16, name = "datapoints")
+upViewport()
+@
+
+One advantage of having named viewports is that it is possible to
+\emph{revisit} the viewport to add more output later. This works
+because revisiting a viewport means not only revisiting that region on
+the page, but also revisiting the coordinate system imposed on that
+region by the viewport scales. For example, the following code adds an
+extra (red) data point to the original plot (relative to the original
+scales).
+
+<<gridadd, echo = FALSE, fig.keep = "last", fig.cap = "The basic plot produced by \\grid{} with an extra point added.">>=
+<<gridsetup>>
+downViewport("panelvp")
+grid.points(3, 14, pch=16,
+            size=unit(4, "mm"),
+            gp=gpar(col="red"))
+@
+
+The task that \gridSVG{} performs is to translate viewports and
+graphics objects into SVG equivalents. In particular, the exported SVG
+image retains the naming information on viewports and graphics
+objects. The advantage of this is we can still refer to the same
+information in \grid{} and in SVG. In addition, we are able to
+annotate \grid{} grobs to take advantage of SVG features such as
+hyperlinking and animation.
+
+\section{The \gridSVG{} Coordinate System}
+
+When exporting \grid{} graphics as SVG, instead of positioning within
+a viewport, all drawing occurs within a single pixel-based coordinate
+system. This document describes how \gridSVG{} now exports additional
+information so that the original \grid{} coordinate systems are still
+available within the SVG document.
+
+To demonstrate this, we will show how to add a new data symbol to a
+plot that has been drawn with \grid{} and then exported with
+\gridSVG{}. This is similar to the task performed in the previous
+section, but the difference is that we will add points to the plot
+without using \grid{} itself, or even without using \R{} at all. We
+will just make use of the information that has been exported by
+\gridSVG{} and stored with the plot itself.
+
+Firstly, consider the following code which draws a simple plot using
+\grid{}, exactly as before, but this time exports the plot to to SVG
+in a file called \code{pointsPlot.svg} using \code{gridSVG}. The file
+can then be viewed in a web browser.
+
+<<pointsPlot, fig.keep = "first", fig.cap = "A basic plot produced by \\pkg{gridSVG}.">>=
+<<gridsetup>>
+library(gridSVG)
+gsvg <- grid.export("pointsPlot.svg")
+grid.export("pointsPlot.svg", exportCoords = "file")
+@
+
+We will now consider the task of modifying this exported plot so that
+we can add extra information, such as a new data point. An important
+point is that we want to add a new data point relative to the axis
+coordinate systems on the plot and an important difference is that we
+are going to do this using only the information that was exported by
+\gridSVG{}, with no further help from \grid{}.
+
+When the SVG file was exported, all of the locations on the plot were
+transformed into pixels. This means that in our SVG file, none of the
+axis scales exist, and the locations of points are no longer native
+coordinates, but absolutely positioned pixels. See the \code{x} and
+\code{y} attributes in the \code{<use>} elements below as a
+demonstration of this process.
+
+<<showPointsGrob>>=
+pointsGroup <- getNodeSet(gsvg$svg,
+                          "//svg:g[@id='datapoints.1']",
+                          c(svg="http://www.w3.org/2000/svg"))[[1]]
+tmp <- saveXML(pointsGroup, file = NULL, indent = TRUE)
+cat(paste0(sapply(strsplit(tmp, "\n")[[1]], lineTrim), collapse = "\n"))
+@
+
+Prior to version 1.0 of \gridSVG{}, this task was awkward because it
+was difficult to determine the correct location of a new point in
+terms of pixels. Recent changes in \gridSVG{} have enabled us to keep
+viewport information by exporting viewport metadata in the form of
+JSON, a structured data format. This enables us to be able to retain
+viewport locations and scales so that we can now transform pixel
+locations to native coordinates, and vice versa.
+
+The following fragment shows the coordinates file that is exported by
+\gridSVG{}. It is exported in the form of a \proglang{JavaScript}
+statement that assigns an object literal to a variable,
+\code{gridSVGCoords}.
+
+<<coordsJSON, echo = FALSE>>=
+tmp <- toJSON(gsvg$coords, pretty = TRUE)
+tmp <- gsub("\t", "    ", tmp)
+cat(paste0("var gridSVGCoords = ", tmp, ";"))
+@
+
+This shows all of the information available to \gridSVG{}. This
+\proglang{JavaScript} object contains a list of viewport names, with
+each viewport name associated with its metadata. This metadata
+includes the viewport location and dimensions in terms of SVG
+pixels. Also included are the axis scales, along with the resolution
+that the viewport was exported at. The resolution simply represents
+the number of pixels that span an inch.
+
+This coordinate information is important for use with
+\proglang{JavaScript} functions which are also exported by
+\gridSVG{}. Examples of such functions are shown in the next section.
+
+\section{Browser-based Modification}
+
+In this section, we will consider the task of modifying the exported
+SVG image using only a web browser, with no connection to \R{} at all.
+
+We can modify an SVG image within a web browser by executing
+\proglang{JavaScript} code to insert SVG elements representing points
+into the plot. To start off we first load the image into the
+browser. This loads the SVG image, and executes any
+\proglang{JavaScript} code that is referenced or included by the
+image. By default \gridSVG{} does not export coordinate information to
+a \code{JavaScript} file. This can be enabled by calling
+\code{grid.export} with the \code{exportCoords} parameter set to
+\code{"file"}. A utility \proglang{JavaScript} file that contains
+functions useful for working with \gridSVG{} graphics can also be
+exported. This can be done by setting the \code{exportJS} parameter in
+\code{grid.export} to \code{"file"}. The utility code is particularly
+useful because it includes functions that enable us to do unit
+conversion in the browser, e.g. from \code{native} to \code{npc} or to
+\code{inches}.
+
+Because \gridSVG{} must perform some name manipulation to ensure that
+SVG element IDs are unique, a couple of \proglang{JavaScript} utility
+functions require introduction. Firstly, although not stricly
+necessary, if we know the name of the grob, we can find out which
+viewport path it belonged to by calling \code{grobViewport}.
+
+<<getSVGMappingsEx, echo = FALSE>>=
+jsLine('var grobID = getSVGMappings("datapoints", "grob")[1];')
+jsLine('grobViewport(grobID);')
+jsLine('"panelvp.1"', prefix = "")
+@
+
+We see that the viewport name is not exactly what we chose
+in \R{}, but suffixed with a numeric index. Now that we
+can query the viewport name, we know which viewport to draw into
+and the SVG element that we can add elements
+to. However, the issue remains that we really want to be able to
+use \code{native} units in the browser, rather
+than SVG pixels. To remedy this, unit conversion
+functions have been created. These functions are:
+
+\begin{itemize}
+\item \code{viewportConvertX}
+\item \code{viewportConvertY}
+\item \code{viewportConvertWidth}
+\item \code{viewportConvertHeight}
+\end{itemize}
+
+The first two conversion functions take three mandatory parameters,
+the viewport ID you want the location of, the size of the unit, and
+what type of unit it is. Optionally a fourth parameter can be
+specified to determine what the unit is converted to, by default this
+is SVG pixels. The value returned from this function is a number
+representing the location in the new unit.
+
+The second two conversion functions are the same but the fourth
+parameter, the new type of unit, is mandatory. This means we can
+convert between \code{inches}, \code{native} and \code{npc} in the
+browser without requiring an instance of \R{} available, as long as we
+stick to our existing viewports.
+
+As an example of how we might use these functions, we can find out
+where the coordinates $(3, 14)$ are in the viewport \code{panelvp} (the
+main plot region) by running the following code:
+
+<<vpConvertXYEx, echo = FALSE>>=
+jsLine('viewportConvertX("panelvp.1", 3, "native");')
+jsLine("110.45", prefix = "")
+jsLine('viewportConvertY("panelvp.1", 14, "native");')
+jsLine("283.1", prefix = "")
+@
+
+We now know that the location of $(3, 14)$ in SVG pixels is $(110.45,
+283.1)$. Using this information we can insert a new point into our plot
+at that location. We also want the the radius of this point to be 2mm,
+so we can work out how big the point is going to be in a similar
+manner. The following code shows that a radius of 2mm will translate
+to 5.67 SVG pixels.
+
+<<vpConvertWidthEx, echo = FALSE>>=
+jsLine('viewportConvertWidth("panelvp.1", 2, "mm", "svg");')
+jsLine('5.67', prefix = "")
+@
+
+To insert this new point this requires some knowledge of
+\proglang{JavaScript}, and knowledge of the SVG Document Object Model
+(DOM). To demonstrate this, a red SVG circle is going to be
+inserted into the plot at $(3, 14)$ with a radius of 2mm using
+\proglang{JavaScript}.
+
+<<jsEx, echo = FALSE>>=
+jsLine('// Getting the element that contains all existing points')
+jsLine('var panel = document.getElementById("panelvp.1");')
+
+jsLine('// Creating an SVG circle element')
+jsLine('var c = document.createElementNS("http://www.w3.org/2000/svg",')
+jsLine('                                 "circle");', prefix = "JS+ ")
+
+jsLine('// Setting some SVG properties relating to the appearance')
+jsLine('// of the circle')
+jsLine('c.setAttribute("stroke", "rgb(255,0,0)");')
+jsLine('c.setAttribute("fill", "rgb(255,0,0)");')
+jsLine('c.setAttribute("fill-opacity", 1);')
+
+jsLine('// Setting the location and radius of our points')
+jsLine('// via the gridSVG conversion functions')
+jsLine('c.setAttribute("cx",\nJS+     viewportConvertX("panelvp.1", 3, "native"));')
+jsLine('c.setAttribute("cy",\nJS+     viewportConvertY("panelvp.1", 14, "native"));')
+jsLine('c.setAttribute("r",\nJS+     viewportConvertWidth("panelvp.1", 2, "mm", "svg"));')
+jsLine('// Add new point to the same "viewport" as the existing points')
+jsLine('panel.appendChild(c);')
+@
+
+The image below provides a live demonstration of this task. When the
+"Click to add point" button is clicked, the browser generates a new
+SVG circle object and adds it to the image, relative to the plot
+scales, using \proglang{JavaScript} code and the information that was
+exported from \R{}.
+
+%%%%%%%%%%%%% INSERT SCREENSHOT!
+
+This example provides a very simple demonstration of the idea that an
+SVG image can be manipulated within a web browser by writing
+\proglang{JavaScript} code. The significance of the new development in
+\gridSVG{} is that, if an image was generated by \grid{} and exported
+to SVG using \gridSVG{}, extra information and \proglang{JavaScript}
+functions are now exported with the image so that the image can be
+manipulated with full knowledge of all \grid{} coordinate systems that
+were used to draw the original image (such as plot axis scales).
+
+Much more complex applications of this idea are possible, including
+complex animations and interactions, limited only by the amount and
+complexity of the \proglang{JavaScript} code that is required. One
+possibility with great potential involves leveraging third-party
+\proglang{JavaScript} libraries for manipulating the content of a web
+page, particularly SVG. The D3 library is one very powerful example.
+
+% FIXME: sentence "manipulating the content of a web page" was changed
+
+\section{Modification via the \pkg{XML} Package}
+
+In this section, we will consider modifying the exported SVG image
+using \R{}, but in an entirely different \R{} session, without
+recourse to \grid{} and without any access to the original \R{} code
+that was used to generate the original image.
+
+When an SVG image is modified within a web browser using
+\proglang{JavaScript}, as in the previous section, all changes are
+lost when the image is reloaded. In this section, we will consider a
+permanent modification of the image that generates a new SVG file.
+
+We will make use of the \gridSVG{} and \pkg{XML} packages to modify
+our SVG image. As \gridSVG{} automatically loads the \pkg{XML}
+package, all of the functionality from the \pkg{XML} package becomes
+readily available to us.
+
+The first step is to parse the image, so that it is represented as a
+document within \R{}.
+
+<<parseSVG>>=
+svgdoc <- xmlParse("pointsPlot.svg")
+@
+
+We know that the name of the viewport we are looking for has the
+exported ID of \code{panelvp.1}. An XPath query can be created to
+collect this viewport.
+
+<<vpGroup>>=
+# Getting the object representing our viewport that contains
+# our data points
+panel <- getNodeSet(svgdoc,
+                    "//svg:g[contains(@id, 'panelvp')]",
+                    c(svg="http://www.w3.org/2000/svg"))[[1]]
+@
+
+Now we need to read in the \proglang{JavaScript} file that contains
+the coordinates information. However, some cleanup is needed because
+the code is designed to be immediately loaded within a browser, and is
+thus not simply JSON. We need to clean up the data so that it is able
+to be parsed by the \pkg{RJSONIO} package's \code{fromJSON} function.
+
+<<cleanJSON>>=
+# Reading in and cleaning up the coordinate system data
+coordsData <- readCoordsJS("pointsPlot.svg.coords.js")
+@
+
+We now have valid JSON in the form of a list. Using this, we can
+initialise a coordinate system in \R{} by utilising
+\code{gridSVGCoords}. Nothing is returned from \code{gridSVGCoords}
+because we are \emph{setting} coordinate information. If we call
+\code{gridSVGCoords} with no parameters we can get the coordinate
+information back.
+
+<<initCoords>>=
+gridSVGCoords(coordsData)
+@
+
+Now that a coordinate system is initialised we are able convert
+coordinates into SVG pixels. This means we can create a
+\code{<circle>} element and correctly position it using \code{native}
+units at $(3, 14)$.
+
+<<createCircle>>=
+# Creating an SVG circle element to insert into our image
+# that is red, and at (3, 14), with a radius of 2mm
+circ <- newXMLNode("circle",
+  parent = panel,
+  attrs = list(
+    cx = viewportConvertX("panelvp.1", 3, "native"),
+    cy = viewportConvertY("panelvp.1", 14, "native"),
+    r = viewportConvertWidth("panelvp.1", 2, "mm", "svg"),
+    stroke = "red",
+    fill = "red",
+    "fill-opacity" = 1))
+@
+
+Note that we have used the \code{viewportConvert*} functions to
+position the circle at the correct location and with the correct
+radius. This demonstrates that the same functions that are available
+in \proglang{JavaScript} are also available in \R{} (via the
+\gridSVG{} package).
+
+This point has been inserted into the same SVG group as the rest of
+the points by setting the \code{parent} parameter to the object
+representing the viewport group.
+
+The only thing left to do is write out the new XML file with
+the point added.
+
+<<savingXML, results = "hide">>=
+# Saving a new file for the modified image
+saveXML(svgdoc, file = "newPointsPlot.svg")
+@
+
+%    <figure>
+%      <img src="newPointsPlot.svg" width="504" height="504" alt="gridSVG plot modified using XML package">
+%      <figcaption>A <em>gridSVG</em> plot modified using the <em>XML</em> package.</figcaption>
+%    </figure>
+
+The new SVG image is located at \code{"newPointsPlot.svg"} and when
+loaded into the browser shows the new point. The appearance of the
+plot should be identical to the modifications we made using
+\proglang{JavaScript}, except these modifications are permanent and
+are able to be distributed to others.
+
+This example provides a very simple demonstration of the idea that an
+SVG image can be manipulated in \R{} using the \pkg{XML} package. The
+significance of the new development in \gridSVG{} is that, if an image
+was generated by \grid{} and exported to SVG using \gridSVG{}, extra
+information is now exported with the image, and new functions are
+available from \gridSVG{} to work with that exported information, so
+that the image can be manipulated with full knowledge of all \grid{}
+coordinate systems that were used to draw the original image (such as
+plot axis scales).
+
+Much more complex modifications of an image are possible, limited only
+by the amount and complexity of the \R{} code that is required.  One
+possibility with great potential involves using \R{} on the server to
+dynamically manipulate SVG content within a web page on-the-fly.
+
+\section{Conclusion}
+
+This article describes several new features of the \gridSVG{} package.
+The main idea is that \grid{} coordinate system information can now be
+exported, in a JSON format, along with the image (in an SVG
+format). In addition, \proglang{JavaScript} functions can be exported
+to support the manipulation of the SVG image within a web browser,
+using this coordinate system information. Furthermore, new \R{}
+functions are provided so that the SVG image, and its associated
+coordinate information, can be loaded back into a different \R{}
+session to manipulate the SVG image within \R{} (using the \pkg{XML}
+package).  These features significantly enhance the framework that
+\gridSVG{} provides for developing dynamic and interactive \R{}
+graphics for the web.

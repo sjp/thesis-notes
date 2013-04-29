@@ -1,131 +1,147 @@
 \chapter{Introduction}
 
-\section{What are web-based interactive graphics?}
+\section{What are these Graphics?}
 
-It must be established what are web-based interactive graphics in
-order to illustrate the intended goal of this project.  Web-based
-graphics are images that are able to be viewed within a web page by a
-web browser.  The graphics we intend to produce are not only
-web-based, but also have the properties of animation and
-interactivity.  Interactivity involves changing the behaviour or
-appearance of an image, most commonly by the use of a mouse or
-keyboard.
+There are numerous software packages that are capable of creating
+graphs of some form. Many of these packages are also capable of
+producing statistical graphics -- graphs which communicate statistical
+information. The \R{} statistical software system \autocite{R13} is a
+popular example of software which generates statistical graphics. The
+great strength of \R{} is its wealth of statistical functions and
+graphics, but only for static graphics. Most statistical graphics in
+use today are static, meaning that they cannot be modified once they
+are created. The proliferation of \emph{reactive} web-based graphics
+using libraries such as \pkg{D3} \autocite{Bos13} shows that there is
+significant interest in creating reactive graphics in web browsers.
 
-\section{Existing solutions}
+It must be established what dynamic, interactive and reactive
+statistical graphics are in order to illustrate the intended aim of
+this research. \emph{Dynamic} graphics are images which are capable of
+being animated or modified after they have been
+created. \emph{Interactive} graphics are able to be modified by
+triggering an event, most commonly by a mouse or
+keyboard. \emph{Reactive} graphics are able to be updated in response
+to an event, in particular when the inputs that the graphics are bound
+to are changed. For our purposes we will restrict this definition to
+the ability to react by updating statistical content. Our final
+requirement is that these images are able to be viewed and interacted
+with in a web browser.
+
+We would like to create these graphics with \R{} in order to use to
+our advantage its powerful statistical functionality, along with the
+flexible graphics system it provides. There is also a large amount of
+existing graphics that could be enhanced with the properties described
+earlier. There are many existing statistical software packages that
+fulfil some of these criteria, but none that can meet all of them. For
+example, the \pkg{animation} package \autocite{Xie12} can produce
+animated graphics in many image and video formats, most of which are
+not provided by \R{}. It does this by generating a series of static
+plots, where each plot shows the animation at a specific point in
+time. \pkg{animation} demonstrates that we can produce graphics that
+are animated but it lacks the facility for adding interactivity to any
+of these animations.
+
+The interactivity of the plots we generate are intended to be
+customisable and only for two dimensional graphics. This means that we
+are not aiming to compete with systems that specialise in the area of
+interactive statistical graphics. Examples of such systems are
+\pkg{Mondrian} \autocite{The09} and \pkg{GGobi} \autocite{Coo07}, both
+of which are highly interactive and in the case of \pkg{GGobi},
+focused on high dimensional graphics. The main reason for this
+stipulation is because we would like to stick to the \R{} graphics
+engine, and not an external graphics system.
+
+A package for \R{} that has been developed recently and has generated
+a large amount of interest is \pkg{shiny} \autocite{RSt13}. It can not
+only create web-based graphics, but it is designed with reactivity in
+mind. Many interactive user interface controls are available which can
+be bound to data in \R{}, for example a slider or a drop-down
+box. This means a change in the value of a control on a web page will
+cause \R{} to generate new content for the web page. However, a
+limitation is that when a plot is the output for reactive content,
+when the reactive content changes an entirely new static plot is
+drawn. We would like graphics to be updated in response to a change in
+content instead of being replaced altogether.
+
+The \gridSVG{} package \autocite{Mur13} for \R{} exports a \grid{}
+\autocite{Mur11} scene to the SVG (Scalable Vector Graphics) image
+format \autocite{SVG11}. A notable restriction for \gridSVG{} is that
+it is only able to export \grid{} graphics to SVG, any plots created
+using the base graphics system is not supported. \gridSVG{} is capable
+of producing dynamic and interactive graphics for use within a web
+browser. In particular it can create graphics with animation and
+hyperlinking, as well as embedding \proglang{JavaScript} for creating
+customised interactivity. This package had the potential for also
+creating reactive graphics but doing so would have been an arduous
+task. \gridSVG{} was largely incapable of creating reactive graphics
+until the establishment of this research. The primary limitation was
+that \gridSVG{} content was not easily able to be served dynamically
+as part of a web page.
+
+The large amount of \proglang{JavaScript} libraries available for
+producing plots with interactivity and dynamic properties shows that
+the web browser has become a powerful platform for creating
+graphics. However, these libraries by themselves do not come with the
+facilities necessary for creating statistical graphics. To create
+statistical graphics would require communication with a statistical
+software system. Rather than creating all of our graphics within \R{},
+or all of our graphics in \proglang{JavaScript}, we can create SVG
+using \gridSVG{} and then manipulate it in a web browser using
+\pkg{D3}. The advantage of this approach is that we are able to still
+draw \R{} graphics via \gridSVG{}, but allow for features such as
+transitioning using \pkg{D3}. Therefore the primary goal of this
+research is to allow \gridSVG{} to act as a bridge between \R{} and
+\pkg{D3}.
+
+We will first examine a motivating example that shows the type of
+graphics we want \gridSVG{} to create, and then investigate what
+existing software can help to achieve the goal of implementing the
+motivating example.
+
+\section{Motivating Example}
+
+The Visual Inference Tools system is an \R{} package developed as a
+teaching aid for high school and first year university students. It
+aims to demonstrate statistical concepts such as bootstrap (and other)
+confidence intervals and randomisation tests. It provides a
+GUI (Graphical User Interface) to allow students and teachers
+to load their own data and configure the type of animation they
+want. In another window, the animation can be viewed. See fig below.
+
+%%%%
+FIGURE
+%%%%
+
+The advantages of this software are that \R{} is powering all of the
+statistics that are used by the software. It is also able to use
+\R{}'s \grid{} graphics engine to generate all of the graphics.
+
+The limitations of this approach are numerous.
+
+Firstly, distributing software like this with RGtk2 is
+platform-specific and therefore potentially fraught with
+complications.
+
+Unable to get ``true'' animation, only snapshots and animation via
+linear interpolation.
+
+Biggest complication: NO KNOWLEDGE OF TIME!
+
+No declaractive user interface.
+
+%%%%
+
+The primary reason for the limitations is due to the R graphics engine
+itself not being designed with animation in mind.
+
+\section{Existing Software}
+
+In order to improve upon the behaviour of VIT in a web browser we need
+to use \gridSVG{} along with some other software.
 
 There are currently a few notable packages for \R{} that do allow for
-the creation of web-based interactive graphics.  A description of how
+the creation of web-based interactive graphics. A description of how
 these packages work follows, in order to explain why \gridSVG{} is
 being improved upon.
 
-The \textsf{animation} package \citep{Xie11} can create animated
-graphics in many image and video formats, most of which are not
-provided by \R{}.  In order to produce animated graphics, the
-\textsf{animation} package generates a series of static plots.  Each
-plot shows the animation at a specific point in time.  This means that
-long and fluid animations will generate a large amount of static plots
-in comparison to shorter, ``choppy" animations.  By piecing all of the
-static plots together, the illusion of animation is created.
-
-\textsf{animation} relies heavily on the use of software not present
-within the package to produce many of the different graphics formats
-it supports.  In fact, the only formats that do not have any
-dependencies on third-party software are on-screen animations and HTML
-pages.  On-screen animations have the drawback of being unable to be
-stored in any way.  The GIF, Flash, PDF and video formats that
-\textsf{animation} supports all require software additional to \R{}.
-
-Other packages have been released but they leverage other graphics
-systems to implement any animation or interactivity.  These packages
-include \textsf{webvis}, \textsf{googleVis} and \textsf{gWidgetsWWW}.
-
-The \textsf{webvis} package \citep{Con10} currently uses the Protovis
-JavaScript library to produce its plots.  The approach that
-\textsf{webvis} takes is to translate the graphical functions that
-\R{} provides into equivalents that utilise the Protovis library.  Use
-of the \texttt{plot.webvis} function is expected to produce similar
-results to a plot that is created using \R{}'s \texttt{plot} function.
-It is also possible to construct a graph using Protovis-specific
-functions, e.g. using \texttt{pv.line} to add a line.  This approach
-requires knowledge of Protovis and the code to produce plots within
-\R{} will be very similar to equivalent JavaScript code.
-
-The \textsf{googleVis} package \citep{Ges11} provides an interface for
-\R{} to Google's Visualisation API.  \textsf{googleVis} allows the
-creation of plots that use Google's graphics library.  This means that
-any plot that can be created with this library can be used by
-\textsf{googleVis}.  An example of the graphics that
-\textsf{googleVis} can create is an interactive map that places
-markers at locations on the map.  Many of the types of plots available
-in \textsf{googleVis} are widely used in highly visible Google
-products.  This ensures that the plots are going to be highly polished
-in both appearance and behaviour.
-
-\textsf{gWidgetsWWW} \citep{Ver11} is a package that provides an HTML
-and JavaScript implementation of the \textsf{gWidgets} package for
-\R{}.  \textsf{gWidgets} implements a generic interface for creating
-interactive GUIs allowing the same \R{} code to work in multiple GUI
-toolkits.  This means that we can use \textsf{gWidgetsWWW} to create a
-graphical user interface that responds to user input.  When used in
-conjunction with \textsf{RApache}, an \R{} module for the Apache HTTP
-Server, \textsf{gWidgetsWWW} can add interactivity to a web page.
-
-A package developed by \citet{Lan10} that generates animated,
-interactive graphics via the \R{} graphics system is
-\textsf{SVGAnnotation}.  It leverages \R{}'s \texttt{svg()} graphics
-device by post-processing its output to see which SVG elements
-correspond with specific components of a plot.  After performing the
-post-processing, animation can occur along with interactivity via
-JavaScript.  Many functions have been provided that allow for
-interactivity in processed plots.  Examples of these functions include
-adding tooltips, animating graphical elements and linking related
-points.
-
-\section{Motivation for \textsf{gridSVG}}
-
-Here we discuss why the currently available \R{} packages are not
-suitable for our needs when creating web-based interactive graphics.
-
-We deem \textsf{animation} to be unsuitable for our needs because it
-does not provide any means of interactivity, only animation.
-Moreover, the animation is does produce is unsuitable.  Rather than
-drawing several plots to generate an animated image, we would rather
-draw a plot only once that has animation embedded within it.  The
-distinction is similar to the difference between a cartoonist who has
-to draw every single frame, and a director that simply tells people
-what to do.
-
-The packages \textsf{webvis} and \textsf{googleVis} are also
-unsuitable because they do not use \R{}'s graphics system to create
-their plots.  We would like to use the facilities \R{} provides with
-its powerful graphics system to create animated and interactive
-graphics.  This method ensures that the graphics we see in \R{} are
-what is actually going to be drawn when we create our interactive
-plots.
-
-\textsf{gWidgetsWWW} does create the kind of graphics we want to
-create, with facilities present for powerful interactivity.  What it
-does not provide is any means of animating a plot once it has been
-created.  It can only be done in a manner similar to
-\textsf{animation}, which is impractical to serve frame by frame over
-the internet due to latency and network speed.
-
-\textsf{SVGAnnotation} can also create the kind of graphics we desire,
-but it is difficult to understand how it works.  The approach
-\textsf{SVGAnnotation} takes to match SVG elements with graphical
-objects in \R{} requires knowledge of the expected SVG output of the
-\texttt{svg()} device.  This introduces a lack of transparency because
-it relies on reverse engineering \R{}'s \texttt{svg()} device's
-output.  Because of this, it is challenging to extend
-\textsf{SVGAnnotation}'s features to create animated and interactive
-graphics that are not provided out-of-the-box.  Another issue to
-consider is that if \textsf{SVGAnnotation} does not work as expected
-then there is little that a user can do.
-
-None of the existing solutions produce the kind of graphics we wish to
-create.  However, a package exists that has the potential to create
-animated and interactive graphics in a transparent manner.  This
-package, \gridSVG{}, can only produce basic plots as it is currently
-little more than a proof-of-concept.  By extending \gridSVG{} to be
-capable of producing more complex plots we should be able to create
-sophisticated web-based interactive graphics.
+\dots

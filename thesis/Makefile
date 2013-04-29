@@ -1,4 +1,5 @@
 DOCUMENT = thesis
+DOCUMENT_RNW = $(DOCUMENT).Rnw
 DOCUMENT_TEX = $(DOCUMENT).tex
 DOCUMENT_PDF = $(DOCUMENT).pdf
 CHAPTER_TEXS := $(patsubst tex/%.Rnw, tex/%.tex, $(wildcard tex/*.Rnw))
@@ -9,7 +10,7 @@ CHAPTER_TEXS := $(patsubst tex/%.Rnw, tex/%.tex, $(wildcard tex/*.Rnw))
 
 all: $(DOCUMENT_PDF)
 
-$(DOCUMENT_PDF): $(CHAPTER_TEXS)
+$(DOCUMENT_PDF): $(DOCUMENT_TEX) $(CHAPTER_TEXS)
 	pdflatex $(DOCUMENT_TEX)
 	bibtex $(DOCUMENT)
 	pdflatex $(DOCUMENT_TEX)
@@ -18,12 +19,15 @@ $(DOCUMENT_PDF): $(CHAPTER_TEXS)
 	@echo "** DOCUMENT BUILT: $(DOCUMENT_PDF)"
 	@echo "**"
 
+$(DOCUMENT_TEX): $(DOCUMENT_RNW)
+	R -e "library(knitr) ; knit('$<', '$@')"
+
 tex/%.tex: tex/%.Rnw
-	R -e "knitr::knit('$<', '$@')"
+	R -e "library(knitr) ; knit('$<', '$@')"
 
 clean:
-	-ls | grep -E -v '(.*tex|bin|images|Makefile|README|.*bib)' | xargs rm
-	-rm $(CHAPTER_TEXS) tex/figures/*
+	-ls | grep -E -v '(.*Rnw|bin|images|Makefile|biblatex.*\.tex|.*\.R|README|references\.bib)' | xargs rm
+	-rm $(CHAPTER_TEXS) figures/* tex/*svg*
 
 .PHONY: show
 show: $(DOCUMENT_PDF)
