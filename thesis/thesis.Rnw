@@ -1,5 +1,5 @@
 \documentclass[11pt, a4paper, twoside]{book}
-\usepackage{graphicx, color, natbib}
+\usepackage{graphicx, color, xcolor}
 
 % Allowing dots in graphical filenames
 \usepackage{grffile}
@@ -10,26 +10,25 @@
 % Remove headers and footers from pages that are just empty
 \usepackage{emptypage}
 
-% While microtype produces nice results,
-% change font size by no more than 1%.
-\usepackage{microtype}
-
 % Might want to mess with page geometry at some point.
 % Handy to have just in case.
 \usepackage{geometry}
 
-% Nice monospaced font
+% Fonts, load microtype after loading fonts
+\usepackage{lmodern}
 \usepackage{inconsolata}
+\usepackage{microtype}
 
 % Using these packages for vector graphics, e.g. the package
 % relationship diagram.
 \usepackage{pgf, tikz}
 \usetikzlibrary{arrows, positioning, fit, shapes}
 
-% Ensuring we get hyperlinks and that natbib plays nicely with it.
+% Ensuring we get hyperlinks
 \usepackage{float}
 \usepackage{hyperref}
-\usepackage{hypernat}
+
+\usepackage[nottoc,notlof,notlot]{tocbibind}
 
 % Don't want `Chapter X` to appear
 % Instead, `1 Introduction` will appear for example
@@ -38,12 +37,15 @@
 
 % Defining the file/font/lang formats we want.
 \usepackage[utf8]{inputenc}
-\usepackage[OT1]{fontenc}
+\usepackage[T1]{fontenc}
 \usepackage[newzealand]{babel}
 
-% Will need subfloats for before & after comparisons
-% \usepackage{caption}
-% \usepackage[list = true]{subcaption}
+% biblatex
+\usepackage{csquotes}
+\usepackage[style=authoryear]{biblatex}
+\renewcommand\nameyeardelim{\addcomma\space}
+\input{./biblatex-hyperlinks.tex}
+\addbibresource{references.bib}
 
 % Required to use either 1.5x or 2x spacing
 % Using 1.5x
@@ -57,17 +59,17 @@
 }
 
 % Saving myself from repeatedly having to format text.
-\newcommand{\grid}{\textsf{grid}}
-\newcommand{\gridSVG}{\textsf{gridSVG}}
-\newcommand{\R}{\textsf{R}}
-
-% Renaming the bibliography section with the name `References`.
-\addto{\captionsnewzealand}{\renewcommand{\bibname}{References}}
+\newcommand{\grid}{\pkg{grid}}
+\newcommand{\gridSVG}{\pkg{gridSVG}}
+\newcommand{\R}{\proglang{R}}
+\newcommand{\proglang}[1]{\textsc{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\pkg}[1]{\textsf{#1}}
 
 % Document properties.
-\newcommand{\doctitle}{Dynamic, Interactive and Reactive Graphics for the Web}
+\newcommand{\doctitle}{Dynamic, Interactive and Reactive Statistical Graphics for the Web}
 \newcommand{\docauthor}{Simon J. Potter}
-\newcommand{\docdate}{June 1, 2013}
+\newcommand{\docdate}{June 7, 2013}
 \title{\doctitle{}}
 \author{\docauthor{}}
 \date{\docdate{}}
@@ -75,26 +77,38 @@
             pdfauthor = {\docauthor{}},
             pdfborder = {0 0 0.5}}
 
-
 % Configuring the page headers
 \usepackage{fancyhdr}
 \setlength{\headheight}{15pt}
- 
+
 \pagestyle{fancy}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
 \renewcommand{\sectionmark}[1]{\markright{#1}{}}
- 
+
 \fancyhf{}
 \fancyhead[LE,RO]{\thepage}
 \fancyhead[RE]{\thechapter{}~ \nouppercase{\leftmark}}
 \fancyhead[LO]{\thesection{}~ \nouppercase{\rightmark}}
- 
+
 \fancypagestyle{plain}{ %
 \fancyhf{} % remove everything
 \renewcommand{\headrulewidth}{0pt} % remove lines as well
 \renewcommand{\footrulewidth}{0pt}}
 
+% Now setting knitr configs
+% They are set here because none of the chapters are actual documents,
+% therefore all of the knitr definitions are set here, where there is
+% an actual document being defined.
+% The actual settings here will be ignored though. C&P for each chapter.
+<<echo = FALSE, results = "hide", message = FALSE>>=
+source("knitr-settings.R")
+@
 
+% Adding extra margins to knitr output
+\usepackage{changepage}
+\renewenvironment{knitrout}{\begin{adjustwidth}{2em}{2em}}{%
+    \end{adjustwidth}\ignorespacesafterend%
+}
 
 \begin{document}
 
@@ -105,16 +119,13 @@
 \frontmatter
 
 % Title page
-\input{./title.tex}
+\input{./tex/title.tex}
 \thispagestyle{empty}
 
-\cleardoublepage{}
+\cleardoublepage
 \setcounter{page}{1}
 
-%\thispagestyle{empty}
-%\cleardoublepage
-
-\input{./abstract.tex}
+\input{./tex/abstract.tex}
 
 \tableofcontents
 \cleardoublepage
@@ -136,29 +147,26 @@
 \setcounter{page}{1}
 \renewcommand{\thepage}{\arabic{page}}
 
-\input{./aim.tex}
-\input{./introduction.tex}
-\input{./conclusion.tex}
+\input{./tex/introduction.tex}
+\input{./tex/coordinates.tex}
+\input{./tex/selectr.tex}
+\input{./tex/conclusion.tex}
 
 %%%%%%%%%%%%%%%%%%%
 % END MAIN MATTER %
 %%%%%%%%%%%%%%%%%%%
- 
+
 %\appendix
 %\input{./appendix.tex}
 
 \backmatter
- 
+
 %%%%%%%%%%%%%%%%%%%%
 % BEGIN REFERENCES %
 %%%%%%%%%%%%%%%%%%%%
 
 \clearpage
-\phantomsection
-\addcontentsline{toc}{chapter}{References}
-
-\bibliographystyle{apa}
-\bibliography{references.bib}
+\printbibliography[heading=bibintoc]
 
 %%%%%%%%%%%%%%%%%%
 % END REFERENCES %

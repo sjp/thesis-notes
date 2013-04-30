@@ -2,50 +2,33 @@ DOCUMENT = thesis
 DOCUMENT_RNW = $(DOCUMENT).Rnw
 DOCUMENT_TEX = $(DOCUMENT).tex
 DOCUMENT_PDF = $(DOCUMENT).pdf
+CHAPTER_TEXS := $(patsubst tex/%.Rnw, tex/%.tex, $(wildcard tex/*.Rnw))
 
-all:
-	-rm $(DOCUMENT_PDF)
-	find . -name "*.Rnw" -exec R -e 'library(knitr) ; knit("{}")' \;
-	-rm Rplots.pdf
+# Note that for each Rnw file we run them in a separate instance of R.
+# This is so that if we change some global settings in R they do not
+# propogate across several chapters.
+
+all: $(DOCUMENT_PDF)
+
+$(DOCUMENT_PDF): $(DOCUMENT_TEX) $(CHAPTER_TEXS)
 	pdflatex $(DOCUMENT_TEX)
 	bibtex $(DOCUMENT)
 	pdflatex $(DOCUMENT_TEX)
 	pdflatex $(DOCUMENT_TEX)
-	mv $(DOCUMENT_PDF) ./images/
-	-rm $(DOCUMENT_TEX) $(DOCUMENT).log $(DOCUMENT).out $(DOCUMENT).aux $(DOCUMENT).toc $(DOCUMENT).lof $(DOCUMENT).lol $(DOCUMENT).lot $(DOCUMENT).bbl $(DOCUMENT).blg *.svg* *.tex *.pdf
-	mv ./images/$(DOCUMENT_PDF) ./
+	@echo "**"
+	@echo "** DOCUMENT BUILT: $(DOCUMENT_PDF)"
+	@echo "**"
 
-show:
-	-rm $(DOCUMENT_PDF)
-	find . -name "*.Rnw" -exec R -e 'library(knitr) ; knit("{}")' \;
-	-rm Rplots.pdf
-	pdflatex $(DOCUMENT_TEX)
-	bibtex $(DOCUMENT)
-	pdflatex $(DOCUMENT_TEX)
-	pdflatex $(DOCUMENT_TEX)
-	mv $(DOCUMENT_PDF) ./images/
-	-rm $(DOCUMENT_TEX) $(DOCUMENT).log $(DOCUMENT).out $(DOCUMENT).aux $(DOCUMENT).toc $(DOCUMENT).lof $(DOCUMENT).lol $(DOCUMENT).lot $(DOCUMENT).bbl $(DOCUMENT).blg *.svg* *.tex *.pdf
-	mv ./images/$(DOCUMENT_PDF) ./
-	evince $(DOCUMENT_PDF) &
+$(DOCUMENT_TEX): $(DOCUMENT_RNW)
+	R -e "library(knitr) ; knit('$<', '$@')"
 
-all-dirty:
-	-rm $(DOCUMENT_PDF)
-	find . -name "*.Rnw" -exec R -e 'library(knitr) ; knit("{}")' \;
-	-rm Rplots.pdf
-	pdflatex $(DOCUMENT_TEX)
-	bibtex $(DOCUMENT)
-	pdflatex $(DOCUMENT_TEX)
-	pdflatex $(DOCUMENT_TEX)
-
-show-dirty:
-	-rm $(DOCUMENT_PDF)
-	find . -name "*.Rnw" -exec R -e 'library(knitr) ; knit("{}")' \;
-	-rm Rplots.pdf
-	pdflatex $(DOCUMENT_TEX)
-	bibtex $(DOCUMENT)
-	pdflatex $(DOCUMENT_TEX)
-	pdflatex $(DOCUMENT_TEX)
-	evince $(DOCUMENT_PDF) &
+tex/%.tex: tex/%.Rnw
+	R -e "library(knitr) ; knit('$<', '$@')"
 
 clean:
-	-rm $(DOCUMENT_TEX) $(DOCUMENT).log $(DOCUMENT).out $(DOCUMENT).aux $(DOCUMENT).toc Rplots.pdf $(DOCUMENT).lof $(DOCUMENT).lol $(DOCUMENT).lot $(DOCUMENT).bbl $(DOCUMENT).blg $(DOCUMENT).pyg $(DOCUMENT_PDF) *.log *.svg* *.tex *.pdf
+	-ls | grep -E -v '(.*Rnw|bin|images|Makefile|biblatex.*\.tex|.*\.R|README|references\.bib)' | xargs rm
+	-rm $(CHAPTER_TEXS) figures/* tex/*svg*
+
+.PHONY: show
+show: $(DOCUMENT_PDF)
+	evince $(DOCUMENT_PDF)

@@ -1,65 +1,118 @@
 @Book{Mur05,
     author    = "Paul Murrell",
-    title     = "R Graphics",
+    title     = "R Graphics, Second Edition",
     publisher = {Chapman \& Hall/CRC},
-    year      = "2005",
+    year      = "2011",
     isbn      = {158488486X}
 }
 
-@Manual{R11,
+@Inbook{Mur11,
+    author = {Paul Murrell},
+    title = {R Graphics, Second Edition},
+    chapter = {The grid Graphics Model},
+    series = {Chapman \& Hall/CRC The R Series},
+    year = {2011},
+    month = {6},
+    day = {7},
+    publisher = {CRC Press},
+    pages = {173–225},
+    isbn = {978-1-4398-3176-2},
+    doi = {10.1201/b10966-1},
+    url = {http://www.stat.auckland.ac.nz/~paul/RG2e/}
+}
+
+@Manual{Mur13,
+    title = {gridSVG: Export grid graphics as SVG},
+    author = {Paul Murrell and Simon Potter},
+    year = {2013},
+    note = {R package version 1.2-0},
+    url = {http://r-forge.r-project.org/projects/gridsvg/}
+}
+
+@Manual{R13,
     title = {R: A Language and Environment for Statistical Computing},
     author = {{R Development Core Team}},
     organization = {R Foundation for Statistical Computing},
     address = {Vienna, Austria},
-    year = {2011},
+    year = {2013},
     note = {{ISBN} 3-900051-07-0},
     url = {http://www.R-project.org/},
 }
 
-@Manual{W3C10,
-    author = {W3C},
-    title = {Scalable {V}ector {G}raphics 1.1 ({S}econd {E}dition)},
-    month = {June},
-    year = {2010},
-    note = {\\ \url{http://www.w3.org/TR/SVG/}}
+@TechReport{SVG11,
+    author = {W3C {SVG Working Group}},
+    title = {Scalable {V}ector {G}raphics ({SVG}) 1.1 ({S}econd {E}dition)},
+    month = {8},
+    year = {2011},
+    type = "{W3C} Recommendation",
+    url = {http://www.w3.org/TR/SVG/}
 }
 
-@Manual{W3C11,
-    author = {W3C},
+@Manual{Bos13,
+    author = {Mike Bostock},
+    title = {{D3}: Data Driven Documents},
+    month = {6},
+    year = {2013},
+    note = "Version 3.1.5",
+    url = {http://d3js.org/}
+}
+
+@Manual{CSS11,
+    author = {W3C {CSS Working Group}},
     title = {{C}ascading {S}tyle {S}heets {L}evel 2 {R}evision 1 ({CSS} 2.1) {S}pecification},
-    month = {June},
+    month = {6},
     year = {2011},
-    note = {\\ \url{http://www.w3.org/TR/CSS2/}}
+    url = {http://www.w3.org/TR/CSS2/}
 }
 
 @Manual{Lan10,
     title = {{SVGA}nnotation: {T}ools for post-processing {SVG} plots created in {R}},
     author = {Duncan Temple Lang},
-    month = {December},
+    month = {12},
     year = {2010},
     note = {\url{http://www.omegahat.org/SVGAnnotation/}. R package version 0.9-0}
 }
 
-@Manual{Lan11,
+@Manual{Lan13,
     title = {{XML: Tools for parsing and generating XML within R and S-Plus}},
     author = {Duncan Temple Lang},
-    month = {April},
     year = {2011},
-    note = {\url{http://www.omegahat.org/RSXML/}. R package version 3.4-0}
+    url = {http://CRAN.R-project.org/package=XML},
+    note = {R package version 3.96-1.1}
 }
 
-@Manual{Xie11,
-    title = {{a}nimation: {A} {G}allery of {A}nimations in {S}tatistics and {U}tilities to {C}reate {A}nimations},
-    author = {Yihui Xie},
-    month = {April},
-    year = {2011},
-    note = {\url{http://animation.yihui.name/} R package version 2.0-4}
+@Manual{RSt13,
+    title = {shiny: Web Application Framework for R},
+    author = {{RStudio}, {Inc.}},
+    year = {2013},
+    note = {R package version 0.5.0},
+    url = {http://CRAN.R-project.org/package=shiny},
+}
+
+@article{Xie12,
+  author = "Yihui Xie",
+  title = "animation: An R Package for Creating Animations and Demonstrating Statistical Methods",
+  journal = "Journal of Statistical Software",
+  volume = "53",
+  number = "1",
+  pages = "1--27",
+  day = "21",
+  month = "4",
+  year = "2013",
+  CODEN = "JSSOBK",
+  ISSN = "1548-7660",
+  bibdate = "2012-07-02",
+  URL = "http://www.jstatsoft.org/v53/i01",
+  accepted = "2012-07-02",
+  acknowledgement = "",
+  keywords = "",
+  submitted = "2011-02-12",
 }
 
 @Manual{Ver11,
     title = {{gWidgetsWWW}: {T}oolkit implementation of the g{W}idgets {API} for use with web pages},
     author = {John Verzani},
-    month = {January},
+    month = {1},
     year = {2011},
     note = {\url{http://gwidgets.r-forge.r-project.org/}. R package version 0.0-22}
 }
@@ -67,40 +120,9 @@
 @Manual{Ges11,
     title = {{googleVis}: {U}sing the {G}oogle {V}isualisation {API} with {R}},
     author = {Markus Gesmann and Diego de Castillo},
-    month = {February},
+    month = {2},
     year = {2011},
     note = {\url{http://code.google.com/p/google-motion-charts-with-r/}. R package version 0.2.4}
-}
-
-@Manual{Con10,
-    title = {{w}ebvis: {C}reate graphics for the web from {R}},
-    author = {Shane Conway},
-    month = {April},
-    year = {2010},
-    note = {\\ \url{http://code.google.com/p/rwebvis/}. R package version 0.0.1}
-}
-
-@Manual{Mur11,
-    title = {grid{SVG}: {E}xport grid graphics as {SVG}},
-    author = {Paul Murrell},
-    month = {June},
-    year = {2011},
-    note = {\\ \url{http://r-forge.r-project.org/projects/gridsvg/}. R package version 0.7-0}
-}
-
-@Manual{Ski10,
-    title = {Easel{JS}: {A} {J}avascript library for working with the {HTML}5 canvas element},
-    author = {Grant Skinner},
-    year = {2010},
-    note = {\url{http://easeljs.com/}}
-}
-
-@Manual{Kog11,
-    title = {o{C}anvas: {O}bject-based {C}anvas {D}rawing},
-    author = {Johannes Koggdal},
-    month = {March},
-    year = {2011},
-    note = {\url{http://ocanvas.org/}}
 }
 
 @Manual{Neu06,
@@ -108,7 +130,7 @@
     author = {Andreas Neumann and Andr\'{e} M. Winter},
     month = {March},
     year = {2006},
-    note = {\\ \url{http://www.carto.net/svg/eventhandling/}}
+    url = {http://www.carto.net/svg/eventhandling/}
 }
 
 @Book{Wic09,
@@ -133,9 +155,23 @@
 @misc{Gap11,
     author = {{Gapminder Foundation}},
     title = {Gapminder: {U}nveiling the beauty of statistics for a fact based world view},
-    month = {June},
+    month = {6},
     year = {2011},
     howpublished = {\url{http://www.gapminder.org/}}
 }
 
+@Book{Coo07,
+    author = {Dianne Cook and Deborah F. Swayne},
+    title = {Interactive and Dynamic Graphics for Data Analysis},
+    publisher = {Springer New York},
+    year = {2007},
+    isbn = {978-0-387-71761-6},
+}
 
+@Book{The09,
+    author = {Martin Theus and Simon Urbanek},
+    title = {Interactive Graphics for Data Analysis},
+    publisher = {Chapman \& Hall/CRC},
+    year = {2009},
+    isbn = {978-1-58488-594-8},
+}
