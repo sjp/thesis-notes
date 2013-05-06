@@ -143,6 +143,7 @@ sample of the translations that occur:
 
 % Ideally would have this generated automatically but escaping is a pain.
 % Consider revising later?
+% Also, we really need this landscape...
 \begin{table}[H]
 \centering
 \begin{tabular}{l l l}
@@ -340,8 +341,8 @@ technicalReports <- data.frame(title = titles,
                                date = dates,
                                stringsAsFactors = FALSE)
 # and show one column at a time
-technicalReports$title
-technicalReports$url
+cat(printedLineTrim(technicalReports$title, getOption("width")))
+cat(printedLineTrim(technicalReports$url, getOption("width")))
 technicalReports$date
 @
 
@@ -375,14 +376,14 @@ shown below:
 
 <<compareXPathCSS, results = "hide">>=
 # XPath
-legendNode <- getNodeSet(svgdoc,
-                         "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
-                         c(svg = "http://www.w3.org/2000/svg"))[[1]]
+legend <- getNodeSet(svgdoc,
+                     "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+                     c(svg = "http://www.w3.org/2000/svg"))[[1]]
 # CSS
-legendNode <- querySelector(svgdoc,
-                            "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
-                            c(svg = "http://www.w3.org/2000/svg"),
-                            prefix = "//svg:*/descendant-or-self::")
+legend <- querySelector(svgdoc,
+                        "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+                        c(svg = "http://www.w3.org/2000/svg"),
+                        prefix = "//svg:*/descendant-or-self::")
 @
 
 This particular example demonstrates a case where the XPath approach
@@ -400,9 +401,9 @@ demonstrates the use of \pkg{selectr}'s namespace-aware function
 \code{querySelectorNS}:
 
 <<qsNS>>=
-legendNode <- querySelectorNS(svgdoc,
-                              "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
-                              c(svg = "http://www.w3.org/2000/svg"))
+legend <- querySelectorNS(svgdoc,
+                          "#layout\\:\\:guide-box\\.3-5-3-5\\.1",
+                          c(svg = "http://www.w3.org/2000/svg"))
 @
 
 The resulting use of CSS selection is now as concise as the XPath
@@ -413,7 +414,7 @@ Now that the legend has been selected, we can remove it from the SVG
 document to produce an image with a legend omitted.
 
 <<removeLegend, results = "hide">>=
-removeChildren(xmlParent(legendNode), legendNode)
+removeChildren(xmlParent(legend), legend)
 #saveXML(svgdoc, file = NULL)
 @
 

@@ -2,7 +2,7 @@
 source("../knitr-settings.R")
 @
 
-\chapter{Working with the gridSVG{} Coordinate System}
+\chapter{Working with the \gridSVG{} Coordinate System}
 
 % Abstract
 The \gridSVG{} package exports \grid{} images to an SVG format for
