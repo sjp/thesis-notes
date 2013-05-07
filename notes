@@ -1,12 +1,154 @@
 
-2013-04-30
+2013-05-06
 ----------
 
 DISCUSS:
 
   + GSoC
 
+  + Other work
+    - nvd3, polycharts, etc (lots of javascript libraries built on d3)
+    - are there any benefits from (the gridSVG approach of producing)
+      SvG + javascript compared to the "pure javascript" approaches ?
+      + e.g., you can't view a pure javascript image in Inkscape (?)
+      + of course, we get all (grid-based) R graphics too !!!
+
+
+DONE:
+
+  + thesis writing 
+    - draft of introduction
+    - incorporation of three tech reports
+
+  + gridSVG
+    - "localize" positioning and size of Reference objects
+
+
+FOR NOTING:
+
+  + Gabriel Becker on R-devel 2013-05-04 talking about R in browser ...
+
+    "direct control of the DOM via R code (allowing statisticians to
+     script entire pages using a language they are more comfortable
+     with), the use of R functions directly as event handlers,
+     including for super high-frequency events such as mousemove
+     (which is infeasible in server based approaches due to the
+     required round-trip), and interactive versions of actual R plots
+     (drawn with standard R plotting code), drawn directly to the page
+     via graphics devices which draw primitives via Javascript, among
+     other things"
+
+    Simon Urbanek follow up on r-devel ...
+
+    "This has been attempted quite a few times - literally by the
+     canvas package (in generates JavaScript) and in more general
+     terms by using SVG (this was way back when it was en vogue). The
+     problem is that by design R plots lack the link between data and
+     the objects drawn so you can only add a small amount of
+     interactivity to very specific plots by hand-crafing the links or
+     by trying to apply some heuristics, but it doesn't work in
+     general. That's why all the web-baed interactive graphics
+     typically do it the other way around - define JS-based primitives
+     with interactions and build plots from this. You actually get
+     nice interactive graphics, but you can't re-use R-based graphics
+     (other than re-drawing it interactively, but that's another
+     story)."
+
+    Gabriel's rebuttal ...
+
+    "I have a working graphics device that ships with RBrowserPlugin
+     which both draws directly into the page via the Raphael js
+     library (which plots to the page via dynamic SVG) and keeps
+     references to the drawn objects around (which is only possible
+     because R can see JS objects and vice-versa).
+
+     It is a proof-of-concept, but it allows us to add event handlers
+     directly to elements in the plot (and these event handlers can be
+     R functions), and also allows the plot to be updated, including
+     the removal and alteration of individual elements, all via R code
+     *without* redraws or intermediary files.
+
+     An abstraction layer could certainly be added which formalizes
+     the relationship between the data and the plot elements, but this
+     seems largely orthogonal to the technology used to do the
+     actually plotting, and we can do quite a bit even without it. And
+     if it were added, we could add it in R, and use R computations
+     within it, something that wouldn't work if we are generating
+     strings of JS code and then evaluating them as an entirely
+     separate action in order to make the graphics, because R cannot
+     see the plotted elements at all in this case.
+
+     The tightly-coupled client-side approach also allows R and Web
+     tech to actually interoperate (a Google Maps display directly
+     controlled and and plotted to via R code in real time in response
+     to user interactions), instead of simply operating side-by-side.
+
+     Javascript visualization technologies are great, but I don't see
+     why that should prevent us from seeing how much we can leverage
+     of R's extensive statistical visualization capabilities when
+     creating interactive graphics for the web. Also, with the
+     client-side approach we can create AND interact with/modify JS
+     visualizations via R if we do want to go that route, or we can
+     code in JS but have some computations performed in R with 0
+     latency (e.g. using an R function within a D3 visualization
+     without taking a performance hit).
+
+     The client side approach has weaknesses, absolutely, and perhaps
+     they are even fatal for some use-cases, but I would argue that
+     more options is very rarely a bad thing, and that, with all due
+     respect, things are perhaps not quite so clear cut as your
+     previous message suggested."
+
+  + Simon Urbanek's 'RCloud' 
+
+    http://stats.research.att.com/RCloud/
+
+    "It uses WebSockets to talk to R either locally or on a
+     server. The nice thing about using WS is that you can leverage
+     large clusters - are not tied to the local machine. Also it
+     allows you to get the benefits of both worlds: R for computation
+     + static graphics while allowing you do to cool interactive
+     graphics in JavaScript. RCloud is something like iPython notebook
+     but based on R with extra interactive graphics."  
+     Simon R-devel 2013-05-04
+
+     Looks like he gave a talk on RCloud at useR! 2012, but no slides
+     are available (from the conference web site)
+
+  + Gabriel Becker's 'RFirefox' (R inside Firefox) getting close to release?
+
+    https://github.com/gmbecker/RFirefox
+
+
+2013-04-30
+----------
+
+Discussed organisation of thesis introduction
+(see ../overview-sketch.pdf)
+
+
+DISCUSS:
+
+  + GSoC
+
   + Problem (?) with viewportConvertX(vpname, x, from="svg", to="native") 
+
+
+FOR NOTING:
+
+  + The 'rCharts' project 
+
+    http://ramnathv.github.io/rCharts/
+
+    Based on polychart2.js
+
+    https://github.com/Polychart/polychart2
+
+  + There are also 'rHighcharts' and 'rVega' packages
+
+  + And 'xCharts' ...
+
+    http://tenxer.github.io/xcharts/
 
 
 2013-04-23
