@@ -1,0 +1,869 @@
+<<echo = FALSE, results = "hide", message = FALSE>>=
+source("../knitr-settings.R")
+@
+
+\chapter{Generating Unique Names}
+
+In \gridSVG{}, the key advantage is that we can identify output.  This
+was done by translating the name of the \grid{} object to an ID
+attribute on the generated SVG element.
+
+\dots
+
+
+\section{Name Translation}
+
+When \gridSVG{} exports the \grid{} display list, it attempts to give
+SVG \code{id} attributes the same value as the name associated with a
+grob or viewport. However, the fact we require a unique \code{id}
+presents us with problems in maintaining these names for a few
+reasons, which will be discussed later. For now, we will first look at
+an image drawn in \grid{} and what \gridSVG{} produces from that
+\grid{} scene.
+
+A simple image will be drawn where we have two viewports and a circle
+is then drawn inside those viewports. The code to produce that image
+and the display list that \grid{} records for the image are shown
+below:
+
+
+<<simpleImage, fig.keep = "last", fig.show = "hold", echo = -5>>=
+pushViewport(viewport(name = "a"))
+pushViewport(viewport(name = "b", width = 0.5, height = 0.5))
+grid.circle(name = "a", gp = gpar(fill = "steelblue"))
+grid.ls(viewports = TRUE, fullNames = TRUE)
+img <- grid.export(NULL)$svg
+@
+
+What we can see is that there are three viewports, named \code{ROOT},
+\code{a}, and \code{b}, one of which shares its name with a circle
+called \code{a}. The \code{ROOT} viewport is a viewport that \grid{}
+creates by default that corresponds to the entire drawing canvas. This
+explains why \code{ROOT} exists in the display list without explicitly
+being created.
+
+Ideally we would like to see that \grid{}'s viewport and grob names
+are mapped directly to SVG \code{id} attributes. However, because we
+are constrained to having our SVG element \code{id} attributes being
+unique, \gridSVG{} must take action to ensure this is the case. Before
+explaining how \gridSVG{} does this, let us first consider the simple
+example we just created by examining the relevant output from
+\gridSVG{}.
+
+<<showSimpleMarkup, echo = FALSE>>=
+getNodeSet(img, "//*[@id='a.1']")[[1]]
+@
+
+We see here that \emph{none} of the names we have in \grid{} are
+mapped directly to SVG \code{id} attributes. The \grid{} names are
+still being retained, albeit modified from the original names. The
+following name translations occurred:
+
+\begin{itemize}
+\item The viewport called \code{a} became an SVG \code{<g>} element
+  whose \code{id} attribute is \code{a.1}.
+
+\item The viewport called \code{b} became an SVG \code{g} element
+  whose \code{id} attribute is \code{a::b.1}.
+
+\item The circle grob called \code{a} became an SVG \code{<g>} element
+  with an \code{id} attribute of \code{a.2}. This \code{g} element has
+  a child \code{<circle>} element whose \code{id} attribute is
+  \code{a.2.1}.
+\end{itemize}
+
+This name translation is clearly evident. How \gridSVG{} performs name
+translation will now be discussed.
+
+\section{Paths}
+
+In \grid{}, both grobs and viewports can be constructed as a tree of
+viewports or a tree of grobs. To find a particular viewport or a grob
+within a tree, we need to use a path. This path is an ordered list of
+names, specifying parent-child relations. We will be focusing on
+viewport paths for simplicity, but the same principle applies to trees
+of graphics objects. An example of a viewport path is shown below:
+
+<<exvpPath>>=
+vpPath("first", "second", "third")
+@
+
+This viewport path describes that we first visit the viewport called
+\code{first}, followed by its child, \code{second}. Once in the
+\code{second} viewport, we then traverse to its child viewport
+\code{third}. We can see that the resulting path is simply a
+double-colon separated string of names.
+
+It is possible to create a path where not all names in the path are
+unique.
+
+<<exNonUniquePath, fig.keep = "none">>=
+# Creating viewports, note vp1 and vp3 have the same name
+vp1 <- viewport(name = "a")
+vp2 <- viewport(name = "b")
+vp3 <- viewport(name = "a", width = 0.5)
+
+# Creating a tree of viewports
+vpT <- vpTree(vp1, vpList(vpTree(vp2, vpList(vp3))))
+print(vpT)
+
+# Pushing into the tree
+pushViewport(vpT)
+
+# Showing our current viewport path
+current.vpPath()
+@
+
+In this example we create a viewport tree and push into it. We then
+observe our current viewport path to be \code{a::b::a}. Despite there
+being two \code{a} viewports in the path, they are each in fact two
+completely different viewports. As a result, we cannot simply assign
+the name of each viewport in the path to SVG output because the
+\code{id} attribute may not be unique. In our simple example, if we
+were to do this, we would end up with two SVG elements named
+\code{a}. The relevant output showing the result of this is shown
+below:
+
+<<showNonUniquePathNames, echo = FALSE, warning = FALSE, fig.keep = "none">>=
+pushViewport(vpT)
+tmp <- grid.export("", usePaths = "none", uniqueNames = FALSE)$svg
+getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+@
+
+This demonstrates that names alone are not sufficient for the
+requirement of unique \code{id} attributes. A potential solution is to
+use the \emph{path} as the name of the element. The path would avoid
+repeating \code{a} in \code{id} attributes. This would produce output
+like the following:
+
+<<exPathOutput, fig.keep = "none", echo = FALSE>>=
+pushViewport(vpT)
+image <- grid.export("")$svg
+vpTNodes <- getNodeSet(image, "//*[@id='a.1']")[[1]]
+cat(gsub("\\.1", "", saveXML(vpTNodes, file = NULL)))
+@
+
+This looks like an adequate solution as we have produced unique
+\code{id} attributes, despite having viewports with the same
+names. However, because viewports can be moved in and out of at any
+point, we cannot guarantee that the viewport tree is fixed while the
+plot is being drawn. Consider the following:
+
+<<exDupePath, fig.keep = "none">>=
+pushViewport(vpT)
+current.vpPath()
+upViewport()
+current.vpPath()
+pushViewport(viewport(name = "a", height = 0.1))
+current.vpPath()
+@
+
+What is happening here is that we first push into our tree but then
+navigate back to the previous viewport path of \code{a::b}. A new
+viewport is then created called \code{a}, and we push into that
+viewport instead of the viewport that we were previously in. This
+creates an ambiguity because we have two different viewports that have
+been pushed into at the same path of \code{a::b::a}.
+
+<<showBrokenOutput, fig.keep = "none", echo = FALSE>>=
+pushViewport(vpT)
+upViewport()
+pushViewport(viewport(name = "a", height = 0.1))
+tmp <- grid.export("")$svg
+vpTNodes <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(gsub("\\.[12]", "", saveXML(vpTNodes, file = NULL)))
+@
+
+We can see here that despite using paths, they are not sufficient for
+uniqueness when generating an SVG \code{id} attribute. This problem is
+also present when revisiting the same viewports in a viewport path. To
+overcome this problem, we use an integer suffix that is incremented
+each time we encounter the same path. To ensure consistency, this
+integer suffix is applied to every path. The result is shown below:
+
+<<showFixedOutput, fig.keep = "none", echo = FALSE>>=
+pushViewport(vpT)
+upViewport()
+pushViewport(viewport(name = "a", height = 0.1))
+tmp <- grid.export("")$svg
+getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+@
+
+What we can see here is that we visit the top \code{a} for the first
+time. We then traverse to the viewport path \code{a::b} for the first
+time. It is important to note however that we can see that we have
+traversed to \code{a::b::a} on two separate occasions.
+
+By keeping track of viewport and grob paths we can ensure that their
+SVG \code{id} attributes are unique. In addition, their uniqueness
+allows us to easily retain viewport coordinate information (see
+'Working with the gridSVG Coordinate System' in **CHAPTER**), because
+the coordinate information will be paired with the SVG \code{id} that
+was generated by \gridSVG{}. This is necessary because each time a
+viewport path is visited there may be a different coordinate system in
+use. For example, consider the case where we create two different
+viewports share the same name but use different coordinate systems:
+
+<<sameNameDiffVps, fig.keep = "none", echo = -9>>=
+a1 <- viewport(width = 0.5, height = 0.5, name = "a")
+a2 <- viewport(width = 0.1, height = 0.1, name = "a")
+pushViewport(a1)
+current.vpPath()
+popViewport()
+pushViewport(a2)
+current.vpPath()
+popViewport()
+tmpcoords <- grid.export("")$coords
+@
+
+Firstly, two viewports with the name \code{a} have been created. These
+two viewports have a different width and height to one another. This
+is important because each time the viewports are used the viewport
+path is the same despite different coordinate systems being used. The
+\code{id} attributes that that \gridSVG{} will generate in this
+situation should now be familiar:
+
+<<printSameNameVps, echo = FALSE>>=
+# Do this by hand because it's easier
+cat("<g id=\"a.1\">\n<g id=\"a.2\"/>")
+@
+
+The unique \code{id} attributes of \code{a.1} and \code{a.2} allow us
+to look up coordinate information based on these generated names. To
+see this in action, we only need to look at the relevant subset of
+coordinate information that has been exported to JSON <a
+href="\#ref-6">[6]</a>, a structured data format.
+
+<<printSameNameCoords, echo = FALSE>>=
+printjson <- toJSON(tmpcoords[2:3], pretty = TRUE) # 1 is ROOT, ignore
+cat(gsub("\t", "    ", printjson))
+@
+
+This clearly illustrates that the viewport coordinate systems for both
+viewports has been retained. We know this is the case because the
+\code{x}, \code{y}, \code{width} and \code{height} attributes for the
+viewports are indeed different. By generating unique \code{id}
+attributes for viewport paths, we can guarantee that coordinate
+information is not only retained, but is also unambiguous.
+
+\section{Name Sharing}
+
+In \grid{}, both viewports and grobs contain names. Indeed, we have
+seen they can also be referred to by a path. One problem that
+\gridSVG{} has that \grid{} isn't concerned with is that viewports and
+grobs can have the same name. Consider the following example:
+
+<<exNameSharing, fig.keep = "none">>=
+pushViewport(viewport(name = "a"))
+grid.circle(name = "a")
+grid.ls(viewports = TRUE, fullNames = TRUE)
+@
+
+We can see that a viewport has a name that is the same as a circle
+grob's name. \grid{} is able to draw this scene without any issues but
+we are presented with a problem when exporting it using \gridSVG{}. We
+want the SVG \code{id} attribute to be assigned with the name of the
+object that we're representing. However, in this example, because this
+is the first time each grob path and each viewport path is
+encountered, we can end up with non-unique elements. This is shown
+below:
+
+<<exNameSharingOutput, fig.keep = "none", echo = FALSE>>=
+pushViewport(viewport(name = "a"))
+grid.circle(name = "a.1")
+tmp <- grid.export("")$svg
+tmp <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+tmp <- saveXML(tmp, file = NULL)
+# Need to remove id from circle
+# Unfortunately XML pkg keeps crashing so need to gsub
+tmp <- gsub('circle id="a\\.1\\.1\\.1+"', "circle", tmp)
+cat(gsub("([a-z])\\.[12](\\.1)*", "\\1.1", tmp))
+@
+
+The reason why both the viewport and circle grob are given the suffix
+of \code{.1} is because it is both the first time that the viewport
+path has been visited and it is the first time that the grob path has
+been visited. This presents us with a case where \code{id} attributes
+between grobs and viewports are shared. To correct this, we not only
+need to track paths, but we also need to track the names and how often
+they have been assigned to both viewports \emph{and} grobs. The
+solution currently used by \gridSVG{} is shown below:
+
+<<exNameSharingOutputFixed, fig.keep = "none", echo = FALSE>>=
+pushViewport(viewport(name = "a"))
+grid.circle(name = "a")
+tmp <- grid.export("")$svg
+tmp <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+tmp <- saveXML(tmp, file = NULL)
+# Need to remove id from circle
+# Unfortunately XML pkg keeps crashing so need to gsub
+tmp <- gsub('circle id="a\\.2\\.1+"', "circle", tmp)
+cat(tmp)
+@
+
+Now instead of just tracking how often each viewport or grob path has
+been used, we track how often each \grid{} name has been used. This is
+shown in our output because when the circle grob is drawn, it is the
+second time that the name \code{a} has been encountered, so we end up
+with a suffix of \code{.2}.
+
+In summary, by tracking the names that we attempt to apply to
+\code{id} attributes, we ensure that unique \code{id} attributes are
+generated by \gridSVG{} by adding an integer suffix.
+
+\section{Sub-grobs}
+
+We have already seen that when a grob is drawn, we create an SVG
+\code{<g>} element. The contents of this grouping element are
+graphical elements (e.g. rectangles, circles, lines) that are drawn to
+an SVG canvas. The reason why grouping output is necessary is because
+there are cases where \gridSVG{} cannot create a one-to-one mapping
+between a \grid{} grob and SVG output. For example, while it is
+possible for a single \grid{} circle to be drawn simply as an SVG
+\code{<circle />} element, we cannot assume this to always be true. We
+can draw multiple circles using a single call to
+\code{grid.circle}. An example of this is shown below:
+
+<<subGrobEx>>=
+grid.circle(r = 1:3 / 10, name = "a")
+grid.ls()
+@
+
+A \emph{single} circle grob (as listed on the display list) has
+managed to draw three separate circles. These will be referred to as
+sub-grobs. It is clear that we cannot apply any name given to the grob
+to all of its sub-grobs because all sub-grobs would therefore have
+identical names. The solution \gridSVG{} uses is to use an integer
+suffix to identify each sub-grob that is drawn. Using the example
+above, we will take a look at the SVG output that \gridSVG{} produces.
+
+<<subGrobExSVG, fig.keep = "none", echo = FALSE>>=
+grid.circle(r = 1:3 / 10, name = "a")
+tmp <- grid.export("")$svg
+g <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(saveXML(g, file = NULL))
+@
+
+Firstly, we can see that the original grob name has been changed to
+\code{a.1} because it is the first time that we use the name
+\code{a}. However, its children also have an integer suffix
+applied. The first circle drawn (i.e. the circle with a radius of 0.1)
+is given the name \code{a.1.1}. The second and third circles are
+assigned the names \code{a.1.2} and \code{a.1.3} respectively.
+
+This technique also applies to grobs where there is an \code{id}
+parameter. An example of such a grob is a \code{polylineGrob}.
+
+<<subGrobIdEx>>=
+grid.polyline(x = c(0:4 / 10, rep(.5, 5), 10:6 / 10, rep(.5, 5)),
+              y = c(rep(.5, 5), 10:6 / 10, rep(.5, 5), 0:4 / 10),
+              id = rep(1:5, 4),
+              gp = gpar(col = 1:5, lwd = 3),
+              name = "a")
+@
+
+A single call to \code{grid.polyline} has produced 5 distinct
+lines. This is because of \code{grid.polyline}'s \code{id} parameter
+which determines the sub-grob that each line coordinate belongs
+to. The SVG output is shown below, and demonstrates that the same rule
+applies to grobs with vectorised parameters and to those with an
+\code{id} parameter.
+
+<<subGrobIdExSVG, echo = FALSE>>=
+#tmp <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+#cat(saveXML(tmp, file = NULL))
+# Ignore the above because it gives us too much output, generate by hand
+tmp <- newXMLNode("g", attrs = c(id = "a.1"),
+    newXMLNode("polyline", attrs = c(id = "a.1.1")),
+    newXMLNode("polyline", attrs = c(id = "a.1.2")),
+    newXMLNode("polyline", attrs = c(id = "a.1.3")),
+    newXMLNode("polyline", attrs = c(id = "a.1.4")),
+    newXMLNode("polyline", attrs = c(id = "a.1.5")))
+output <- saveXML(tmp, file = NULL)
+# gsub for ... implying extra attribs
+cat(gsub("(a\\.1\\.[1-5]\")", "\\1 ... ", output))
+@
+
+The addition of an integer suffix to sub-grobs allows us to not only
+generate unique \code{id}s for SVG elements, but also allows us to
+identify each sub-grob that is being drawn in a consistent manner.
+
+\section{Controlling Output}
+
+This article has shown why \gridSVG{} needs to modify names to produce
+unique output. One of the problems in doing this is that the SVG
+\code{id} attributes are now much harder to predict. This means that
+any name that is assigned to a grob or viewport in \grid{}, when
+exported to SVG by \gridSVG{}, does not map to an easily predictable
+SVG \code{id} attribute. However, to aid predictability, \gridSVG{}
+does offer some options for controlling how it constructs \code{id}
+attributes.
+
+\subsection{The \code{usePaths} Option}
+
+It was discussed earlier why viewport paths are used as part of the
+exported \code{id}s. However, there are cases where this unnecessarily
+complicates the SVG output. Primarily this is the case when the names
+of each viewport --- and therefore every viewport path --- are
+unique. Using viewport paths as part of the generated \code{id}
+attributes is therefore not strictly necessary. We add the
+complication of dealing with paths when our viewport names are
+sufficiently specific.
+
+The \code{usePaths} parameter for \gridSVG{}'s \code{grid.export}
+function allows us to determine whether paths are used when creating
+\code{id}s for grobs and viewports. There are four possible options:
+
+\begin{description}
+\item[\code{vpPaths}] Use paths in SVG \code{id}s for viewport
+  paths. This is the default behaviour because it makes coordinate
+  system exporting clearer as there are likely to be fewer name
+  conflicts.
+
+\item[\code{gPaths}] Use paths in SVG \code{id}s for grob paths.
+
+\item[\code{none}] Do not use paths for either viewport paths or grob
+  paths.
+
+\item[\code{both}] Generate SVG \code{id}s with paths for both
+  viewport paths and grob paths.
+\end{description}
+
+To demonstrate the effect of these options, a simple image will be
+drawn, then we will examine the relevant SVG output that \gridSVG{}
+generates from each option.
+
+<<usePathsTestImage>>=
+# Create viewports and grobs
+vpa <- viewport(name = "a")
+vpb <- viewport(name = "b", width = 0.5, height = 0.5)
+rectc <- rectGrob(name = "c")
+circd <- circleGrob(name = "d")
+
+# Construct trees of the viewports and grobs
+vpt <- vpTree(vpa, children = vpList(vpb))
+gt <- gTree(children = gList(rectc, circd), name = "gt")
+
+# Draw the image
+pushViewport(vpt)
+grid.draw(gt)
+
+# Examine what grid sees
+grid.ls(viewports = TRUE, fullNames = TRUE)
+@
+
+What has been drawn are two grobs, a circle and a rectangle. They are
+the only children in a single tree of grobs called \code{gt}. This
+tree has been drawn inside the viewport path \code{a::b}. Because we
+have trees of content, we can easily compare the effect of each
+option. We will first look at the output when we only want viewport
+paths to be used.
+
+<<usePathsvpPaths, echo = FALSE, fig.keep = "none">>=
+cat('R> grid.export(usePaths = "vpPaths")\n') # clunky...
+pushViewport(vpt)
+grid.draw(gt)
+tmp <- grid.export("", usePaths = "vpPaths")$svg
+tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(saveXML(tmpsub, file = NULL))
+@
+
+Only viewport paths are being used here. As a result each of the grob
+names are kept unchanged and instead of viewport names we use the
+viewport path. We know this is the case because there is an \code{id}
+that has been exported that can only belong to a viewport path,
+\code{a::b.1}. In addition, both the \code{c} and \code{d} grobs do
+not use paths for their names so are exported as \code{c.1} and
+\code{d.1} respectively.
+
+<<usePathsgPaths, echo = FALSE, fig.keep = "none">>=
+cat('R> grid.export(usePaths = "gPaths")\n') # clunky...
+pushViewport(vpt)
+grid.draw(gt)
+tmp <- grid.export("", usePaths = "gPaths")$svg
+tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(saveXML(tmpsub, file = NULL))
+@
+
+The viewports are now being retained as just being the names, while we
+are now using paths for grobs. The viewport path \code{a::b} is
+consequently exported simply to \code{b.1}, which can only be the case
+if we ignore the path prefix of \code{a}. The grob path is being used
+in particular with the rectangle and circle grobs because they are now
+being exported with the \code{id}s of \code{gt.1::c.1} and
+\code{gt.1::d.1} respectively. This clearly indicates that they are
+children of the \code{gTree} named \code{gt}.
+
+<<usePathsNone, echo = FALSE, fig.keep = "none">>=
+cat('R> grid.export(usePaths = "none")\n') # clunky...
+pushViewport(vpt)
+grid.draw(gt)
+tmp <- grid.export("", usePaths = "none")$svg
+tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(saveXML(tmpsub, file = NULL))
+@
+
+No paths are being used so we are only exporting the names of the
+viewports and grobs. This is particularly evident because the default
+path separator of \code{::} is no longer present in any of our
+\code{id} attributes.
+
+<<usePathsBoth, echo = FALSE, fig.keep = "none">>=
+cat('R> grid.export(usePaths = "both")\n') # clunky...
+pushViewport(vpt)
+grid.draw(gt)
+tmp <- grid.export("", usePaths = "both")$svg
+tmpsub <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(saveXML(tmpsub, file = NULL))
+@
+
+Finally, we observe the output created by exporting \code{id}s
+as both viewport paths and grob paths.
+
+\subsection{Custom Separators}
+
+When \gridSVG{} exports paths as SVG \code{id}s, the result is that
+each name in the path is separated by \code{::}. This is the default
+path separator used by \grid{}. However, there may be situations where
+a custom path separator may be more appropriate. An example where this
+is the case is when using \code{id}s within CSS selectors <a
+href="\#ref-7">[7]</a>. This is because the colon character is a
+special character in CSS <a href="\#ref-8">[8]</a>, as it prefixes a
+pseudo-selector. Therefore, if we were to use the default \gridSVG{}
+path separator, we would need to \emph{escape} it for use within a CSS
+selector. This would require modifying each instance of \code{::} and
+replacing it with \code{\\:\\:}. Ideally we would like to avoid
+performing any escaping by using a different separator. This section
+discusses how custom separators can be by \gridSVG{} when it exports
+an SVG image.
+
+There are three types of separators that \gridSVG{} uses:
+
+\begin{description}
+\item[\code{vpPath}] The separator used between names in a viewport
+  path. The default value is \code{::}.
+
+\item[\code{gPath}] The separator used between names in a grob
+  path. The default value is \code{::}.
+
+\item[\code{id}] The separator between the name given to a grob or
+  viewport and and additional integer suffix, used for the purposes of
+  ensuring uniqueness. By default this value is \code{.}. This also
+  applies to sub-grobs and additional SVG output like clipping paths
+  and marker names.
+\end{description}
+
+We can change the values of these separators, avoiding the need to
+escape them for use within CSS selectors. Another possible reason why
+using custom separators might be useful is if we have grob names
+containing \code{.} characters. By changing the \code{id} separator,
+we can make it easier to determine the grob or viewport name from the
+generated SVG \code{id} attribute.
+
+\gridSVG{} provides three functions that are useful for the purposes
+of changing the separators used when generating SVG \code{id}
+attributes: \code{setSVGoptions}, \code{getSVGoptions}, and
+\code{getSVGoption}. \code{setSVGoptions} allows us to change the
+separators, while \code{getSVGoptions} allows us to query \gridSVG{}
+for all current separators. \code{getSVGoption} is a convenience
+function that gives us the value of a single separator. Example usage
+is shown below:
+
+<<demoSeparators>>=
+# See what the current id separator is
+getSVGoption("id.sep")
+# Now let's see all of them
+getSVGoptions()
+# Set new separators
+setSVGoptions(vpPath.sep = "_",
+              gPath.sep = "_",
+              id.sep = "-")
+@
+
+Now that we have changed the separators, we can examine the effect of
+these changes by drawing our earlier example again with
+\code{usePaths} being set to \code{"both"}. The relevant output is
+shown below:
+
+<<svgSeparators, fig.keep = "none", echo = c(1:2, 7:8)>>=
+pushViewport(vpt)
+grid.draw(gt)
+cat('R> grid.export(usePaths = "both")\n')
+tmp <- grid.export("", usePaths = "both")$svg
+tmp <- getNodeSet(tmp, "//*[@id='a-1']")[[1]]
+cat(saveXML(tmp, file = NULL))
+# Resetting to defaults
+setSVGoptions(vpPath.sep = "::", gPath.sep = "::", id.sep = ".")
+@
+
+Notice how the each of the grob and viewport paths now have underscore
+characters in them. Additionally, every \code{id} now has a dash as a
+separator to the integer suffix.
+
+\subsection{Unique Names}
+
+By default, to ensure valid SVG content, \gridSVG{} adds an integer
+suffix for the purposes of making the generated \code{id} attribute
+unique. A consequence of this is that there is not a one-to-one
+mapping between \grid{} names and SVG \code{id}s. This makes it hard
+to predict the SVG \code{id} that is generated for a grob or viewport,
+presenting challenges when we want to use the SVG output. For example,
+in \proglang{JavaScript}, if we want to change the colour of a grob as
+we hover our mouse over it, we first need to know the \code{id} of the
+SVG element that we are applying this effect to.
+
+If a \grid{} plot has been drawn that is known to have unique grob and
+viewport names, this procedure of adding an integer suffix is not
+required. \gridSVG{} provides an option for enabling this process,
+\code{uniqueNames}, which is \code{TRUE} by default. In the case when
+this parameter is \code{FALSE} it is possible to produce valid SVG
+without the addition of any integer suffixes. This means that we can
+create a one-to-one mapping between \grid{} grob names and the
+\code{id} attributes that \gridSVG{} generates. This parameter only
+affects grob names because modifying viewport names could affect
+retention of coordinate information. A simple demonstration of the
+effect of \code{uniqueNames} is shown below:
+
+<<showDirectUniqueNames, echo = 1:2, fig.keep = "none">>=
+grid.circle(name = "circle")
+grid.ls()
+cat("R> grid.export(uniqueNames = FALSE)\n")
+tmp <- grid.export("", uniqueNames = FALSE)$svg
+tmp <- getNodeSet(tmp, "//*[@id='circle']")[[1]]
+cat(saveXML(tmp, file = NULL))
+@
+
+We can see that the \code{id} generated for the grob named
+\code{circle} is still \code{circle}. One important thing to note is
+that \gridSVG{} does not change its behaviour for sub-grobs. This is
+why the \code{<circle />} element has an \code{id} of \code{circle.1}.
+
+
+When the \code{uniqueNames} argument is set to \code{FALSE}, it is
+possible to generate invalid SVG. This may occur when grobs and/or
+viewports share names when exported to SVG. \gridSVG{} will generate
+non-unique names, but it will provide a warning in this case because
+invalid SVG is being produced. See the following:
+
+<<showNonUniqueNames, fig.keep = "none", echo = 1:4>>=
+# Giving a rect, and a viewport the same "name" when exported
+pushViewport(viewport(name = "a"))
+grid.rect(name = "a.1")
+grid.ls(viewports = TRUE, fullNames = TRUE)
+cat("R> grid.export(uniqueNames = FALSE)\n")
+tmp <- grid.export("", uniqueNames = FALSE)$svg
+tmp <- getNodeSet(tmp, "//*[@id='a.1']")[[1]]
+cat(saveXML(tmp, file = NULL))
+@
+
+In this example, \gridSVG{} is not checking whether the \code{id}
+\code{a.1} already exists. The viewport is given the expected
+\gridSVG{} name of \code{a.1} because it is the first time that the
+\code{a} viewport path has been pushed into. Now when we come across a
+grob called \code{a.1}, no checking is occurring to see whether the
+\code{id} already exists. Additionally, because \code{uniqueNames} is
+set to \code{FALSE}, no integer suffix is added for the purpose of
+ensuring uniqueness. Therefore we end up with two \code{id} attributes
+that are the same, creating invalid SVG, which \gridSVG{} is providing
+a warning message for.
+
+Care should be taken when using this parameter because it is the only
+parameter which has the potential to produce invalid SVG documents. In
+fact, the need to change this parameter from the default of
+\code{TRUE} is rarely necessary when we use mapping information.
+
+\subsection{Output Annotation}
+
+We have shown how \gridSVG{} can be used to modify its resulting SVG
+output. These settings can be particularly useful for deriving the
+structure of a source image. For example, we might like to know
+whether an \code{id} attribute is part of a grob path or a viewport
+path. If we know the values of separators used when exporting, we can
+make more sense of a \code{gridSVG} generated SVG document. This is
+also particularly useful for debugging a \gridSVG{} image.
+
+Settings used for controlling SVG output are exported as metadata in
+the SVG that \gridSVG{} creates. To demonstrate this, we will draw a
+simple \grid{} image (not shown), but show only the SVG metadata that
+was exported by \gridSVG{}.
+
+<<showMetadata, echo = FALSE, fig.keep = "none">>=
+grid.rect()
+tmp <- grid.export("")$svg
+tmp <- getNodeSet(tmp, "//metadata")[[1]]
+cat(saveXML(tmp, file = NULL))
+@
+
+The metadata shows us exactly how the image was drawn. In particular,
+the \code{gridsvg:argument} elements which tell us how the \code{id}
+attributes were controlled. We can see that as this particular image
+was exported it was ensuring that unique names were being used and the
+only paths it was generating were for viewport paths. Additionally, we
+can also see the values of the separators when the image was being
+exported.
+
+\section{Mappings}
+
+We have discussed the many ways in which \gridSVG{} modifies grob and
+viewport names, including ways to control how that happens. However,
+the key issue with this name translation is that it is difficult to
+predict how to map the names that are used in \grid{} with the output
+produced by \gridSVG{}. A recent development in \gridSVG{} is the
+ability to retain mapping information that provides us with
+information on how to map a \grid{} grob or viewport name to an SVG
+\code{id} attribute.
+
+It is useful to have mapping information available both in \R{}, and
+in \proglang{JavaScript} <a href="\#ref-9">[9]</a>. In \R{}, we might
+want to perform some post-processing on the XML nodes that a grob maps
+to. If the \code{id} can be retrieved easily then performing this task
+is far simpler than writing an XPath <a href="\#ref-10">[10]</a>
+expression. Similarly, if we want to perform some modification on an
+SVG image in the browser, using tools like \pkg{D3} <a
+href="\#ref-11">[11]</a>, then knowing what content we're trying to
+select is an important problem to solve.
+
+We will first look at the mapping information that \gridSVG{} is
+exporting. We start with the following image:
+
+<<mappingSimpleImage, echo = 1:4, fig.keep = "last", fig.show = "hold", warning = FALSE>>=
+grid.newpage()
+pushViewport(viewport(name = "a"))
+grid.rect(name = "b")
+grid.circle(name = "b")
+cat("R> grid.export()\n")
+tmp <- grid.export("")
+@
+
+This exports mapping information as JSON, a structured data format
+that is convenient for use within a web browser. The mapping
+information from this plot is shown below:
+
+<<showMappingJSON, echo = FALSE>>=
+output <- toJSON(tmp$mappings, pretty = TRUE)
+cat(gsub("\t", "    ", output))
+@
+
+This is showing that we store both viewport and grob mapping
+information. Within each category, we store the name of the object,
+which has three pieces of information associated with it. The first
+are the integer suffixes that the name has been mapped to. For our
+example, we used the grob name \code{b} twice, so there are two
+suffixes associated with the \code{b} grob. This can be used to
+construct an \code{id} attribute by concatenating the name with the
+\code{id.sep} value.
+
+Also included are CSS selectors and XPath expressions which target the
+same \code{id}. These are included for convenience, and special
+characters are already escaped. This means that if we use a
+\proglang{JavaScript} library like \pkg{D3} or \pkg{jQuery} <a
+href="\#ref-12">[12]</a>, we can select the content immediately by
+just using the exported CSS selector.
+
+In order to make the mapping information easy to use, \gridSVG{}
+provides convenience functions in both \R{} and
+\proglang{JavaScript}. The primary function that is used is
+\code{getSVGMappings}, which is named the same in both \R{} and
+\proglang{JavaScript}. To demonstrate, we will be building upon the
+mapping information shown earlier.
+
+<<showMappingFunctions, echo = -(1:2)>>=
+gridSVGMappings(tmp$mappings)
+cat('R> mappings <- readMappingsJS("mappings.js")\nR> gridSVGMappings(mappings)')
+getSVGMappings("a", "vp") # getting 'a', which is a viewport
+getSVGMappings("b", "grob") # getting 'b', which are grobs
+@
+
+The first thing that occurs is that because mapping information is
+stored in a file as JSON, we need to read it into \R{}. The
+\code{readMappingsJS} function takes the filename containing mapping
+information, and reads that file into \R{} and parses it as a
+list. The result can then be given to \code{gridSVGMappings}. Once
+this has been done we can apply the mapping information by using
+\code{getSVGMappings}.
+
+It is important to note that when a name has been used more than once,
+instead of getting a single \code{id} value, we can end up with
+multiple \code{id}s. This ambiguity cannot be resolved because of
+issues discussed earlier, but at least we can reduce the search to
+only the \code{id}s that have been returned from the
+function. Typically there are few instances where multiple results are
+returned.
+
+The same example above can be performed in a browser using
+\proglang{JavaScript}, the output is shown below:
+
+<<showMappingJSOutput, echo = FALSE>>=
+jsLine('getSVGMappings("a", "vp");')
+cat('["a.1"]')
+jsLine('getSVGMappings("b", "grob");');
+cat('["b.1", "b.2"]')
+@
+
+In this example, is it shown that the function always returns an array
+of values, even when there is only one matching result. This is for
+consistency across single and multiple matching results.
+
+To return a CSS selector or XPath expression instead of an \code{id}
+we just need to specify that in the optional third parameter. Again,
+this is the case in both the \R{} and JavaScript implementations of
+the function. This is shown below:
+
+<<mappingFnFormats>>=
+getSVGMappings("a", "vp", "selector")
+getSVGMappings("a", "vp", "xpath")
+getSVGMappings("b", "grob", "selector")
+getSVGMappings("b", "grob", "xpath")
+@
+
+<<mappingFnFormatsJS, echo = FALSE>>=
+jsLine('getSVGMappings("a", "vp", "selector");')
+cat('["#a\\\\.1"]')
+jsLine('getSVGMappings("a", "vp", "xpath");')
+cat('["//*[@id=\'a.1\']"]')
+jsLine('getSVGMappings("b", "grob", "selector");')
+cat('["#b\\\\.1", "#b\\\\.2"]')
+jsLine('getSVGMappings("a", "vp", "xpath");')
+cat('["//*[@id=\'b.1\']", "//*[@id=\'b.2\']"]')
+@
+
+An example where this becomes useful is if you want to use \pkg{D3} to
+modify content, perhaps using a transtition. All that is required is
+to get the appropriate selector and \pkg{D3} can select the
+appropriate content based on that selector. For example the following
+shows how this might occur:
+
+<<showD3JSMappingUsage, echo = FALSE>>=
+jsLine('var sel = getSVGMappings("a", "vp", "selector")[0];')
+jsLine('d3.select(sel)')
+jsLine('.transition()', prefix = 'JS+     ')
+jsLine('...', prefix = 'JS+     ')
+@
+
+In \R{}, the use of the \pkg{XML} package <a href="\#ref-13">[13]</a>
+is more familiar, so we can use XPath expressions instead of CSS
+selectors.
+
+<<xmlWithMappings, echo = c(1, 3)>>=
+xp <- getSVGMappings("a", "vp", "xpath")
+image <- tmp$svg
+vpa <- getNodeSet(image, xp)[[1]]
+cat("R> vpa")
+cat(saveXML(vpa, file = NULL))
+@
+
+With the development of retaining name mapping information we can more
+easily manipulate SVG images that have been exported by \gridSVG{}.
+
+\section{Conclusion}
+
+We have demonstrated that \grid{} grob and viewport names are required
+to be modified as they are translated to SVG \code{id} attributes. We
+have also shown why this is necessary and the process \gridSVG{} takes
+to ensure valid SVG is generated.
+
+\gridSVG{} also provides two parameters in its \code{grid.export}
+function which affect how modification of grob and viewport names
+occur. Despite the modification of names, it is straightforward to
+retrieve possible matching \code{id}s using convenience functions that
+access \gridSVG{}'s name mapping information.

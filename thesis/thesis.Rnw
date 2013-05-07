@@ -14,10 +14,9 @@
 % Handy to have just in case.
 \usepackage{geometry}
 
-% Fonts, load microtype after loading fonts
+% Fonts
 \usepackage{lmodern}
 \usepackage{inconsolata}
-\usepackage{microtype}
 
 % Using these packages for vector graphics, e.g. the package
 % relationship diagram.
@@ -40,9 +39,15 @@
 \usepackage[T1]{fontenc}
 \usepackage[newzealand]{babel}
 
+% Load after fonts & encodings
+\usepackage{microtype}
+
 % biblatex
 \usepackage{csquotes}
-\usepackage[style=authoryear]{biblatex}
+\usepackage[backend=bibtex,style=authoryear]{biblatex}
+% Ensure names are last first for both the first name *and* others
+\DeclareNameAlias{sortname}{last-first}
+\DeclareNameAlias{default}{last-first}
 \renewcommand\nameyeardelim{\addcomma\space}
 \input{./biblatex-hyperlinks.tex}
 \addbibresource{references.bib}
@@ -148,6 +153,7 @@ source("knitr-settings.R")
 \renewcommand{\thepage}{\arabic{page}}
 
 \input{./tex/introduction.tex}
+\input{./tex/unique-names.tex}
 \input{./tex/coordinates.tex}
 \input{./tex/selectr.tex}
 \input{./tex/conclusion.tex}

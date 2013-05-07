@@ -8,75 +8,476 @@ producing statistical graphics -- graphs which communicate statistical
 information. The \R{} statistical software system \autocite{R13} is a
 popular example of software which generates statistical graphics. The
 great strength of \R{} is its wealth of statistical functions and
-graphics, but only for static graphics. Most statistical graphics in
-use today are static, meaning that they cannot be modified once they
-are created. The proliferation of \emph{reactive} web-based graphics
-using libraries such as \pkg{D3} \autocite{Bos13} shows that there is
-significant interest in creating reactive graphics in web browsers.
+graphics, but only for static graphics. The proliferation of dynamic
+and interactive web-based graphics using libraries such as \pkg{D3}
+\autocite{Bos13} shows that there is significant interest in creating
+these graphics in web browsers.
 
-It must be established what dynamic, interactive and reactive
-statistical graphics are in order to illustrate the intended aim of
-this research. \emph{Dynamic} graphics are images which are capable of
-being animated or modified after they have been
-created. \emph{Interactive} graphics are able to be modified by
-triggering an event, most commonly by a mouse or
-keyboard. \emph{Reactive} graphics are able to be updated in response
-to an event, in particular when the inputs that the graphics are bound
-to are changed. For our purposes we will restrict this definition to
-the ability to react by updating statistical content. Our final
-requirement is that these images are able to be viewed and interacted
-with in a web browser.
+In order to explain the types of graphics we wish to create, we will
+first examine the types of graphics that can currently be produced by
+\R{}, and how they are used within a web browser.
 
-We would like to create these graphics with \R{} in order to use to
-our advantage its powerful statistical functionality, along with the
-flexible graphics system it provides. There is also a large amount of
-existing graphics that could be enhanced with the properties described
-earlier. There are many existing statistical software packages that
-fulfil some of these criteria, but none that can meet all of them. For
-example, the \pkg{animation} package \autocite{Xie12} can produce
-animated graphics in many image and video formats, most of which are
-not provided by \R{}. It does this by generating a series of static
-plots, where each plot shows the animation at a specific point in
-time. \pkg{animation} demonstrates that we can produce graphics that
-are animated but it lacks the facility for adding interactivity to any
-of these animations.
+<<diagramStatic, echo = FALSE, message = FALSE, fig.height = 2, fig.width = 6>>=
+library(gridSVG)
+library(ggplot2)
 
-The interactivity of the plots we generate are intended to be
-customisable and only for two dimensional graphics. This means that we
-are not aiming to compete with systems that specialise in the area of
-interactive statistical graphics. Examples of such systems are
-\pkg{Mondrian} \autocite{The09} and \pkg{GGobi} \autocite{Coo07}, both
-of which are highly interactive and in the case of \pkg{GGobi},
-focused on high dimensional graphics. The main reason for this
-stipulation is because we would like to stick to the \R{} graphics
-engine, and not an external graphics system.
+simplePlot <- function() {
+  pushViewport(dataViewport(xData = cars$speed, yData = cars$dist,
+                            width = unit(1, "npc") - unit(1, "cm"),
+                            height = unit(1, "npc") - unit(1, "cm")))
+  grid.points(x = cars$speed, y = cars$dist, size = unit(0.2, "char"))
+  grid.xaxis(label = FALSE)
+  grid.yaxis(label = FALSE)
+  popViewport()
+}
 
-A package for \R{} that has been developed recently and has generated
-a large amount of interest is \pkg{shiny} \autocite{RSt13}. It can not
-only create web-based graphics, but it is designed with reactivity in
-mind. Many interactive user interface controls are available which can
-be bound to data in \R{}, for example a slider or a drop-down
-box. This means a change in the value of a control on a web page will
-cause \R{} to generate new content for the web page. However, a
-limitation is that when a plot is the output for reactive content,
-when the reactive content changes an entirely new static plot is
-drawn. We would like graphics to be updated in response to a change in
-content instead of being replaced altogether.
+grid.newpage()
+l <- grid.layout(ncol = 5, widths = unit(rep(0.2, 5), "npc"))
+pushViewport(viewport(layout = l))
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
+grid.text("R", gp = gpar(fontsize = 32))
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
+grid.text("png()\nsvg()", x = 0.5, y = 0.6, just = "bottom",
+          gp = gpar(fontfamily = "mono"))
+grid.lines(y = rep(0.5, 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 3))
 
-The \gridSVG{} package \autocite{Mur13} for \R{} exports a \grid{}
-\autocite{Mur11} scene to the SVG (Scalable Vector Graphics) image
-format \autocite{SVG11}. A notable restriction for \gridSVG{} is that
-it is only able to export \grid{} graphics to SVG, any plots created
-using the base graphics system is not supported. \gridSVG{} is capable
-of producing dynamic and interactive graphics for use within a web
-browser. In particular it can create graphics with animation and
-hyperlinking, as well as embedding \proglang{JavaScript} for creating
-customised interactivity. This package had the potential for also
-creating reactive graphics but doing so would have been an arduous
-task. \gridSVG{} was largely incapable of creating reactive graphics
-until the establishment of this research. The primary limitation was
-that \gridSVG{} content was not easily able to be served dynamically
-as part of a web page.
+pushViewport(viewport(width = 0.7, height = 0.5))
+grid.rect()
+simplePlot()
+popViewport()
+
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 4))
+grid.lines(y = rep(0.5, 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 5))
+pushViewport(viewport(width = 0.8, height = 0.8))
+grid.rect()
+pushViewport(viewport(width = 0.7, height = 0.5))
+grid.rect()
+simplePlot()
+popViewport()
+popViewport()
+popViewport()
+popViewport()
+@
+
+This figure demonstrates that \R{} can generate a static image using
+its built-in graphics devices. In this example the \code{png} and
+\code{svg} devices can produce PNG (Portable Network Graphics) and SVG
+(Scalable Vector Graphics) images respectively. These images are
+static, and can be included in an HTML (Hypertext Markup Language)
+document using the \code{img} tag.
+
+When we include images onto a web page in this manner, the effect is
+largely the same as if we were treating the HTML document as a piece
+of paper. One useful feature of web browsers is the ability view
+content that is not fixed, and thus unlike a piece of paper. A key
+example of this is when we want to include animated graphics within a
+web page. There are packages for \R{} that enable animation within a
+web browser, we will first consider the prominent \pkg{animation}
+package.
+
+The \pkg{animation} package uses software outside of \R{} to construct
+its animations, e.g. ImageMagick and ffmpeg. These are additional
+pieces of software required to produce animations in various
+formats. The general idea of pkg{animation} is to repeatedly draw
+entire plots that are then saved. The saved images are then stitched
+together into one of the many formats that \pkg{animation}
+supports. This means that \pkg{animation} can create a animated GIF
+(Graphics Interchange Format) or a video out of the images that have
+been saved. The resulting video or animated GIF can then be inserted
+into a web page using the appropriate HTML tag (\code{<video>} and
+\code{<img>} respectively).
+
+<<diagramAnimation, echo = FALSE, message = FALSE, fig.height = 2, fig.width = 6>>=
+library(gridSVG)
+
+simplePlot <- function() {
+  pushViewport(dataViewport(xData = cars$speed, yData = cars$dist,
+                            width = unit(1, "npc") - unit(1, "cm"),
+                            height = unit(1, "npc") - unit(1, "cm")))
+  grid.points(x = cars$speed, y = cars$dist, size = unit(0.2, "char"))
+  grid.xaxis(label = FALSE)
+  grid.yaxis(label = FALSE)
+  popViewport()
+}
+
+grid.newpage()
+l <- grid.layout(ncol = 5, widths = unit(rep(0.2, 5), "npc"))
+pushViewport(viewport(layout = l))
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
+grid.text("R", gp = gpar(fontsize = 32))
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
+grid.text("png()\nsvg()", x = 0.3, y = 0.7, just = "bottom",
+          gp = gpar(fontfamily = "mono"))
+grid.polyline(x = rep(c(0, 1), 3),
+              y = c(0.5, 5/6, rep(0.5, 2), 0.5, 1/6),
+              id = rep(1:3, each = 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 3))
+
+pushViewport(viewport(layout = grid.layout(nrow = 3)))
+for (i in 1:3) {
+  pushViewport(viewport(width = 0.7, height = 0.5,
+                        layout.pos.row = i, layout.pos.col = 1))
+  grid.rect()
+  simplePlot()
+  popViewport()
+}
+popViewport()
+
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 4))
+grid.text("animation", y = 0.6, just = "bottom")
+grid.lines(y = rep(0.5, 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 5))
+pushViewport(viewport(width = 0.8, height = 0.8))
+grid.rect()
+pushViewport(viewport(width = 0.7, height = 0.5))
+grid.rect()
+simplePlot()
+popViewport()
+popViewport()
+popViewport()
+popViewport()
+@
+
+The for using \pkg{animation} is demonstrated in **FIGURE**. The main
+idea to get across is that several images are generated by \R{}, which
+are then stitched together into an animation-capable format using
+\pkg{animation}. The result is then included into a web page.
+
+An alternative to using \pkg{animation} is to write some
+\proglang{JavaScript} to be included within an HTML document. The
+\proglang{JavaScript} can recreate an animation by referring to
+generated static images, and then repeatedly update the HTML to
+reference the next image in the sequence. The described behaviour is
+in fact already provided by \pkg{animation} through its
+\code{saveHTML} function. However, it is a ``black box'' solution
+which may not be suitable for all needs. Furthermore, it does not
+enable the interactivity that may is possible by writing our own
+\proglang{JavaScript} and HTML code. This approach is illustrated
+below:
+
+<<diagramHTMLJS, echo = FALSE, message = FALSE, fig.height = 2, fig.width = 6>>=
+library(gridSVG)
+
+simplePlot <- function() {
+  pushViewport(dataViewport(xData = cars$speed, yData = cars$dist,
+                            width = unit(1, "npc") - unit(1, "cm"),
+                            height = unit(1, "npc") - unit(1, "cm")))
+  grid.points(x = cars$speed, y = cars$dist, size = unit(0.2, "char"))
+  grid.xaxis(label = FALSE)
+  grid.yaxis(label = FALSE)
+  popViewport()
+}
+
+grid.newpage()
+l <- grid.layout(ncol = 5, widths = unit(rep(0.2, 5), "npc"))
+pushViewport(viewport(layout = l))
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
+grid.text("R", gp = gpar(fontsize = 32))
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
+grid.text("png()\nsvg()", x = 0.3, y = 0.7, just = "bottom",
+          gp = gpar(fontfamily = "mono"))
+grid.polyline(x = rep(c(0, 1), 3),
+              y = c(0.5, 5/6, rep(0.5, 2), 0.5, 1/6),
+              id = rep(1:3, each = 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 3))
+
+pushViewport(viewport(layout = grid.layout(nrow = 3)))
+for (i in 1:3) {
+  pushViewport(viewport(width = 0.7, height = 0.5,
+                        layout.pos.row = i, layout.pos.col = 1))
+  grid.rect()
+  simplePlot()
+  popViewport()
+}
+popViewport()
+
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 4))
+grid.text("HTML/JavaScript", y = 0.6, just = "bottom")
+grid.polyline(x = rep(c(0, 1), 3),
+              y = c(5/6, 0.6, rep(0.5, 2), 1/6, 0.4),
+              id = rep(1:3, each = 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 5))
+pushViewport(viewport(width = 0.8, height = 0.8))
+grid.rect()
+pushViewport(viewport(width = 0.7, height = 0.5))
+grid.rect()
+simplePlot()
+popViewport()
+popViewport()
+popViewport()
+popViewport()
+@
+
+The \proglang{JavaScript} shown here can be any \proglang{JavaScript}
+code that can interact with static images. In practice the
+\proglang{JavaScript} code will likely be limited to toggling which
+image(s) to display at a given point in time.
+
+A limitation in the types of images that are typically used in web
+pages is that they are \emph{raster} images. This means that the image
+itself is a description of the colour values encoded in a matrix of
+pixels. There is no other information available, so we cannot identify
+or manipulate any part of a plot.
+
+Another image format that can be used in a web browser is SVG
+(Scalable Vector Graphics). SVG is an XML-based (Extensible Markup
+Language) vector image format which supports animation and
+interactvity (via \proglang{JavaScript}). The fact that SVG is a
+vector image format means that we can scale the image to any size and
+it will not lose any fidelity. The most encouraging feature is the
+XML-based nature of SVG, meaning that SVG inherits behaviour from XML.
+
+The most interesting features of XML for creating SVG are that it is a
+structured text format and there is a standard interface for
+manipulating an SVG image once it has been loaded, this interface is
+called the DOM (Document Object Model). This means that SVG enables
+(for example) the colour of a piece of text to change once the image
+has been loaded in a browser.
+
+There are two packages for \R{} which use SVG to add interactivity and
+animation to plots: \pkg{SVGAnnotation} \autocite{} and \gridSVG{}
+\autocite{Mur13}. The key difference between the two packages is how
+they produce animated and interactive SVG images. \pkg{SVGAnnotation}
+post-processes the SVG produced by \R{}'s \code{svg} device. It also
+provides functions for annotating the the post-processed SVG with
+animation, tooltips, and linking of two plots. It is possible to add
+custom \proglang{JavaScript} to these plots but it is difficult to
+write the required code because the structure of the SVG is not clear
+and understandable. \gridSVG{} takes the approach of writing its own
+SVG output by translating \grid{} primitives into their SVG
+equivalents. Animation and interactivity is performed by creating or
+annotating \grid{} graphics objects through high-level functions.
+
+The advantage of the \gridSVG{} approach is that because it creates
+its own SVG and annotates it with \grid{} object names, it is easier
+to manipulate \gridSVG{} output than the output produced by
+\pkg{SVGAnnotation}. However, \gridSVG{} is limited to only creating
+SVG from \grid{} output, while \pkg{SVGAnnotation} is able to do this
+for both the \grid{} and base graphics systems provided by \R{}.
+
+The approach that both of these packages that to produce their plots
+can be illustrated by the figure below:
+
+<<diagramSVGAnnGridSVG, echo = FALSE, message = FALSE, fig.height = 2, fig.width = 6>>=
+library(gridSVG)
+
+simplePlot <- function() {
+  pushViewport(dataViewport(xData = cars$speed, yData = cars$dist,
+                            width = unit(1, "npc") - unit(1, "cm"),
+                            height = unit(1, "npc") - unit(1, "cm")))
+  grid.points(x = cars$speed, y = cars$dist, size = unit(0.2, "char"))
+  grid.xaxis(label = FALSE)
+  grid.yaxis(label = FALSE)
+  popViewport()
+}
+
+grid.newpage()
+l <- grid.layout(ncol = 5, widths = unit(rep(0.2, 5), "npc"))
+pushViewport(viewport(layout = l))
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 1))
+grid.text("R", gp = gpar(fontsize = 32))
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 2))
+grid.text("SVGAnnotation\ngridSVG", x = 0.3, y = 0.7, just = "bottom")
+grid.lines(y = rep(0.5, 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 3))
+pushViewport(viewport(width = 0.7, height = 0.7))
+grid.rect()
+simplePlot()
+popViewport()
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 4))
+grid.text("JavaScript", y = 0.6, just = "bottom")
+grid.lines(y = rep(0.5, 2), arrow = arrow())
+popViewport()
+pushViewport(viewport(layout.pos.row = 1, layout.pos.col = 5))
+pushViewport(viewport(width = 0.8, height = 0.8))
+grid.rect()
+pushViewport(viewport(width = 0.7, height = 0.5))
+grid.rect()
+simplePlot()
+popViewport()
+popViewport()
+popViewport()
+popViewport()
+@
+
+All of the methods for getting \R{} graphics in the browser have one
+features in common --- they are all pre-generated. This means that
+whenever a plot is created in \R{}, the statistical information
+encoded in that image (or indeed \proglang{JavaScript} code for
+\pkg{SVGAnnotation} and \pkg{gridSVG} in particular) becomes fixed. We
+cannot add more statistical information to the plot without
+communicating with \R{}, which is not possible with the aforementioned
+solutions. To produce a plot with different information would require
+\R{} to create an entirely new plot, regardless of whether the plot is
+static, dynamic or interactive. What this means is that a web page
+with embedded statistical graphics cannot update the images without
+some way of communicating to \R{}.
+
+There are several existing pieces of software that enable a web
+browser to communicate to \R{}. The way this occurs is that a software
+package can expose \R{}'s functionality by creating a web server that
+can interface with a web browser using HTTP (Hypertext Transfer
+Protocol). A web browser can then request resources, such as
+statistical documents and graphics. What this means in practice is
+that instead of a loading a standalone HTML file on a local hard disk
+(or even a remote location), \R{} generates the web page that is
+loaded within the browser. Because the web page is generated as it is
+requested, it does not need to be fixed.
+
+There are many \R{} packages that are able to perform the described
+functionality. Examples of these are \pkg{Shiny} \autocite{},
+\pkg{Rook} \autocite{} and \pkg{FastRWeb} \autocite{} (which requires
+\pkg{RServe}). The details of existing server software will be
+discussed in more detail later in chapter. The general idea with all
+of these packages is that a web browser requests a resource ---
+usually a web page or an image --- which is generated by \R{}, then
+delivered to a web browser.
+
+To explain why these packages are more useful than pre-generated web
+pages and images, consider this example. A web page features a scatter
+plot with a Loess curve where an HTML slider control determines the
+size of the smoothing window. Each time the value of the slider
+control changes we want to update the plot by replacing the existing
+Loess curve with a new one. This is simple when there is a web server
+that communicates to \R{}, because we can just request an entirely new
+plot which replaces the existing plot. This simple example is one
+where a pre-generated HTML page is infeasible. Attempting a
+pre-generated solution would require creating every possible plot,
+which in this case is determined by the possible sizes of the Loess
+smoothing window. Because the value of the Loess spanning window is a
+continuous variable, this is not possible as it would require an
+incredibly large amount of plots. Even if were to limit the possible
+number of plots to 100, that is still a large amount of work to
+pre-generate, especially if many of the plots will not be seen.
+
+The pre-generated solutions can be illustrated using the following diagram:
+
+\dots
+
+\textbf{INSERT PLOT}
+
+\dots Explain the plot briefly
+
+\dots
+
+The plots that are dynamically generated can be any one of the types
+of plots that were discussed earlier. Typically the dynamically
+generated images are simply a static plot, often the result of drawing
+the \code{png} device. In the example that was discussed earlier, the
+simple method for updating the plot that appeared on the web page was
+removing the old image and inserting the newly generated image. If the
+goal is to update the Loess curve then generating an entirely new
+image is not only wasteful --- because most of the plot has not
+changed --- but it does not give us any way of showing \emph{how} the
+curve changed.
+
+What we aim to achieve is to be able to \emph{modify} an \R{} plot
+with dynamically generated graphical content within a web
+browser. What this requires is not only to be able to communicate with
+\R{} to generate new content, but also to be able to identify and
+modify \emph{parts} of a plot in a web page. We have already mentioned
+some of the \R{} packages which allow us to communicate with \R{}, but
+in order to modify parts of a plot reveals that there are few options
+available because the only image format that is capable of the desired
+behaviour is SVG. \R{}'s \code{svg} device produces SVG that is
+viewable in a web browser, but unreadable to anyone who wishes to
+modify it. \pkg{SVGAnnotation} reverse engineers and modifies
+\code{svg}'s output to enhance it with animation and
+interactivity. Unfortunately, once \pkg{SVGAnnotation} plots are
+loaded into a web browser, they are still diffficult to modify because
+the resulting SVG is largely unchanged from \code{svg}. This leaves
+\pkg{gridSVG} as the only remaining option as one of its goals is to
+produce SVG with identifiable output. This means that when \gridSVG{}
+produces a scatter plot with a Loess curve, we are able to easily
+identify the SVG elements that the Loess curve corresponds to.
+
+Relating back to the example, we should be able to load a web page
+with a \gridSVG{} plot. When an HTML slider modifies the value of a
+Loess smoothing window, \R{} can give us a new \emph{piece} of a
+\gridSVG{} plot which represents the new curve. The new piece can then
+replace or update the existing piece of the plot. A bonus of this
+approach is that we can (if desired) exploit the powerful
+functionality of \proglang{JavaScript} libraries such as \pkg{D3},
+which can \emph{transition} the curve to its new values. The figure
+below exhibits how the pieces of software fit together.
+
+\textbf{INSERT PLOT}
+
+Without being able to identify parts of a plot, it is very difficult
+to perform any useful modification of a plot. \gridSVG{}'s naming of
+SVG elements allows us to easily identify what it is that we are
+attempting to modify. The other options, \pkg{svg} and
+\pkg{SVGAnnotation} are therefore not suitable for the type of
+dynamically generated graphics that we wish to produce. However, prior
+to this research \gridSVG{} was not yet a usable solution that is
+capable of creating these graphics. It was the solution with the
+greatest potential, and this thesis largely describes how \gridSVG{}
+has been improved to meet the goal of creating dynamic, interactive
+and reactive statistical graphics.
+
+\dots
+
+\dots
+
+\section{Existing Software}
+
+We have discussed using \R{} to generate web pages but have glossed
+over the details as to how this occurs. For a web browser to be able
+to communicate to a web service that exposes functionality provided by
+\R{} it needs to communicate over a \emph{protocol}. A protocol is
+simply a standard set of rules that a web browser and a web server can
+use to send messages between each other, much like humans use a
+language to send messages to one another. There are two protocols of
+interest that are used to construct web pages, HTTP and WebSockets.
+
+HTTP operates in a request-response model. This means that a web
+browser sends a message to a web server that requests a resource
+(i.e. a web page or an image). The web server responds with a message
+containing the resource that the web browser requested, that the
+browser can then render. The majority of the software packages that
+provide a web interface to \R{} operate using HTTP.
+
+WebSockets is a protocol which allows for bi-directional communication
+between a WebSocket server and a web browser. Instead of requesting a
+resource, a web browser sends a message over the WebSocket that is
+received by the WebSocket server. The server needs to know how to read
+the message, and it also needs to know what task the message is asking
+to be performed. If both of these requirements have been fulfilled,
+then the WebSocket server can send a message along the socket to the
+web browser. The message could (for example) include new content that
+should be included in a web page. A potentially useful feature of
+WebSockets is that the server can also send a message to the browser
+without the browser having explicitly requested it. An example of this
+is when the server sends the browser the current time every
+minute. All the browser needs to to in this instance is to know what
+to do with the current time information.
+
+The key difference between the two protocols is that HTTP requires the
+browser to request a resource, while WebSockets is simply a means to
+send a message without any explicit action being applied.
+
+\subsection{Server-side}
+
+\subsection{Client-side}
+
+\textbf{IGNORE FROM HERE ON}
 
 The large amount of \proglang{JavaScript} libraries available for
 producing plots with interactivity and dynamic properties shows that

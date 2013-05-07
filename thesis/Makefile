@@ -11,6 +11,7 @@ CHAPTER_TEXS := $(patsubst tex/%.Rnw, tex/%.tex, $(wildcard tex/*.Rnw))
 all: $(DOCUMENT_PDF)
 
 $(DOCUMENT_PDF): $(DOCUMENT_TEX) $(CHAPTER_TEXS)
+	sed -i 's/^.*upquote.*$$//' $(DOCUMENT_TEX) # upquote + inconsolata broken
 	pdflatex $(DOCUMENT_TEX)
 	bibtex $(DOCUMENT)
 	pdflatex $(DOCUMENT_TEX)
