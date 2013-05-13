@@ -1,0 +1,55 @@
+<<echo = FALSE, results = "hide", message = FALSE>>=
+source("../knitr-settings.R")
+@
+
+\chapter{Referenced Content}
+
+Much of the development of \gridSVG{} has focused on translating
+\grid{} objects to their SVG equivalents. In order to take advantage
+of SVG features, \grid{} objects can be annotated with additional
+information. This is how animation and hyperlinking able to be
+generated from a \grid{} image. These are certainly useful features to
+have but there are many features of SVG that are not possible to
+implement in \grid{} due to limitations in the \R{} graphics
+engine. This requires \gridSVG{} to take a different approach to SVG
+translation than usual; rather than translating \grid{} concepts to
+SVG, \gridSVG{} attempts to translate SVG concepts to \grid{}.
+
+This chapter describes \gridSVG{}'s implementation of SVG features in
+\grid{}. These features are called \emph{referenced content} because
+they are not graphical elements to be drawn, they can only be
+\emph{referred} to by graphical elements. For example, a pattern fill
+requires a graphical object to be filled with a pattern (e.g. a
+rectangle), and also a definition of a pattern. The graphical object
+\emph{refers} to the pattern to determine how it is filled. Each of
+the types of referenced content will be examined in more detail.
+
+\section{Patterns}
+
+%FIXME! cite which systems
+A common feature in many graphics systems (\dots) is the ability to
+fill a region with a pattern. SVG
+
+\subsection{Definition}
+
+
+\subsection{Registration}
+
+
+
+\dots
+
+\section{Clipping Paths}
+
+\dots
+
+
+\section{Masks}
+
+\dots
+
+
+\section{Filter Effects}
+
+
+\dots

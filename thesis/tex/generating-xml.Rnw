@@ -1,0 +1,437 @@
+<<echo = FALSE, results = "hide", message = FALSE>>=
+install.packages("../bin/gtable_0.1.1-1.tar.gz", repos = NULL, type = "source")
+source("../knitr-settings.R")
+
+# Define some null functions
+increaseIndent <- indent <- decreaseIndent <-
+  setParentNode <- getParentNode <- function(...) invisible()
+@
+
+\chapter{A Structured Approach for Generating SVG}
+
+\section{Introduction}
+
+\grid{} is an alternative graphics system to the traditional base
+graphics system provided by \R{} . Two key features of \grid{}
+distinguish it from the base graphics system, graphics objects (grobs)
+and viewports.
+
+Viewports are how \grid{} defines a drawing context and plotting
+region. All drawing occurs relative to the coordinate system within a
+viewport. Viewports have a location and dimension and set scales on
+the horizontal and vertical axes. Crucially, they also have a name so
+we know how to refer to them.
+
+Graphics objects (grobs) store information necessary to describe how a
+particular object is to be drawn. For example, a \grid{}
+\code{circleGrob} contains the information used to describe a circle,
+in particular its location and its radius. As with viewports, graphics
+objects also have names.
+
+The task that \gridSVG{} performs is to translate viewports and
+graphics objects into SVG equivalents. In particular, the exported SVG
+image retains the naming information on viewports and graphics
+objects. The advantage of this is we can still refer to the same
+information in \grid{} and in SVG. In addition, we are able to
+annotate \grid{} grobs to take advantage of SVG features such as
+hyperlinking and animation.
+
+This document describes a new development in \gridSVG{} that changes
+the mechanism used to convert \grid{} grobs and viewports to an SVG
+representation.
+
+\section{The Previous Approach for Creating SVG}
+
+In order to aid our explanation, a simple \grid{} plot will be drawn
+using the code below.
+
+<<gridIntro>>=
+library(grid)
+grid.rect(width = unit(0.5, "npc"),
+          height = unit(0.5, "npc"),
+          name = "example-rect")
+@
+
+The output from \code{grid.ls} shows the \grid{} display list. This is
+represents the list of grobs that have been plotted on the current
+graphics device. The display list shows that the rectangle has been
+drawn and we can see that it is named \code{example-rect}. When
+\gridSVG{} translates \code{example-rect} into SVG, the rectangle
+translates into the following markup:
+
+<<showRectMarkup, echo = FALSE, message = FALSE, fig.keep = "none">>=
+library(gridSVG)
+grid.rect(width = unit(0.5, "npc"),
+          height = unit(0.5, "npc"),
+          name = "example-rect")
+svgdoc <- grid.export(NULL)$svg
+pointsGroup <- getNodeSet(svgdoc,
+                          "//svg:g[@id='example-rect.1']",
+                          c(svg="http://www.w3.org/2000/svg"))[[1]]
+cat(saveXML(pointsGroup))
+@
+
+Prior to the recent development, \gridSVG{} would create this SVG
+markup by concatenating strings. The first step involved creating an
+SVG group (a \code{g} element). This group needs to have all of its
+appropriate attributes inserted, which always include an \code{id}
+attribute, but can also include attributes related to animation,
+hyperlinking, or custom attributes by ``garnishing'' attributes. In
+\R{}, string concatenation is accomplished using the \code{paste}
+function. A fragment of pseudo-code follows, which would generate the
+SVG group markup.
+
+<<pasteExample, results = "hide", error = FALSE, echo = -1>>=
+groupId <- paste("example-rect", 1, sep = ".")
+paste("<g",
+      ' id="', groupId, '"',
+      " ... ",
+      ">\n", sep = "")
+increaseIndent()
+@
+
+In this case the \code{...} represents the optional attributes applied
+to a group, e.g. hyperlinking. We can see already that the code to
+produce the SVG markup is reasonably complex compared to the markup
+itself. Note that we have also increased the level of indentation so
+that children of this group are clearly observed to be children of
+this particular group.
+
+The next step is to add a child \code{<rect />} element to this SVG
+group. We need to first indent to the correct position on a new line,
+and then draw the rectangle. The code that would be used to produce
+the rectangle is shown below.
+
+<<pasteRectExample, echo = -c(1:7,9)>>=
+# Paste is redefined and reset so that we can have
+# one block of code showing one 'cat'd block of output.
+rectId <- paste("example-rect", 1, 1, sep = ".")
+oldpaste <- paste
+paste <- function(...) cat(oldpaste(...))
+rectX <- rectY <- 126
+rectWidth <- rectHeight <- 252
+paste(indent(),
+      "<rect",
+      ' id="', rectId, '"',
+      ' x="', rectX, '"',
+      ' y="', rectY, '"',
+      ' width="', rectWidth, '"',
+      ' height="', rectHeight, '"',
+      " ...",
+      " />\n", sep = "")
+paste <- oldpaste
+@
+
+We can clearly see how attribute values are inserted into the SVG
+output, in particular with our location and dimension
+attributes. Again, the \code{...} represents other attributes that may
+be inserted (though not demonstrated). What is also being shown here
+is how we are applying the indentation. This is done by calling a
+function that returns a vector character with the correct number of
+spaces to indent our \code{<rect />} element.
+
+Once all children have been added to the SVG group, we can close the
+group so that all \code{<rect />} elements are contained with
+it. Because we are closing an element, we need to decrease the level
+of indentation to preserve the heirarchical structure of the SVG
+markup. This means when closing any element, we need to do something
+similar to the following code which closes an SVG group.
+
+<<closeGroupEx, echo = -c(1:3, 6)>>=
+# Again with the paste redefinition trick
+oldpaste <- paste
+paste <- function(...) cat(oldpaste(...))
+decreaseIndent()
+paste(indent(),
+      "</g>\n", sep = "")
+paste <- oldpaste
+@
+
+We have shown how SVG images are built using a series of concatenated
+strings. It is important to note that these strings are written
+directly to a file (specified when calling \code{grid.export}). This
+means each time an SVG fragment is created using \code{paste}, it is
+appended to a specified file.
+
+This approach has a few limitations. For instance, we cannot guarantee
+that the output that is produced is valid SVG markup. We are also
+writing directly to a file, which means that we need to read the file
+to observe its contents; we do not retain the SVG content in resident
+memory. Finally, but less importantly, performance is a concern when
+generating output using repeated string concatenation as it is known
+to be a slow operation (this is less important because the drawing of
+the original image by \grid{}, before export, is also slow).
+
+To remedy these limitations a rewrite of the markup generating
+component of \gridSVG{} was undertaken.
+
+\section{Structured Output with the \pkg{XML} package}
+
+The rewrite of part of the \gridSVG{} package was achieved by
+utilising the \pkg{XML} <a href="\#ref-4">[4]</a> package. The
+\pkg{XML} package is an \R{} wrapper for the \pkg{libxml2} <a
+href="\#ref-5">[5]</a> XML parser and generator. The key feature that
+the \pkg{XML} package provides us with is a way of representing an SVG
+image as a collection of SVG nodes (elements), instead of a long
+character vector. We simply need to define the structure of the
+document, the \pkg{XML} package will take care of how this will be
+exported to text.
+
+\subsection{Image Construction}
+
+To define the structure of an SVG image, we need to establish how
+elements relate to each other. In the case of \gridSVG{}, the only
+relationship of importance is the parent/child relationship. The
+earlier example with the rectangle will be recreated using the
+\pkg{XML} package to demonstrate the differences between the two
+approaches. The code that creates an SVG group is shown below. Notice
+that when we print out the node itself, the markup is generated for us
+by the \pkg{XML} package.
+
+<<createGroupNode, echo = -1>>=
+groupId <- paste("example-rect", 1, sep = ".")
+g <- newXMLNode("g",
+                attrs = list(id = "example-rect"))
+setParentNode(g)
+g
+@
+
+The group is given the (modified) name of the grob that it is going to
+be representing. Because we wish to add children to this \code{<g>}
+element, we set it as the current parent node with a call to the
+\code{setParentNode} function.
+
+The next piece of code creates a \code{<rect />} element. It is
+important to note in this code that the \code{parent} parameter is
+given as an argument the result of the function call
+\code{getParentNode}. Earlier we set the current parent node to be the
+\code{<g>} element. This means that the \code{<rect />} element will
+be a child of the \code{<g>} element.
+
+<<newRectNode, echo = -(1:6)>>=
+svgRect <- newXMLNode("rect", parent = getParentNode(),
+                      attrs = list(id = rectId,
+                                   x = rectX,
+                                   y = rectY,
+                                   width = rectWidth,
+                                   height = rectHeight))
+svgRect <- newXMLNode("rect", parent = g,
+                      attrs = list(id = rectId,
+                                   x = rectX,
+                                   y = rectY,
+                                   width = rectWidth,
+                                   height = rectHeight))
+svgRect
+g
+@
+
+We can now see how the document is beginning to build up as the
+\code{<rect />} node is added to the \code{g} node.
+
+A complete SVG document must have a ``root'' \code{<svg>} element.
+This has been left out of the examples so far, but it is worth
+mentioning here because with the \pkg{XML} approach we include several
+\emph{namespace} definitions in the \code{<svg>} element.  This allows
+the \pkg{XML} package to ensure that we are producing valid SVG
+output.
+
+<<svgRoot, echo = -1>>=
+svgWidth <- svgHeight <- "504px"
+svgRoot <-
+  newXMLNode("svg", namespaceDefinitions =
+               list("http://www.w3.org/2000/svg",
+                    xlink = "http://www.w3.org/1999/xlink"),
+             attrs = list(width = svgWidth,
+                          height = svgHeight,
+                          version = "1.1"))
+setParentNode(svgRoot)
+svgRoot
+@
+
+This \code{<svg>} element has become the parent node so that the
+\code{<g>} element we created earlier can be made a child of the root
+\code{<svg>} element.
+
+<<addGtoRoot, results = "hide">>=
+addChildren(svgRoot, g)
+@
+
+If we print out the \code{<svg>} node now we see the \code{<g>} and
+\code{<rect />} elements nested neatly within it.
+
+<<showRootNode2>>=
+svgRoot
+@
+
+This demonstrates how SVG images can be built up in a more reliable
+way than with simple string concatenation. It is clear that the way in
+which we define our SVG image is less prone to error in creating
+markup, and it also ensures that images are both well-formed (conform
+to XML syntax) and valid (conform to SVG syntax).
+
+\subsection{In-Memory Images}
+
+The node-based approach to SVG creation offers more advantages than
+just being a cleaner way of building up an image. We are saving the
+root node (and thus its descendents) after the image has been
+created. This means we can keep the image in memory until we want to
+save to disk, or some other output. An example where this is useful is
+for embedding plots in an HTML document because plots can be inserted
+directly as inline SVG (rather than having to create an external file
+and then link to that file from the HTML document).
+
+\subsection{XPath}
+
+Another advantage is that because we are dealing with XML nodes, we
+can manipulate those nodes using other powerful XML tools such as
+XPath <a href="\#ref-6">[6]</a>. XPath is a query language for
+XML. For example, we can retrieve and add subsets within the SVG
+image.
+
+We will demonstrate this idea using a \pkg{ggplot2} <a
+href="\#ref-7">[7]</a> plot (the \pkg{ggplot2} package uses \grid{}
+for rendering so a \pkg{ggplot2} plot consists of a large number of
+\grid{} viewports and grobs).
+
+<<ggplotEx>>=
+library(ggplot2)
+qplot(mpg, wt, data = mtcars, colour = cyl)
+@
+
+We can reduce this image by removing the legend, so that only the plot
+is shown. This code relies on standard functionality from the
+\pkg{XML} package for identifying and removing nodes; all we have to
+do is provide the XPath that describes the node that we want (in this
+case, a \code{<g>} element that has a specific \code{id} attribute).
+
+<<qplotPlotOnly, echo = -c(1,5), warning = FALSE, results = "hide", fig.keep = "last", fig.show = "hold">>=
+qplot(mpg, wt, data = mtcars, colour = cyl)
+svgDoc <- grid.export(NULL)$svg
+legendNode <-
+  getNodeSet(svgDoc,
+             "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+             c(svg = "http://www.w3.org/2000/svg"))[[1]]
+removeChildren(xmlParent(legendNode), legendNode)
+grid.remove("guide-box.3-5-3-5")
+saveXML(svgDoc, file = "no-legend.svg")
+@
+
+Alternatively, we could extract just the legend from the plot and use
+it to create a new image.
+
+<<qplotLegendOnly, echo = -c(1, 10:12), results = "hide", pdfcrop = TRUE, fig.keep = "last", warning = FALSE, out.width = NULL, out.height = NULL>>=
+qplot(mpg, wt, data = mtcars, colour = cyl)
+svgDoc <- grid.export(NULL)$svg
+legendNode <-
+  getNodeSet(svgDoc,
+             "//svg:g[@id='layout::guide-box.3-5-3-5.1']",
+             c(svg="http://www.w3.org/2000/svg"))[[1]]
+rootNode <-
+  getNodeSet(svgDoc,
+             "/svg:svg/svg:g",
+             c(svg="http://www.w3.org/2000/svg"))[[1]]
+removeChildren(rootNode, "g")
+addChildren(rootNode, legendNode)
+newSvg <-
+  newXMLNode("svg", namespaceDefinitions =
+               list("http://www.w3.org/2000/svg",
+                    xlink = "http://www.w3.org/1999/xlink"),
+             attrs = list(width = "50",
+                          height = "200",
+                          viewBox = "435 150 50 200",
+                          version = "1.1"))
+addChildren(newSvg, rootNode)
+saveXML(newSvg, file = "legend-only.svg")
+legendGrob <- grid.get("guide-box.3-5-3-5")
+grid.newpage()
+grid.draw(legendGrob) # Just crop via pdfcrop
+@
+
+These simple examples demonstrate the basic idea of extracting and
+combining arbitrary subsets of an SVG image.  More complex
+applications are possible, such as combining the contents of two or
+more plots together. It is also important to note that these
+manipulations are made more convenient because the SVG produced by
+\gridSVG{} has a clear and labelled structure; these tasks would be
+considerably more difficult if we had to work with the SVG output from
+the standard R \code{svg} device.
+
+\subsection{Inserting Nodes}
+
+Another advantage of this new approach is that when we create an XML
+node, it can then be inserted into the SVG document at any
+location. Previously, with the string concatenation approach we were
+forced to simply append to the document. Now we have the option of
+inserting nodes at any point in the document.
+
+A case where this is useful is within \gridSVG{} itself. When
+\code{grid.export} is called, there are four parameters of particular
+interest: the filename, \code{exportCoords}, \code{exportMappings} and
+\code{exportJS}. The latter three parameters determine how
+\proglang{JavaScript} code is to be included within an SVG image, if
+at all. If we are going to be including \proglang{JavaScript} code,
+the SVG image is first generated. Once the image is created we insert
+new \code{<script>} node(s) to the root \code{<svg>} element. This
+demonstrates the ability to insert nodes at any location because
+rather than being forced to append to the document, we are able to add
+the nodes to be children of the root \code{<svg>} element.
+
+\subsection{Tree Simplification}
+
+One particular case where the \pkg{XML} package gives us some
+advantages is when saving an XML document. The function \code{saveXML}
+provides a boolean option, \code{indent}. This determines whether
+there is going to be any visual structure in the form of indentation
+and line breaks or none at all. An example of its effect is shown
+below.
+
+<<indentEx, echo = -c(1, 5, 7)>>=
+saveXML <- function(...) invisible()
+a <- newXMLNode("a")
+b <- newXMLNode("b", parent = a)
+saveXML(a, indent = TRUE)
+cat(XML::saveXML(a, indent = TRUE))
+saveXML(a, indent = FALSE)
+cat(XML::saveXML(a, indent = FALSE))
+@
+
+We can see that without indentation present the output is much more
+compact. In complex SVG images, particularly those with deep
+heirarchical structure, this could reduce the size of the resulting
+file greatly, which would improve the delivery speed of \gridSVG{}
+plots being sent over the web by reducing the amount of data that
+needs to be transferred.
+
+Another case where removing indentation is useful is when manipulating
+the SVG image in the browser using \proglang{JavaScript}. When parsing
+the SVG DOM with indentation present, the whitespace used for
+indentation is counted as a ``node''. This makes it difficult to
+traverse the DOM as it forces us to check whether the node that we
+have encountered is simply whitespace text or not. When indentation is
+removed, we no longer have this problem and can be certain that all
+nodes are either elements, or the actual content within them.
+
+\section{Conclusion}
+
+This article describes changes to the mechanism used by the \gridSVG{}
+package to convert \grid{} viewports and grobs to SVG representations.
+Instead of pasting strings together to generate SVG code as text
+within an external file, the \gridSVG{} package now uses the \pkg{XML}
+package to create XML nodes in resident memory. The advantages of this
+approach include: guaranteed validity of the SVG representation;
+greater flexibility in the production of the SVG representation;
+improved access to the SVG representation; and greater flexibility in
+the formatting of the SVG code. There are also possible speed benefits
+from these changes.
+
+These advantages have been demonstrated through simple examples, but
+they also have an impact on much more complex scenarios. For example,
+if \R{} is being used to serve web content to a browser, it is now
+possible for \gridSVG{} to provide SVG fragments (rather than complete
+plots) and to supply them directly from resident memory (rather than
+having to generate an external file as an intermediate step).
+
+<<echo = FALSE, results = "hide", message = FALSE>>=
+# Reverting to CRAN 'gtable'
+install.packages("gtable")
+@
