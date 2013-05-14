@@ -1,4 +1,26 @@
 
+2013-05-14
+----------
+
+DISCUSS:
+
+  + It seems that neither gecko (firefox ) nor webkit (chrome) have     
+    implemented "BackgroundImage" as a filter input for SVG
+
+    https://developer.mozilla.org/en-US/docs/SVG_in_Firefox
+
+    http://www.webkit.org/projects/svg/status.xml
+    https://bugs.webkit.org/show_bug.cgi?id=6022
+
+
+DONE:
+
+  + thesis writing 
+    - more drafting of introduction
+    - incorporation of more tech reports
+    - start on "Reference Objects" chapter
+
+
 2013-05-06
 ----------
 
