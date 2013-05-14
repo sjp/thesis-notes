@@ -10,6 +10,12 @@
 % Remove headers and footers from pages that are just empty
 \usepackage{emptypage}
 
+% 'selectr' chapter needs landscape table
+\usepackage{pdflscape}
+
+% Define C++ as \CC for Intro
+\def\CC{{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}}}
+
 % Might want to mess with page geometry at some point.
 % Handy to have just in case.
 \usepackage{geometry}
@@ -154,8 +160,13 @@ source("knitr-settings.R")
 
 \input{./tex/introduction.tex}
 \input{./tex/unique-names.tex}
+\input{./tex/generating-xml.tex}
 \input{./tex/coordinates.tex}
 \input{./tex/selectr.tex}
+\input{./tex/animation-sequencing.tex}
+\input{./tex/referenced-content.tex}
+\input{./tex/examples.tex}
+\input{./tex/discussion.tex}
 \input{./tex/conclusion.tex}
 
 %%%%%%%%%%%%%%%%%%%

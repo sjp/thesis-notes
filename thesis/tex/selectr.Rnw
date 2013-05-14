@@ -144,22 +144,33 @@ sample of the translations that occur:
 % Ideally would have this generated automatically but escaping is a pain.
 % Consider revising later?
 % Also, we really need this landscape...
+\begin{landscape}
+\topskip0pt
+\vspace*{\fill}
 \begin{table}[H]
 \centering
-\begin{tabular}{l l l}
+\begin{tabular}{p{0.25\linewidth} p{0.3\linewidth} p{0.3\linewidth}}
 CSS Selector & Parsed Structure & XPath Expression \\
 \midrule
 \code{\#test} & \code{Hash[Element[*]\#test]} & \code{descendant-or-self::*[@id = 'test']} \\
+\addlinespace[0.5em]
 \code{.test} & \code{Class[Element[*].test]} & \code{descendant-or-self::*[\@class and contains(concat(' ', normalize-space(\@class), ' '), ' test ')]} \\
-\code{body p} & \code{CombinedSelector[Element[body] <followed> Element[p]]} & \code{"descendant-or-self::body/descendant-or-self::*/p"} \\
+\addlinespace[0.5em]
+\code{body p} & \code{CombinedSelector[Element[body] <followed> Element[p]]} & \code{descendant-or-self:: body/descendant-or-self::*/p} \\
+\addlinespace[0.5em]
 \code{a[title]} & \code{Attrib[Element[a][title]]} & \code{descendant-or-self::a[\@title]} \\
+\addlinespace[0.5em]
 \code{div[class\textasciicircum='btn']} & \code{Attrib[Element[div][class \textasciicircum= 'btn']]} & \code{descendant-or-self::div[\@class and starts-with(\@class, 'btn')]} \\
-\code{li:nth-child(even)} & \code{Function[Element[li]:nth-child(['even'])]} & \code{descendant-or-self::*/*[name() = 'li' and ((position() +0) mod 2 = 0 and position() >= 0)]} \\
-\code{\#outer-div :first-child} & \code{CombinedSelector[Hash[Element[*]\#outer-div] <followed> Pseudo[Element[*]:first-child]]} & \code{descendant-or-self::*[@id = 'outer-div']/descendant-or-self::*/*[position() = 1]}
+\addlinespace[0.5em]
+\code{li:nth-child(even)} & \code{Function[Element[li]:nth- child(['even'])]} & \code{descendant-or-self::*/*[name() = 'li' and ((position() +0) mod 2 = 0 and position() >= 0)]} \\
+\addlinespace[0.5em]
+\code{\#outer-div :first-child} & \code{CombinedSelector[Hash[Element[*] \#outer-div] <followed> Pseudo[Element[*]:first-child]]} & \code{descendant-or-self::*[@id = 'outer-div']/ descendant-or-self::*/* [position() = 1]}
 \end{tabular}
 \caption{Examples of translations from CSS selectors to XPath expressions, including intermediary parsed structures.}
 \label{tbl:css-xpath-trans}
 \end{table}
+\vspace*{\fill}
+\end{landscape}
 
 These only touch on the possible translations, but it demonstrates
 that a mapping from CSS selectors to XPath expressions exists.
