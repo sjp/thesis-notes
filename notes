@@ -1,17 +1,29 @@
 
-2013-05-14
+2013-05-21
 ----------
 
 DISCUSS:
 
+  + Paul has got the legend-with-transparent-background going
+    (involves non-trivial usage of masking!)
+  
+  + Make drawDef() methods call grid:::force() ??
+
   + It seems that neither gecko (firefox ) nor webkit (chrome) have     
-    implemented "BackgroundImage" as a filter input for SVG
+    implemented "BackgroundImage" as a filter input for SVG (yet)
 
     https://developer.mozilla.org/en-US/docs/SVG_in_Firefox
 
     http://www.webkit.org/projects/svg/status.xml
     https://bugs.webkit.org/show_bug.cgi?id=6022
 
+  + It also seems that Firefox has not (yet) implemented document
+    fragments for <feImage> elements 
+    BUT chrome seems to do the job nicely
+
+
+2013-05-14
+----------
 
 DONE:
 
