@@ -22,6 +22,58 @@ DISCUSS:
     BUT chrome seems to do the job nicely
 
 
+TODO:
+
+  + Write thesis
+
+  + add grid:::force() to drawDef() methods
+    (so that they behave more completely like grid.export())
+
+  + reorder args of filterEffect() so 'filterEffects' come first
+    (and rename 'filterEffects' to 'feList')
+    (so that simple calls to filterEffect() are simpler/smaller)
+
+  + Add to gridSVG id generation tech report the fact that there is
+    now a 'prefix' argument for ids
+
+    - Also add section describing addition of "class" information
+
+  + push version 1.1-0 to CRAN 
+    (WITH 'depends:  R (< 3.0)')
+    - waiting for fix to 'XML' bug
+
+  + push version 1.2-0 to CRAN 
+
+  + Tech Reports: (?)
+    - a discussion of how to select SVG elements produced by 'gridSVG'
+      + by id (refer to separate doc)
+      + by class (?)
+      + by SVG element
+      + by structure (nesting)
+    - knitr hook for gridSVG
+    - new SVG features in gridSVG
+      + including fill patterns, filters, path clipping, elementGrob(), ...
+    
+  + create grobToSVG() function ?
+    - x = a grob or gTree
+    - width + height give you where to draw
+    - gridToSVG() would call this (?)
+
+
+DONE:
+
+  + changes to gridSVG
+    - col=0 now converted to "transparent"
+    - order of attributes in elements now consistent
+      (and grid.garnish() attributes come last 
+       [so will override others with same name
+        {at least with 'XML' package}])
+
+  + Add the 'prefix' as 'id' for the top-level <svg> (if specified)
+
+  + merge github version back to R-Forge
+
+
 2013-05-14
 ----------
 
