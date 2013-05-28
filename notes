@@ -1,4 +1,42 @@
 
+
+2013-06-04
+----------
+
+DISCUSS:
+
+  + Seminar booked for 4:00 Thurs June 27
+    - Title ? 
+    - Abstract ?
+
+
+2013-05-28
+----------
+
+DISCUSS:
+
+  + NZSA talk ?
+
+  + Paul's blur filter plot example
+
+  + Applying linear gradient to more than one non-group element
+    (can't [and don't want to] supply multiple gradient objects
+     but then garnish.grob() only applies garnish to first non-group
+     element)
+     - Simon pointed out that we have solved this problem before!
+       The answer is to first register the linear gradient and
+       then provide multiple *labels* as the garnish value
+       to grid.gradientFill()
+
+  + GSoC
+
+
+TODO:
+
+  + DON'T FORGET ABOUT THE PROJECT SEMINAR
+    - late June ?
+
+
 2013-05-21
 ----------
 
