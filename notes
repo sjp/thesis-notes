@@ -1,6 +1,15 @@
 
 
-2013-06-04
+2013-06-11
+----------
+
+PLAN:
+
+  + Finish thesis by end of week
+  + Prep talk for June 27
+
+
+2013-06-06
 ----------
 
 DISCUSS:
@@ -8,6 +17,24 @@ DISCUSS:
   + Seminar booked for 4:00 Thurs June 27
     - Title ? 
     - Abstract ?
+
+  + Leaf article
+
+
+FOR NOTING:
+  
+  + the Google Chart API does provide some options to customise plots
+
+    http://mages.github.io/Introduction_to_googleVis/#15
+
+  + 'g3plot' package
+
+    https://github.com/alexbbrownIntel/g3plot
+
+    "Core idea: Pick a dataset, then describe how that data is mapped 
+     into a graph, using the handy-dangy ggplot2 like format.
+     Includes interactive features such as click and drag.
+     Add Shiny inputs to the app to control graph filtering and more."
 
 
 2013-05-28
@@ -35,6 +62,18 @@ TODO:
 
   + DON'T FORGET ABOUT THE PROJECT SEMINAR
     - late June ?
+
+
+DONE:
+
+  + gTree children drawn in childrenOrder
+
+  + add grid:::force() to drawDef() methods
+    (so that they behave more completely like grid.export())
+
+  + reorder args of filterEffect() so 'filterEffects' come first
+    (and rename 'filterEffects' to 'feList')
+    (so that simple calls to filterEffect() are simpler/smaller)
 
 
 2013-05-21
