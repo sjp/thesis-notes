@@ -2,54 +2,1700 @@
 source("../knitr-settings.R")
 @
 
-\chapter{Referenced Content}
+\chapter{Advanced SVG Features}
+\label{chap:refcontent}
 
 Much of the development of \gridSVG{} has focused on translating
 \grid{} objects to their SVG equivalents. In order to take advantage
 of SVG features, \grid{} objects can be annotated with additional
-information. This is how animation and hyperlinking able to be
-generated from a \grid{} image. These are certainly useful features to
-have but there are many features of SVG that are not possible to
-implement in \grid{} due to limitations in the \R{} graphics
-engine. This requires \gridSVG{} to take a different approach to SVG
-translation than usual; rather than translating \grid{} concepts to
-SVG, \gridSVG{} attempts to translate SVG concepts to \grid{}.
+information. This is how animation and hyperlinking can be generated
+from a \grid{} image. These are certainly useful features to have but
+there are many features of SVG that are not possible to implement in
+\grid{} due to limitations in the \R{} graphics engine. This requires
+\gridSVG{} to take a different approach to SVG translation than usual;
+rather than translating \grid{} concepts to SVG, \gridSVG{} attempts
+to translate SVG concepts to \grid{}.
 
-This chapter describes \gridSVG{}'s implementation of SVG features in
-\grid{}. These features are called \emph{referenced content} because
-they are not graphical elements to be drawn, they can only be
-\emph{referred} to by graphical elements. For example, a pattern fill
-requires a graphical object to be filled with a pattern (e.g. a
-rectangle), and also a definition of a pattern. The graphical object
-\emph{refers} to the pattern to determine how it is filled. Each of
-the types of referenced content will be examined in more detail.
+The ability to use features of SVG that are not possible with the \R{}
+graphics engine allows a user to create more sophisticated statistical
+graphics for use within a web browser. \gridSVG{} provides an \R{}
+interface to SVG features that many other graphics systems either do
+not provide, or require knowledge of SVG to use.
 
 \section{Patterns}
 
-%FIXME! cite which systems
-A common feature in many graphics systems (\dots) is the ability to
-fill a region with a pattern. SVG
+In \grid{}, a grob is only able to be filled with a solid colour,
+optionally with some transparency. SVG allows any graphical element to
+be filled not only with a solid colour, but also with a pattern. This
+means that, for example, a rectangle can be filled with a pattern
+``tile'' that is repeated horizontally and vertically to fill the
+entire rectangle. An example of this is shown in
+\autoref{fig:demoPattern}.
 
-\subsection{Definition}
+<<demoPattern, echo = FALSE, results = "hide", fig.cap = "A repeating pattern applied to a rectangle.", phantom = TRUE>>=
+grid.rect(width = unit(2/3, "npc"), height = unit(2/3, "npc"), name = "demo")
+grid.patternFill("demo", pattern(circleGrob(r = 0.3, gp=gpar(fill="black"))))
+@
 
+In the example shown in \autoref{fig:demoPattern} we can see that a
+single rectangle has been filled with a repeating pattern, that
+pattern being a single black circle. In order to draw this image, a
+three step process needed to be followed: the drawing of a graphics
+object, pattern definition, and pattern application. First, we'll draw
+a rectangle with the name \code{myrect}.
 
-\subsection{Registration}
+<<grobDef, out.height = "2in", out.width = "2in", fig.cap = "A plain rectangle named ``myrect''.">>=
+grid.rect(width = 2/3, height = 2/3, name = "myrect")
+grid.ls()
+@
 
+The rectangle that has been drawn in \autoref{fig:grobDef} can now be
+seen on the display list. This means that we can now apply a pattern
+fill to the rectangle simply by referring to its name,
+\code{myrect}. To apply a pattern fill we first need to define a
+pattern, which requires three components to be specified. These
+components are the following: a grob, which describes what the pattern
+looks like, dimensions for the size of the pattern tile as it is being
+used, and finally the dimensions for the tile as it is being defined.
 
+To better explain the difference between the dimensions of a pattern
+tile as it is being used (the pattern size) and the dimensions of the
+tile as it is being defined (the device size), an illustration has
+been drawn in \autoref{fig:dimExpl}.
 
-\dots
+<<dimExpl, echo = FALSE, fig.width = 5, out.width = "5in", fig.cap = "The device dimensions determine how the pattern tile is drawn. The width and height describe the size of the pattern tile when it is used.">>=
+grid.rect(x = 1.5, y = 2, width = 1, height = 1, default.units = "inches")
+grid.circle(x = 1.5, y = 2, r = 1/2, default.units = "inches")
+grid.lines(x = unit(rep(0.75, 2), "inches"),
+           y = unit(1:2 + 0.5, "inches"),
+           arrow = arrow(length = unit(0.1, "inches"),
+                         ends = "both", type = "closed"),
+           gp = gpar(fill = "black"))
+grid.lines(x = unit(1:2, "inches"),
+           y = unit(rep(1.25, 2), "inches"),
+           arrow = arrow(length = unit(0.1, "inches"),
+                         ends = "both", type = "closed"),
+           gp = gpar(fill="black"))
+grid.text("Device Width/Height", x = 1.5, y = 0.75, default.units = "inches")
 
-\section{Clipping Paths}
+grid.rect(x = 3.5, y = 2, width = 1, height = 1, default.units = "inches")
+grid.circle(x = rep(seq(from=3 + 1/8, to = 4 - 1/8, length.out = 4), 4),
+            y = rep(seq(from=1.5+1/8, to=2.5-1/8, length.out = 4), each = 4),
+            r = 1/8, default.units = "inches")
+grid.lines(x = unit(rep(2.75, 2), "inches"),
+           y = unit(c(1.5, 1.75), "inches"),
+           arrow = arrow(length = unit(0.05, "inches"),
+                         ends = "both", type = "closed"),
+           gp = gpar(fill="black"))
+grid.lines(x = unit(c(3, 3.25), "inches"),
+           y = unit(rep(1.25, 2), "inches"),
+           arrow = arrow(length = unit(0.05, "inches"),
+                         ends = "both", type = "closed"),
+           gp = gpar(fill="black"))
+grid.text("Pattern Width/Height", x = 3.5, y = 0.75, default.units = "inches")
+@
 
-\dots
+\autoref{fig:dimExpl} shows how a simple circle grob has been drawn
+onto a new device as the definition of a pattern. How the pattern
+definition appears may depend on the size of the device if absolute
+units are in use, e.g. centimetres, inches. Once the pattern tile has
+been defined, it can then be applied as a pattern fill to a grob. When
+the pattern is applied to a grob, the pattern height and width
+determines the size of the tile as it is being used. We will revisit
+the earlier example to show how the pattern was defined.
 
+<<definePattern>>=
+pat <-
+    pattern(grob = circleGrob(r = 0.3, gp = gpar(fill="black")),
+            # Define *pattern* dimensions
+            width = unit(0.1, "npc"), height = unit(0.1, "npc"),
+            # Define *device* dimensions (in inches)
+            dev.width = 7, dev.height = 7)
+@
 
-\section{Masks}
+Here we see that the circle was drawn onto a 7 inch by 7 inch canvas
+as the pattern definition. When the pattern is used, each tile will be
+one tenth the height and width of the current viewport (in this case
+that means our entire image).
 
-\dots
+Now that we have a pattern object, \code{pat}, we can use this to
+apply it to our rectangle, \code{myrect} using \gridSVG{}'s
+\code{grid.patternFill()} function.
 
+<<applyPattern, echo = FALSE>>=
+cat('grid.patternFill("myrect", pattern = pat)')
+@
+
+We cannot see that the pattern has been applied until we export the
+image using \code{grid.export()}. The result of this operation is
+shown in \autoref{fig:exportPattern}.
+
+<<exportPattern, echo = FALSE, fig.show = "hold", fig.height = 3, out.height = "3in", fig.width = 3, out.width = "3in", fig.cap = "A rectangle with a simple pattern applied to it.", phantom = TRUE>>=
+grid.rect(width = unit(2/3, "npc"), height = unit(2/3, "npc"), name = "demo")
+grid.patternFill("demo", pattern(circleGrob(r = 0.3, gp=gpar(fill="black"))))
+cat('R> grid.export("pattern-ex.svg")')
+@
+
+The previous example was just a simple demonstration to show how
+patterns can be constructed and used. However, there are cases where
+patterns are useful such as showing group classification when colour
+alone is not sufficient. They may also be useful for ensuring that a
+plot can safely be printed by a monochrome printer or when making
+considerations for colourblindness. Consider the plot displayed in
+\autoref{fig:createDataAndPlotBarchart} which could benefit from the
+use of patterns.
+
+<<createDataAndPlotBarchart, fig.width = 5, fig.height = 5, out.width = "4in", out.height = "4in", fig.cap = "A simple \\pkg{lattice} bar chart.">>=
+# Create means for each group
+plotdat <- aggregate(hp ~ gear + vs, data = mtcars, mean)
+plotdat$gear <- factor(plotdat$gear)
+plotdat$vs <- factor(plotdat$vs)
+# Let's have a look at the data
+plotdat
+# Plot a barchart
+library(lattice)
+barchart(hp ~ gear, groups = vs, data = plotdat,
+         xlab = "Number of Gears", ylab = "Mean Horsepower",
+         auto.key = list(space = "right"), horizontal = FALSE)
+@
+
+The plot in \autoref{fig:createDataAndPlotBarchart} uses light green
+and light red as the differentiating colours for group membership in
+the ``V/S'' group. Instead of using colours, patterns can be used to
+show group membership. This bar chart was created using the
+\pkg{lattice} package \autocite{Sar08}, which uses the \grid{}
+graphics system, meaning that we can modify it using \gridSVG{}.
+
+A key advantage of \pkg{lattice} is that it has a clear and
+well-defined naming scheme \autocite{RJournal:2012-2:Murrell} that
+allows us to easily identify a component of a plot. To demonstrate
+this, we will show a relevant subset of the names of objects on the
+\grid{} display list.
+
+<<barchartListing, echo = FALSE, fig.keep = "none">>=
+barchart(hp ~ gear, groups = vs, data = plotdat,
+         xlab = "Number of Gears", ylab = "Mean Horsepower",
+         auto.key = list(space = "right"), horizontal = FALSE)
+dl <- grid.ls(print=FALSE)
+dl <- lapply(dl, function(x) x[-(1:7)])
+class(dl) <- "flatGridListing"
+cat("R> grid.ls()\n...\n")
+print(dl)
+@
+
+The output from \code{grid.ls()} shows that the bars in the bar chart
+are drawn as three rectangle grobs, named
+\code{plot\_01.barchart.\-x.1.\-rect.panel.1.1},
+\code{plot\_01.barchart.\-x.2.\-rect.panel.1.1} and
+\code{plot\_01.barchart.\-x.3.\-rect.panel.1.1}. In the legend, each
+of the keys for the values of ``V/S'' are named
+\code{plot\_01.\-key.\-rect.2.1} and \code{plot\_01.\-key.\-rect.2.2}.
+
+With the naming information in hand, we can now begin to define
+patterns that will be applied to each of these drawn grobs. We will
+define two patterns to show group membership: for the value of ``0''
+we will draw a pattern that will appear as repeated diagonal lines
+from bottom-left to top-right, for the value of ``1'' we will draw
+polka-dot pattern. Additionally, these patterns will be sized to be
+quite small at 2mm wide by 2mm high so that they repeat often.
+
+<<bcPatternDefs, results = "hide">>=
+val0pat <- pattern(linesGrob(),
+                   width = unit(2, "mm"), height = unit(2, "mm"),
+                   dev.width = 1, dev.height = 1)
+val1pat <- pattern(circleGrob(r = 0.25,
+                              gp = gpar(fill = "black")),
+                   width = unit(2, "mm"), height = unit(2, "mm"),
+                   dev.width = 1, dev.height = 1)
+@
+
+Now that they have been defined, they need to be registered so that we
+apply them by label. This will be explained in more detail in
+\autoref{sec:defreg}. The registered patterns will then be applied,
+and we know how to apply the patterns to grobs because we can
+reference them by name.
+
+<<bcApplyPatterns, echo = -c(1, 12), fig.width = 5, fig.height = 5, out.width = "4in", out.height = "4in", fig.show = "hold", fig.keep = "last", fig.cap = "A \\pkg{lattice} bar chart with patterns applied for each group.", phantom = TRUE>>=
+barchart(hp ~ gear, groups = vs, data = plotdat,
+         xlab = "Number of Gears", ylab = "Mean Horsepower",
+         auto.key = list(space = "right"), horizontal = FALSE)
+# Registering patterns
+registerPatternFill("val0pat", val0pat)
+registerPatternFill("val1pat", val1pat)
+# Applying pattern fills
+barNames <- paste0("plot_01.barchart.x.", 1:3,
+                   ".rect.panel.1.1")
+for (i in 1:3) {
+    grid.patternFill(barNames[i],
+                     label = c("val0pat", "val1pat"),
+                     group = FALSE)
+}
+# Applying legend pattern fills
+legendNames <- paste0("plot_01.key.rect.2.", 1:2)
+grid.patternFill(legendNames[1], label = "val0pat",
+                 group = FALSE)
+grid.patternFill(legendNames[2], label = "val1pat",
+                 group = FALSE)
+cat('R> grid.export("pattern-barchart.svg")')
+@
+
+To explain \autoref{fig:bcApplyPatterns} in more detail, when
+\code{grid.patternFill()} is being called the first argument we give
+it is the name of the grob that we want to fill with a pattern. The
+\code{label} argument refers to the pattern we registered earlier
+(either \code{val0pat} or \code{val1pat}), while the \code{group}
+argument being set to \code{FALSE} means that we want the pattern to
+be applied to the SVG \code{<rect>} element produced by \gridSVG{} and
+not the grob's grouping element (see \autoref{sec:subgrob} for more
+details).
+
+Instead of using colour to differentiate between two groups,
+\gridSVG{} has demonstrated an alternative option for performing this
+task by using patterns in SVG.
+
+\section{Gradients}
+
+Gradients are often used to show a linear colour scale in plots,
+particularly when the data the scale describes is a continuous
+variable. SVG allows us to create both linear and radial gradients in
+a declarative manner and \gridSVG{} provides a high-level interface
+for creating and using SVG gradients.
+
+\subsection{Linear Gradients}
+
+Linear gradients are often used in existing statistical software,
+particularly when drawing plots such as two-dimensional density
+plots. Examples of gradients being used are shown in
+\autoref{fig:gradientExamples}, taken from the \pkg{lattice} and
+\pkg{ggplot2} packages.
+
+<<gradientExamples, echo = FALSE, results = "hide", fig.height = 3, out.height = "2.5in", fig.width = 6, out.width = "5in", fig.cap = "A \\pkg{lattice} plot and a \\pkg{ggplot2} plot, both using gradients.">>=
+library(lattice)
+pushViewport(viewport(x = 1/4, width = 1/2))
+trellis.par.set(theme = col.whitebg())
+plot(levelplot(volcano, colorkey = list(space = "top"),
+               sub = "Maunga Whau volcano", aspect = "iso"),
+     newpage = FALSE)
+upViewport(1)
+library(ggplot2)
+pushViewport(viewport(x = 3/4, width = 1/2))
+p <- qplot(mpg, wt, data = mtcars, colour = cyl)
+print(p, newpage = FALSE)
+upViewport(1)
+@
+
+The first thing to consider when creating a linear gradient is what
+units are used to position gradient stops. They can either be relative
+to the filled graphics object or relative to a viewport's coordinate
+system. For example, consider a rectangle that is 5 centimetres wide,
+and another that is 10 centimetres wide. If we allow a gradient to be
+relative to the referring object, then when the same gradient is
+applied to both rectangles, the gradient is scaled to be twice as wide
+on the 10cm wide rectangle than the 5cm wide rectangle. The other
+alternative is to position the gradient relative to the coordinate
+system, in which case the gradient will appear exactly the same on
+both rectangles, but the smaller rectangle may not be able to display
+as much of the gradient as the larger rectangle can. The difference
+between the two alternatives is illustrated in
+\autoref{fig:showBboxAndCoords}.
+
+<<showBboxAndCoords, echo = FALSE, results = "hide", fig.width = 5, out.width = "5in", fig.height = 1.2, out.height = "1.2in", fig.cap = "The two options for positioning gradients.", phantom = TRUE>>=
+colours <- c("#55B1F7", "#52A9ED", "#4EA2E3", "#4B9BD9", "#4793CF",
+             "#448CC6", "#4085BC", "#3D7EB3", "#3977AA", "#3670A1",
+             "#326A97", "#2F638E", "#2C5C86", "#28567D", "#254F74",
+             "#22496B", "#1F4363", "#1C3C5B", "#193652", "#15304A",
+             "#132B43")
+bboxGrad <- linearGradient(colours, y1 = unit(0, "npc"))
+coordsGrad <- linearGradient(colours,
+                             x0 = unit(1, "cm"),
+                             x1 = unit(1, "npc") - unit(1, "cm"),
+                             y1 = unit(0, "npc"), gradientUnits = "coords")
+
+pushViewport(viewport(x = 0.25, width = 0.5))
+fullWidth <- convertWidth(unit(1, "npc") - unit(2, "cm"),
+                          "inches", valueOnly = TRUE)
+halfWidth <- unit(fullWidth / 2, "inches")
+fullWidth <- unit(fullWidth, "inches")
+grid.rect(x = unit(1, "cm"), y = unit(1, "npc") - unit(1, "lines"),
+          width = halfWidth, height = unit(1, "lines"),
+          just = "left", gp = gpar(col = "transparent"),
+          name = "relhalf")
+grid.rect(x = unit(1, "cm"), y = unit(1, "npc") - unit(3, "lines"),
+          width = fullWidth, height = unit(1, "lines"),
+          just = "left", gp = gpar(col = "transparent"),
+          name = "relfull")
+grid.text("Relative Gradients", y = unit(1, "npc") - unit(5, "lines"))
+grid.gradientFill("relhalf", bboxGrad)
+grid.gradientFill("relfull", bboxGrad)
+popViewport()
+
+pushViewport(viewport(x = 0.75, width = 0.5))
+grid.rect(x = unit(1, "cm"), y = unit(1, "npc") - unit(1, "lines"),
+          width = halfWidth, height = unit(1, "lines"),
+          just = "left", gp = gpar(col = "transparent"),
+          name = "abshalf")
+grid.rect(x = unit(1, "cm"), y = unit(1, "npc") - unit(3, "lines"),
+          width = fullWidth, height = unit(1, "lines"),
+          just = "left", gp = gpar(col = "transparent"),
+          name = "absfull")
+grid.text("Absolute Gradients", y = unit(1, "npc") - unit(5, "lines"))
+grid.gradientFill("abshalf", coordsGrad)
+grid.gradientFill("absfull", coordsGrad)
+popViewport()
+@
+
+By default, \gridSVG{} will scale the linear gradient so that the
+start of the gradient and the end of the gradient cover the entire
+graphical object that is being filled.
+
+Once it has been established whether our gradients are going to be
+relative to our grobs relative or to our viewport coordinate system we
+can begin to define our gradients. The \code{x0}, \code{x1},
+\code{y0}, and \code{y1} arguments to our gradient function are
+particularly important because they define three things: position,
+magnitude, and direction.
+
+<<gradientXYs, echo = FALSE, results = "hide", fig.height = 2, out.height = "2in", fig.width = 5, out.width = "5in", fig.cap = "Defining a gradient vector using four points.">>=
+pushViewport(viewport(x = 0, width = 1/3, just = "left"))
+grid.lines(c(0.2, 0.7), c(0.5, 0.5), arrow = arrow())
+grid.text(c("x0", "x1"),
+          x = c(0.2, 0.7), y = unit(0.5, "npc") - unit(1, "lines"),
+          gp = gpar(fontfamily = "mono"))
+popViewport()
+pushViewport(viewport(x = 1/3, width = 1/3, just = "left"))
+grid.lines(x = c(0.5, 0.5), y = c(0.1, 0.9), arrow = arrow())
+grid.text(c("y0", "y1"),
+          x = unit(0.5, "npc") + unit(1, "char"),
+          y = unit(c(0.1, 0.9), "npc"),
+          just = "left", gp = gpar(fontfamily = "mono"))
+popViewport()
+pushViewport(viewport(x = 2/3, width = 1/3, just = "left"))
+grid.lines(c(0.2, 0.7), c(0.1, 0.9), arrow = arrow())
+grid.text(c("Start", "End"),
+          x = unit(c(0.2, 0.7), "npc") + unit(c(2, 1), "char"),
+          y = unit(c(0.1, 0.9), "npc") + unit(c(0, -2), "lines"))
+popViewport()
+@
+
+The $x$ and $y$ vectors not only define a direction, but also a
+magnitude. When these vectors are added together, the result is the
+vector shown on the right of \autoref{fig:gradientXYs}. When the
+gradient is defined to be relative to a grob these vectors will be
+converted to normalised parent coordinates. This means that the
+location $(0, 0)$ refers to the bottom-left corner of the grob and
+$(1, 1)$ refers to the top-right corner. If we are absolutely
+positioning a gradient, then all \grid{} units can be used.
+
+In addition to $x$ and $y$ vectors, a gradient also requires gradient
+stops. Gradient stops are colours defined at control points that a
+gradient must interpolate through. Each gradient stop must define both
+a colour and a position. For example, a gradient could start at the
+colour black, then at halfway it must be red, then at the end of the
+gradient it is white. This example uses three gradient stops and is
+illustrated in \autoref{fig:gradStopEx}.
+
+<<gradStopEx, echo = FALSE, fig.height = 2, out.height = "2in", fig.width = 5, out.width = "5in", fig.cap = "A linear gradient featuring three gradient stops.", phantom = TRUE>>=
+exgrad <- linearGradient(c("black", "red", "white"),
+                         y1 = unit(0, "npc"))
+grid.rect(y = unit(1, "npc") - unit(1, "lines"),
+          height = unit(1, "lines"),
+          width = unit(1, "npc") - unit(2, "cm"),
+          name = "gradrect", gp = gpar(col = "transparent"))
+grid.gradientFill("gradrect", exgrad)
+
+grid.rect(x = unit.c(unit(1, "cm"), unit(0.5, "npc"), unit(1, "npc") - unit(1, "cm")),
+          y = unit(1, "npc") - unit(9, "lines"),
+          width = unit(1, "lines"), height = unit(1, "lines"),
+          gp = gpar(fill = c("black", "red", "white")))
+lineys <- unit.c(unit(1, "npc") - unit(9, "lines") + unit(5, "mm"),
+                 unit(1, "npc") - unit(1, "lines") - unit(5, "mm"))
+linexs <- unit.c(unit(1, "cm"), unit(0.5, "npc"), unit(1, "npc") - unit(1, "cm"))
+grid.lines(unit.c(linexs[1], linexs[1]), lineys,
+           arrow = arrow(length = unit(0.15, "inches"), type = "closed"),
+           gp = gpar(fill = "black", lwd = 2))
+grid.lines(unit.c(linexs[2], linexs[2]), lineys,
+           arrow = arrow(length = unit(0.15, "inches"), type = "closed"),
+           gp = gpar(fill = "black", lwd = 2))
+grid.lines(unit.c(linexs[3], linexs[3]), lineys,
+           arrow = arrow(length = unit(0.15, "inches"), type = "closed"),
+           gp = gpar(fill = "black", lwd = 2))
+@
+
+Gradient stops give us a way of specifying the colours used in a
+gradient but the way in which they are positioned requires further
+explanation. We have already stated how the start and end points of
+the gradient can be positioned relative to a graphics object, or
+relative to a viewport coordinate system. This means that a gradient
+stop needs to be positioned relative to the gradient as it is being
+used. The way in which this is done in \gridSVG{} is to provide a
+relative location for each gradient stop. Locations can range from
+(but are not limited to) 0 to 1, where 0 represents the start of the
+gradient and 1 is the end of the gradient. We can now see how the
+gradient stops were positioned for the example shown earlier: black at
+0, red at 0.5 and white at 1.
+
+A final consideration with the definition of linear gradients is when
+the gradient region is not defined for the the region filling the
+entire referring graphics object. In other words, what should appear
+when a gradient defines colours for a region shorter than the entire
+length of our fill region? SVG gradients can handle this case using
+what is known as a ``spread method''. There are three possible
+options:
+
+\begin{description}
+
+\item[Pad] Use the colours at the ends of the gradient to fill the
+  remaining region.
+\item[Reflect] Reflect the gradient pattern start-to-end,
+  end-to-start, start-to-end, etc. continuously until the remaining
+  region is filled.
+\item[Repeat] Repeat the gradient pattern start-to-end, start-to-end,
+  start-to-end, etc. continuously until the remaining region is
+  filled.
+
+\end{description}
+
+To show how these might be used, consider the earlier example where we
+had three gradient stops. If we define the gradient region to only
+cover half the width of the referring rectangle, we are left with a
+fill region that is only defined between the start and halfway
+points. With this incomplete gradient fill, we can see the effect of
+the different spread methods.
+
+<<showSpreadMethod, echo = FALSE, results = "hide", fig.height = 1.2, out.height = "1.2in", fig.width = 5, out.width = "5in", fig.cap = "The effect of the spread method on gradients.", phantom = TRUE>>=
+offset <- unit(1.5, "cm") + stringWidth("Reflect")
+rectw <- unit(1, "npc") - offset - unit(1, "cm")
+grid.text(c("Pad", "Reflect", "Repeat"), just = "right",
+          x = offset - unit(0.5, "cm"),
+          y = unit(1, "npc") - unit(c(1, 3, 5), "lines"))
+grid.rect(x = offset, y = unit(1, "npc") - unit(1, "lines"),
+          width = rectw, height = unit(1, "lines"),
+          gp = gpar(col = "transparent"), just = "left",
+          name = "pad")
+grid.rect(x = offset, y = unit(1, "npc") - unit(3, "lines"),
+          width = rectw, height = unit(1, "lines"),
+          gp = gpar(col = "transparent"), just = "left",
+          name = "reflect")
+grid.rect(x = offset, y = unit(1, "npc") - unit(5, "lines"),
+          width = rectw, height = unit(1, "lines"),
+          gp = gpar(col = "transparent"), just = "left",
+          name = "repeat")
+padgrad <- linearGradient(c("black", "red", "white"),
+                          x1 = unit(0.5, "npc"), y1 = unit(0, "npc"),
+                          spreadMethod = "pad")
+reflectgrad <- linearGradient(c("black", "red", "white"),
+                              x1 = unit(0.5, "npc"), y1 = unit(0, "npc"),
+                              spreadMethod = "reflect")
+repeatgrad <- linearGradient(c("black", "red", "white"),
+                             x1 = unit(0.5, "npc"), y1 = unit(0, "npc"),
+                             spreadMethod = "repeat")
+grid.gradientFill("pad", padgrad)
+grid.gradientFill("reflect", reflectgrad)
+grid.gradientFill("repeat", repeatgrad)
+@
+
+We have covered the key components of a linear gradient: the gradient
+region (and its direction), gradient stops, and the spread method. To
+demonstrate how to apply a linear gradient in \gridSVG{}, we will
+attempt to fill a simple rectangle. This rectangle will be filled with
+black, then blue, then white and the gradient will be applied from the
+top-left to the bottom-right of the rectangle. The first thing we will
+do is draw the rectangle, shown in \autoref{fig:drawSimpleGradRect}.
+
+<<drawSimpleGradRect, fig.height = 1.5, fig.width = 1.5, out.height = "1.5in", out.width = "1.5in", fig.cap = "A simple \\grid{} rectangle.">>=
+grid.rect(name = "myrect")
+@
+
+The rectangle is now on \grid{}'s display list, meaning that we can
+refer to the name \code{myrect}, and apply a gradient fill to
+it. Before the gradient can be applied it must first be defined using
+the \code{linearGradient()} function.
+
+<<defineSimpleLinGrad>>=
+myLinGrad <-
+    linearGradient(c("black", "dodgerblue4", "white"),
+                   x0 = unit(0, "npc"), x1 = unit(1, "npc"),
+                   y0 = unit(1, "npc"), y1 = unit(0, "npc"))
+@
+
+The linear gradient definition is now stored in the variable
+\code{myLinGrad}. One thing to note is that by default the gradient
+stops are positioned evenly across the gradient region i.e. at the
+start, halfway and end of the gradient. Given that a linear gradient
+definition has been created, we can apply it to the rectangle named
+\code{myrect}.
+
+<<drawSimpleGradRectWithGrad, echo = -c(1, 3), fig.height = 1.75, fig.width = 1.75, out.height = "1.5in", out.width = "1.5in", fig.keep = "last", fig.show = "hold", fig.cap = "A rectangle with a linear gradient.", phantom = TRUE>>=
+grid.rect(name = "myrect")
+grid.gradientFill("myrect", myLinGrad)
+cat('R> grid.export("rect-with-linear-gradient.svg")')
+@
+
+In order to apply a gradient fill, all that was necessary was to refer
+to the drawn grob by name, and also supply the gradient definition as
+arguments to the \code{grid.gradientFill()} function. This is just a
+simple demonstration showing how linear gradients can be defined and
+applied in \gridSVG{}.
+
+A more complicated example demonstrating the use of linear gradients
+will now be shown attempting to recreate the \pkg{lattice} plot shown
+earlier (\autoref{fig:gradientExamples}), but using SVG gradients
+instead of rectangles. First, let us draw the \pkg{lattice} plot and
+display it in \autoref{fig:latticePreGrad}.
+
+<<latticePreGrad, fig.height = 3, out.height = "3in", echo = c(1, 2), fig.cap = "A \\pkg{lattice} plot featuring a colour scale.">>=
+library(lattice)
+levelplot(volcano, colorkey = list(space = "top"),
+          sub = "Maunga Whau volcano", aspect = "iso")
+dl <- unclass(grid.ls(fullNames = TRUE, print = FALSE))
+dl <- lapply(dl, function(x) x[-(1:12)])
+class(dl) <- "flatGridListing"
+cat("R> grid.ls(fullNames = TRUE)\n...")
+print(dl)
+@
+
+The use of a naming scheme in \pkg{lattice} makes the task of
+identifying any component of a plot easy. We can observe from the
+relevant output from \code{grid.ls()} that the colour scale is stored
+in a rectangle grob named \code{plot\_01.colorkey.image}. With
+knowledge of the name of the colour scale, we can collect the
+information we need to construct a gradient, namely the colours used
+to fill it.
+
+<<collectFills, echo = -1, fig.keep = "none">>=
+levelplot(volcano, colorkey = list(space = "top"),
+          sub = "Maunga Whau volcano", aspect = "iso")
+rect <- grid.get("plot_01.colorkey.image")
+gradCols <- rect$gp$fill
+gradCols
+@
+
+We can see that \Sexpr{length(gradCols)} colours were used to fill the
+colour scale. It is also necessary to modify the rectangle so that
+instead of drawing many small rectangles, it draws a single large
+rectangle. This step is not shown but once completed we can
+create and apply a linear gradient.
+
+<<linGradDef, echo = -c(1:7, 12), fig.show = "hold", fig.keep="last", fig.height = 3, out.height = "3in", fig.cap = "A \\pkg{lattice} plot with a linear gradient used for a colour scale instead of a series of rectangles.", phantom = TRUE, cache = TRUE>>=
+levelplot(volcano, colorkey = list(space = "top"),
+          sub = "Maunga Whau volcano", aspect = "iso")
+rect <- grid.get("plot_01.colorkey.image")
+gradCols <- rect$gp$fill
+xs <- convertUnit(rect$x, "native", valueOnly = TRUE)
+midpoint <- (xs[1] + xs[length(xs)]) / 2
+grid.edit("plot_01.colorkey.image",
+          x = unit(midpoint, "native"), y = rect$y[1],
+          width = sum(rect$width))
+
+# Defining the gradient so that it draws from left to right
+grad <- linearGradient(col = gradCols,
+                       x0 = unit(0, "npc"), x1 = unit(1, "npc"),
+                       y0 = unit(0, "npc"), y1 = unit(0, "npc"))
+# Applying the gradient to our grob
+grid.gradientFill("plot_01.colorkey.image", grad, group = FALSE)
+cat('R> grid.export("lattice-gradient.svg")')
+@
+
+<<resetLatticeTheme, echo = FALSE, results = "hide">>=
+trellis.par.set(theme = standard.theme())
+@
+
+We can see in \autoref{fig:linGradDef} that this is an improvement
+over the original implementation because the colour scale is now
+smooth instead of ``blocky''. The linear gradient was simple to create
+because the colours were already available from the existing
+implementation and the gradient vector was directed from $(0, 0)$ to
+$(0, 1)$. When applying the gradient fill, the only additional
+complication was to set the \code{grid.gradientFill()} function's
+\code{group} argument to \code{FALSE}. If \code{group} is \code{TRUE}
+(this is the default value), then the gradient fill operation is
+applied to the SVG \code{<g>} that wraps the grob. In this case
+because there are already colours applied directly to the rectangle
+grob, these will take precedence over any applied to the wrapping
+\code{<g>} element. By setting \code{group} to \code{FALSE}, we are
+ensuring that the colours on the grobs are directly replaced with a
+gradient fill.
+
+\subsection{Radial Gradients}
+
+We have discussed linear gradients but SVG also allows us to fill a
+graphical element with a radial gradient. In many ways these are
+similar to linear gradients because the way in which gradient stops
+are defined and the spread methods are exactly the same. Again, like
+linear gradients, radial gradients can also be relative to a graphics
+object, or relative to a viewport coordinate system. The only
+significant difference between the types of gradients is in how the
+gradient region is defined.
+
+The gradient region for a linear gradient is determined by a vector
+and its start and end points; radial gradients instead define their
+gradient region by a starting location, called the focal point, and
+the radius of a circle dictates the end of the gradient region.
+
+<<circleGradRadius, echo = FALSE, results = "hide", fig.height = 2, out.height = "2in", fig.cap = "A radial gradient starts at the focal point and ends at the edge of the circle.">>=
+grid.circle()
+grid.lines(unit.c(unit(0.5, "npc"), unit(0.5, "npc") + unit(1, "inches")),
+           rep(unit(0.5, "npc"), 2),
+           gp = gpar(lwd = 2, fill="black"),
+           arrow = arrow(length = unit(0.15, "inches"), type = "closed"))
+grid.circle(r = unit(1, "mm"), gp = gpar(fill = "black"))
+grid.text("Start", x = 0.5, y = unit(0.5, "npc") - unit(1, "lines"))
+grid.text("End", x = unit(0.5, "npc") + unit(1.2, "inches"), just = "left")
+@
+
+Additionally, it is not required that the focal point must be in the
+centre of the circle. It is possible to have the focal point in a
+non-central location, the effect is shown in
+\autoref{fig:circleFocalRadius}.
+
+<<circleFocalRadius, echo = FALSE, results = "hide", fig.height = 2, out.height = "2in", fig.cap = "A radial gradient with a non-central focal point.">>=
+grid.circle()
+grid.lines(unit.c(unit(0.4, "npc"), unit(0.5, "npc") - unit(1, "inches")),
+           rep(unit(0.5, "npc"), 2),
+           gp = gpar(lwd = 2, fill="black"),
+           arrow = arrow(length = unit(0.15, "inches"), type = "closed"))
+grid.lines(unit.c(unit(0.4, "npc"), unit(0.5, "npc") + unit(1, "inches")),
+           rep(unit(0.5, "npc"), 2),
+           gp = gpar(lwd = 2, fill="black"),
+           arrow = arrow(length = unit(0.15, "inches"), type = "closed"))
+grid.circle(x = 0.4, r = unit(1, "mm"), gp = gpar(fill = "black"))
+grid.text("Start", x = 0.4, y = unit(0.5, "npc") - unit(1, "lines"))
+grid.text("End", x = unit(0.5, "npc") + unit(1.2, "inches"), just = "left")
+grid.text("End", x = unit(0.5, "npc") - unit(1.2, "inches"), just = "right")
+@
+
+This means that we can have the gradient ``radiate'' from a
+non-central focal point. In this example, the gradient will appear
+more compressed as it radiates left from the focal point in comparison
+to when it radiates right from the focal point. To demonstrate this, a
+simple radial gradient will be drawn where the gradient radiates from
+white to blue to black.
+
+<<startRadGradCircle, fig.height = 3, fig.width = 3, out.height = "3in", out.width = "3in", fig.cap = "A simple \\grid{} circle.">>=
+grid.circle(name = "radial-example")
+grid.ls()
+@
+
+We have started by drawing a simple circle in
+\autoref{fig:startRadGradCircle} named \code{radial-example}. Indeed,
+the output from \code{grid.ls()} tells us that the circle is now on
+the \grid{} display list because its name is present. A radial
+gradient definition must also be created in order to draw a
+gradient. We can do this using the \code{radialGradient()} function.
+
+<<radGradDef>>=
+radGradDef <-
+    radialGradient(c("white", "deepskyblue", "black"),
+                   # Setting circle location and dimensions
+                   x = 0.5, y = 0.5, r = 0.5,
+                   # Setting focal point slightly to the left
+                   fx = 0.4, fy = 0.5)
+@
+
+The definition that we have created is intended to cover the entire
+circle that we drew earlier. Note that the focal point of this
+gradient definition is slightly to the left with an $x$-location of
+0.4, compared to a central $x$-location of 0.5.
+
+<<circleFocusRadius, echo = -c(1,3), fig.height = 2, out.height = "2in", fig.show = "hold", fig.cap = "The circle from \\autoref{fig:startRadGradCircle} with a radial gradient fill applied.", phantom = TRUE>>=
+grid.circle(name = "radial-example")
+grid.gradientFill("radial-example", radGradDef)
+cat('R> grid.export("circle-with-radial-gradient.svg")')
+@
+
+The \code{grid.gradientFill()} function searches for the grob named
+\code{radial-example} and applies a gradient fill using the newly
+created radial gradient definition \code{radGradDef}.
+
+This simple example shows how the use of a non-central focal point
+allows us to create a subtle directed lighting effect on a circle. A
+more complex example would be to use this effect on each plotting
+symbol in a \grid{} plot. First, let us draw a plot using the
+\pkg{lattice} package that is exhibited in
+\autoref{fig:latticeRadialBase}.
+
+<<latticeRadialBase, fig.width = 4, fig.height = 4, out.width = "4in", out.height = "4in", fig.cap = "A basic \\pkg{lattice} scatter plot.">>=
+xyplot(mpg ~ wt, data = mtcars, pch = 16, cex = 2)
+grid.ls()
+@
+
+We can see from the structured labelling of the \grid{} grobs that the
+points are drawn using the name
+\code{plot\_01.xyplot.points.panel.1.1}. The points in this plot are
+also drawn twice as large as normal for emphasis. Rather than having a
+simple blue colour for each of these points, we want to apply the
+radial gradient effect that was shown earlier. Given that we already
+have a radial gradient definition stored in \code{radGradDef}, we can
+apply it to our existing points grob that we know is named
+\code{plot\_01.xyplot.points.panel.1.1}.
+
+<<applyRadGrad, echo = -c(1, 4), fig.show = "hold", fig.keep = "last", fig.width = 4, out.width = "4in", fig.height = 4, out.height = "4in", fig.cap = "The \\pkg{lattice} plot from \\autoref{fig:latticeRadialBase} with a radial gradient applied to data points.", phantom = TRUE>>=
+xyplot(mpg ~ wt, data = mtcars, pch = 16, cex = 2)
+registerGradientFill("mrg", radGradDef)
+grid.gradientFill("plot_01.xyplot.points.panel.1.1",
+                  label = rep("mrg", nrow(mtcars)), group = FALSE)
+cat('R> grid.export("points-with-rad-gradient.svg")')
+@
+
+In the code fragment shown in \autoref{fig:applyRadGrad}, we have
+performed two key tasks. Firstly, we have registered the radial
+gradient by giving it a label. For the purposes of this example it
+simply means that we can use the gradient multiple times. The second
+task is to apply the radial gradient fill to the plotted points. We
+want to replace the existing fill colour for all points, which
+requires that the \code{group} argument is set to \code{FALSE}. If
+this operation is not performed then the gradient fill will be applied
+to the SVG \code{<g>} element which wraps all of the points but its
+effect will not be visible. Additionally, we want the same gradient
+fill to be applied to all of the points so the label that the gradient
+was registered under needs to be repeated for all points and given to
+the \code{label} argument.
+
+The final exporting step shows the result of applying the radial
+gradient fill to the plot and demonstrates a simple example where
+radial gradients can be utilised.
+
+\section{Clipping Paths and Masks}
+
+\subsection{Clipping Paths}
+
+In \grid{} it is possible to restrict the drawing of grobs to a
+rectangular region. This region is called the clipping region, and is
+typically the boundaries of a \grid{} viewport. What this means is any
+grobs that attempt to draw outside the clipping region will not be
+visible beyond that region. To demonstrate this concept, a \grid{}
+plot will be drawn with text intentionally drawn large enough to
+exceed its clipping region.
+
+<<showClipping, fig.height = 1.5, out.height = "1.5in", fig.cap = "Simple usage of viewport clipping in \\grid{}.">>=
+# Creating a new viewport in the middle of the plot
+pushViewport(viewport(width = 0.75, clip = "on"))
+# Showing the size of the viewport
+grid.rect(gp = gpar(lty = "dashed"))
+# Drawing large text that exceeds the size of the viewport
+grid.text("hello, world!", gp = gpar(fontsize = 40))
+# Leaving the viewport
+popViewport()
+@
+
+\autoref{fig:showClipping} shows that the text ``hello, world!'' is
+not entirely visible because it has been \emph{clipped} to the
+viewport boundary.
+
+A limitation of \R{} graphics is that clipping paths must be
+rectangular. This limitation is not present in SVG as it is possible
+to clip to an arbitrary region, e.g. a circle or a complex path. What
+this means is that the example shown earlier could be clipped to any
+region. To show how this can be done in \gridSVG{}, we shall
+re-implement the example from \autoref{fig:showClipping} but will use a
+circular clipping region instead of a rectangular clipping region. The
+first thing to do is draw the text that will be clipped.
+
+<<textPreClip, fig.width = 5, out.width = "5in", fig.height = 1, out.height = "1in", fig.cap = "A piece of text that is not yet clipped.">>=
+grid.text("hello, world!", gp = gpar(fontsize = 36),
+          name = "example")
+grid.ls()
+@
+
+Given that there is a named text grob, we now need to define what the
+clipping region should look like. This is done via the use of the
+\code{clipPath()} function, which takes a \grid{} grob and allows it
+to be used as a clipping path definition. In our case, we want a
+\grid{} circle grob to be used as our definition, but with a smaller
+radius than the entire drawing region.
+
+<<defClipPathRegion>>=
+circ <- circleGrob(r = 0.3)
+clipRegion <- clipPath(circ)
+@
+
+With a named grob on the display list and a clipping path definition,
+we can now clip the existing text to our circular region using the
+\code{grid.clipPath()} function.
+
+<<showCircleClip, echo = -c(1,5), fig.height = 4, fig.width = 4, out.height = "2in", out.width = "2in", fig.show = "hold", fig.cap = "The text from \\autoref{fig:textPreClip} is clipped to a non-rectangular path.", phantom = TRUE>>=
+grid.text("hello, world!", gp = gpar(fontsize = 40),
+          name = "example")
+grid.clipPath("example", clipRegion)
+# Showing the clipping region (invisible usually)
+grid.circle(r = 0.3, gp = gpar(lty = "dashed"))
+cat('grid.export("text-with-circular-clip.svg")')
+@
+
+We have shown in \autoref{fig:showCircleClip} that it is possible to
+clip to a circle, but the fact that SVG allows for most graphical
+content (including animated content) to be used as a clipping path
+means that more interesting clipping regions can be defined. The
+following example will show that a rectangle can be clipped to a
+region defined by some text, in addition to a circle. Firstly, before
+this rectangle is clipped, we will first just draw the text and circle
+grobs to show what the clipping region looks like. Conveniently,
+\grid{} allows us to store the resulting image by providing the
+\code{grid.grab()} function.
+
+<<showTextClipRegion, fig.width = 4.5, out.width = "4.5in", fig.height = 1.5, out.height = "1.5in", fig.keep = "last", fig.cap = "The clipping region that will be applied to a \\grid{} rectangle.">>=
+grid.newpage()
+grid.circle(r = 0.3)
+grid.text("hello, world!", gp = gpar(fontsize = 24))
+image <- grid.grab()
+# Defining as a clipping region
+clipRegion <- clipPath(image)
+@
+
+Now we can draw the rectangle that will later be clipped.
+
+<<showTextClipRect, fig.width = 3, out.width = "3in", fig.height = 1, out.height = "1.5in", fig.cap = "A \\grid{} rectangle that has not been clipped.">>=
+grid.newpage()
+# Starting rectangle that will later be clipped
+grid.rect(gp = gpar(fill = "grey"), name = "example")
+@
+
+Again, in order to apply the clipping path definition we use the
+\code{grid.clipPath()} function.
+
+% Don't use phantomjs because the result is slightly incorrect just draw instead.
+<<showTextClipResult, echo = -c(1, 3:6), fig.width = 5, out.width = "3in", out.height = "1.8in", fig.keep = "last", fig.show = "hold", fig.cap = "The \\grid{} rectangle from \\autoref{fig:showTextClipRect} is clipped to the region shown in \\autoref{fig:showTextClipRegion}.">>=
+grid.rect(gp = gpar(fill = "grey"), name = "example")
+grid.clipPath("example", clipRegion)
+cat('R> grid.export("complex-clip-region.svg")')
+gridSVG.newpage()
+grid.text("hello, world!", gp = gpar(fontsize = 48, col = "grey"))
+grid.circle(r = 0.3, gp = gpar(col = "grey", fill = "grey"))
+@
+
+The rectangle that was drawn has now been clipped to a complicated
+clipping region. In fact, we can see in
+\autoref{fig:showTextClipResult} that the clipping region defined by
+our circle and text is the union of the area covered by the two
+grobs. This is a simple demonstration to show how complicated clipping
+paths can be applied, even if the example is not particularly
+useful. In practice, non-rectangular clipping paths are beneficial
+when drawing on geographic maps. Consider \autoref{fig:loadMapData},
+which shows an example that was contributed to the R Journal
+\autocite{RJournal:2012-2:Murrell2}.
+
+<<loadMapData, echo = FALSE, results = "hide", message = FALSE, fig.cap = "A map with an overlaid contour. A path has been used to obscure the contour where it does not overlap with land.">>=
+library(maptools)
+gpclibPermit()
+load("../examples/full_NZ_shore.RData")
+
+polygonsToPath <- function(ps) {
+	# Turn the list of polygons into a single set of x/y
+	x <- do.call("c",
+	             sapply(ps,
+	                    function(p) { p@coords[,1] }))
+	y <- do.call("c",
+	             sapply(ps,
+	                    function(p) { p@coords[,2] }))
+	id.lengths <- sapply(ps, function(p) { nrow(p@coords) })
+	# Generate vertex set lengths
+	list(x=x, y=y, id.lengths=id.lengths)
+}
+
+path <- polygonsToPath(NZ@polygons[[1]]@Polygons)
+
+library(akima)
+library(maps)
+library(gpclib)
+quakes <- read.csv("../examples/quakes-mod.csv")
+quakes$long <- ifelse(quakes$LONG < 0, 360 + quakes$LONG, quakes$LONG)
+quakes <- quakes[quakes$LAT < 0 & quakes$long < 190, ]
+library(MASS)
+qd <- kde2d(quakes$long, quakes$LAT, n=100)
+ql <- contourLines(qd$x, qd$y, qd$z, nlevels=10)
+n <- length(ql)
+# points(quakes$long, quakes$LAT, pch=".")
+outline <- map("nz", plot=FALSE)
+xrange <- range(outline$x, na.rm=TRUE)
+yrange <- range(outline$y, na.rm=TRUE)
+xbox <- xrange + c(-2, 2)
+ybox <- yrange + c(-2, 2)
+
+hue <- 240
+par(mar=rep(0, 4))
+# Plot the data
+map("nz")
+mapply(function(c, col) {
+           polygon(c, col=col, border=adjustcolor(col, 1, .9, .9, .9))
+       },
+       ql, as.list(hcl(hue, 50, 20 + 60*n:1/(n+1)))) # grey(.7*n:1/(n+1) + .2)))
+polypath(c(outline$x, NA, c(xbox, rev(xbox))),
+         c(outline$y, NA, rep(ybox, each=2)),
+         col="white", rule="evenodd")
+@
+
+\autoref{fig:loadMapData} shows a contour of earthquake events
+overlaid across a map of New Zealand. The contours appear to be
+clipped to the New Zealand coastline but in fact, the contours are not
+clipped at all. Cleverly, the contours are drawn first and to obscure
+the unwanted contour regions, the \emph{inverse} of the region covered
+by the New Zealand coastline is drawn over the top in white. The
+process that was taken to draw the earlier example is shown in
+\autoref{fig:mapclipsetup}.
+
+<<nzcontour, echo = FALSE, results = "hide", include = FALSE>>=
+par(mar=rep(2, 4))
+# Plot the data
+map("nz")
+mapply(function(c, col) {
+           polygon(c, col=col, border=adjustcolor(col, 1, .9, .9, .9))
+       },
+       ql, as.list(hcl(hue, 50, 20 + 60*n:1/(n+1))))
+map("nz", add=TRUE)
+@
+
+<<nzmap, echo = FALSE, results = "hide", include = FALSE>>=
+par(mar=rep(2, 4))
+# Plot the data
+map("nz", col="grey", fill=TRUE)
+@
+
+<<nzpathfill, echo = FALSE, results = "hide", include = FALSE>>=
+par(mar=rep(2, 4))
+map("nz", col=NA)
+polypath(c(outline$x, NA, c(xbox, rev(xbox))),
+         c(outline$y, NA, rep(ybox, each=2)),
+         col="grey", rule="evenodd")
+box()
+@
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.3\textwidth]{figure/nzcontour}
+\includegraphics[width=.3\textwidth]{figure/nzmap}
+\includegraphics[width=.3\textwidth]{figure/nzpathfill}
+\caption{A map with a path used to obscure unwanted drawing.}
+\label{fig:mapclipsetup}
+\end{figure}
+
+If non-rectangular clipping regions are able to be used instead then
+this trickery is no longer necessary. We will recreate this example
+with \gridSVG{} by applying the clipping functions that we have
+already described earlier. For the sake of brevity, the code used to
+prepare and reshape the data will not be shown.
+
+<<prepareClippedMap, echo = FALSE, results = "hide">>=
+# Format earthquake data
+library(maps)
+outline <- map("nz", plot = FALSE)
+xrange <- range(outline$x, na.rm=TRUE)
+yrange <- range(outline$y, na.rm=TRUE)
+# Add +2 padding
+xbox <- xrange + c(-2, 2)
+ybox <- yrange + c(-2, 2)
+
+# Get contour polygons
+library(MASS)
+qd <- kde2d(quakes$long, quakes$LAT, n=100)
+ql <- contourLines(qd$x, qd$y, qd$z, nlevels=10)
+n <- length(ql)
+polylevels <- unlist(lapply(ql, function(x) x$level))
+eachlevel <- sapply(ql, function(x) length(x$x))
+polyxs <- unlist(lapply(ql, function(x) x$x))
+polyys <- unlist(lapply(ql, function(x) x$y))
+fillColours <- hcl(240, 50, 20 + 60*n:1/(n + 1))
+
+splitByNA <- function(x) {
+    idx <- 1 + cumsum(is.na(x))
+    not.na <- ! is.na(x)
+    split(x[not.na], idx[not.na])
+}
+pathxs <- splitByNA(outline$x)
+groupns <- sapply(pathxs, length)
+pathxs <- unlist(pathxs, use.names = FALSE)
+pathys <- unlist(splitByNA(outline$y), use.names = FALSE)
+@
+
+<<plotClippedMap, echo = -12, fig.height = 4.5, out.height = "4.5in", fig.keep = "last", fig.show = "hold", fig.cap = "Clipping contours to land regions with a non-rectangular clipping path.", phantom = TRUE>>=
+# Push into a viewport to establish a coordinate system
+pushViewport(viewport(xscale = xbox, yscale = ybox))
+# Draw the contours
+grid.polygon(polyxs, polyys, id.lengths = eachlevel,
+             name = "contours", default.units = "native",
+             gp = gpar(fill = fillColours,
+                       col = adjustcolor(fillColours,
+                                         1, 0.9, 0.9, 0.9)))
+# Create a path of the NZ islands
+nzpath <- pathGrob(pathxs, pathys, id.lengths = groupns,
+                   default.units = "native")
+# Draw the path and also clip the contours to it
+grid.draw(nzpath)
+grid.clipPath("contours", clipPath(nzpath))
+popViewport()
+# Export to SVG
+cat('R> grid.export("map-with-clipped-contours.svg")')
+@
+
+We can see in \autoref{fig:plotClippedMap} that the advantage of the
+approach provided by \gridSVG{} is that not only do we need to write
+less code, but also that the code sufficiently captures the intent of
+what we are trying to draw. Furthermore, the order in which we draw
+the contours and the map of New Zealand no longer makes a difference
+because the clipping path is still applied to the contours regardless
+of the order in which the grobs are drawn.
+
+\subsection{Masks}
+
+In \grid{} it is possible to make any grob semi-transparent in three
+ways. Firstly, the border on a grob may have a colour with an alpha
+channel present. Similarly, a grob may be filled with a
+semi-transparent colour. The final option is to apply additional
+semi-transparency to both the border colour and the fill colour at the
+same time. The one thing all approaches have in common is that the
+opacity they apply is uniform. In other words we cannot have for
+example a fill opacity that varies across different parts of the
+grob. SVG allows for such behaviour to be possible with opacity
+masks. When a grob is drawn, its opacity can be determined by the
+opacity defined by a mask.
+
+An opacity mask is a collection of graphical objects whose luminance
+is transferred to the opacity of another graphics object. This means
+that when the grobs in the mask are bright, then any grobs using this
+mask will be opaque where the grobs in the mask are bright. The way
+masks are defined is that they are assumed to be drawn on a black
+canvas, a canvas with no luminance present.
+
+To illustrate the concept of masking, we will create a mask that is
+composed of two grobs: a rectangle and a circle. Both grobs are drawn
+in \autoref{fig:preDrawMask}.
+
+<<preDrawMask, echo = FALSE, out.width = "2in", out.height = "2in", fig.cap = "Two \\grid{} grobs that comprise a mask definition.">>=
+grid.rect(height = 1/3, gp = gpar(fill = "grey50"))
+grid.circle(r = 0.4, gp = gpar(fill = "white"))
+@
+
+It is perhaps more illustrative to show exactly how the mask is
+defined by drawing on a black background. Any luminance on the page is
+therefore going to be the relative level of opacity on any grob using
+this mask.
+
+<<drawMask, echo = FALSE, out.width = "2in", out.height = "2in", fig.cap = "The mask in \\autoref{fig:preDrawMask} reduced to its luminance.">>=
+grid.rect(gp = gpar(fill = "black"))
+grid.rect(height = 1/3, gp = gpar(fill = "grey50"))
+grid.circle(r = 0.4, gp = gpar(fill = "white"))
+@
+
+What \autoref{fig:drawMask} shows is that anything drawn outside the
+circle and the grey rectangle will not be visible once the mask has
+been applied. Furthermore, anything within the circle will be opaque
+and anything within the grey rectangle will have semi-transparency
+applied. To show how this can be done in \gridSVG{}, we will show the
+steps necessary to define a mask, and indeed apply it to a grob. We
+will first start with a black rectangle that will later be masked.
+
+<<drawPlainBlackRect, out.width = "2in", out.height = "2in", fig.cap = "A simple black rectangle.">>=
+grid.rect(gp = gpar(fill = "black"),
+          name = "blackrect")
+grid.ls()
+@
+
+We can now define an opacity mask. For our purposes, all that is
+necessary is to provide the \code{mask()} function with a grob that
+defines what the mask looks like. To do this, we will recreate the
+mask definition shown earlier.
+
+<<maskDefinition>>=
+# Single grob composed of a rectangle and a circle
+mygrob <-
+    gTree(children = gList(
+        rectGrob(height = 1/3, gp = gpar(fill = "grey50")),
+        circleGrob(r = 0.4, gp = gpar(fill = "white"))))
+mymask <- mask(mygrob)
+@
+
+All that is needed now is to apply the mask definition to the black
+rectangle that has already been drawn. This task is performed by the
+\code{grid.mask()} function and the result of masking is shown in
+\autoref{fig:applyMaskToRect}.
+
+% DO NOT USE PHANTOMJS, POSITIONS INCORRECTLY
+% We are just faking this by using grid, cheating!
+<<applyMaskToRect, echo = FALSE, fig.show = "hold", fig.cap = "The result of masking the rectangle from \\autoref{fig:drawPlainBlackRect} with the mask defined in \\autoref{fig:preDrawMask}.">>=
+grid.newpage()
+cat('R> grid.rect(gp = gpar(fill = "black"), name = "blackrect")')
+cat('R> grid.mask("blackrect", mymask)')
+cat('R> grid.export("simple-mask.svg")')
+grid.rect(height = 1/3, gp = gpar(fill = "grey50"))
+grid.circle(r = 0.4, gp = gpar(fill = "black", col = "white"))
+@
+
+We can see in \autoref{fig:applyMaskToRect} that masking the rectangle
+has produced output that is considerably different from the plain black
+rectangle that was originally visible.
+
+Another feature of masking is that we can also define a rectangular
+region that controls the area that the mask affects. By default, this
+region covers the same area as the current viewport. The region of
+effect is defined as we create the mask definition with the
+\code{mask()} function. We will demonstrate this by re-implementing the
+previous example but having its effect restricted only to the right
+half of the plot.
+
+<<maskRightHalf, echo = -c(1, 5:9), out.width = "2in", out.height = "2in", fig.keep = "last", fig.show = "hold", fig.cap = "A mask with a restricted masking region applied to the rectangle in \\autoref{fig:drawPlainBlackRect}.">>=
+grid.newpage()
+grid.rect(gp = gpar(fill = "black"),
+          name = "blackrect")
+mymask <- mask(mygrob, x = 0.5, width = 0.5,
+               just = "left")
+grid.mask("blackrect", mymask)
+cat('R> grid.export("mask-with-restricted-region.svg")')
+gridSVG.newpage()
+grid.rect(x = 0.51, height = 1/3, gp = gpar(fill = "grey50"))
+grid.circle(r = 0.4, gp = gpar(fill = "black", col = "white"))
+grid.rect(x = 0, gp = gpar(col = "white", fill = "white"))
+@
+
+We can see in \autoref{fig:maskRightHalf} that outside the mask area
+the rectangle is no longer visible so only the right hand side of the
+plot is visible and masked. Another way to think about the mask's area
+of effect is that masked content is not only masked within that
+region, but also clipped to it too.
+
+A plot that could benefit from masking can be drawn using the
+\pkg{lattice} package. Consider the plot in
+\autoref{fig:latticePreMask} which has grid lines
+present. Unfortunately lines are drawn through the legend, which we
+would rather avoid.
+
+<<latticePreMask, fig.width = 5, fig.height = 5, out.width = "3in", out.height = "3in", fig.cap = "A \\pkg{lattice} scatter plot with grid lines.">>=
+plot <-
+xyplot(mpg ~ disp, mtcars, group=am, pch=16,
+  panel=function(...) {
+    panel.grid(-1, -1)
+    panel.xyplot(...)
+  },
+  key=
+    list(x=.65, y=.85, corner=c(0, 1),
+      border=TRUE,
+      padding.text=3,
+      text=list(c("automatic", "manual")),
+      points=
+        list(pch=16,
+             col=trellis.par.get("superpose.symbol")$col[1:2])))
+plot
+@
+
+The strategy that we will take is to create a mask based from this
+image, then apply the mask to the grid lines. We want the masked grid
+lines to be completely transparent where the legend is located, but
+opaque in all other locations. The easiest way to define this is to
+draw a white rectangle over the entire plot and redraw the legend in
+black.
+
+<<latticeShowMask, echo = FALSE, fig.width = 5, fig.height = 5, out.width = "2.75in", out.height = "2.75in", fig.keep = "last", fig.cap = "The opacity mask used to hide the grid lines that are visible in the legend from \\autoref{fig:latticePreMask}.">>=
+print(plot)
+print(plot, newpage=FALSE, prefix="plot-mask")
+grid.force()
+legendMask <- editGrob(grid.get("key.frame", grep=TRUE),
+                       gPath="background|points", grep=TRUE, global=TRUE,
+                       gp=gpar(col="black", fill="black"))
+downViewport(vpPath("plot-mask.toplevel.vp",
+                    "plot-mask.legend.region.vp",
+                    "plot-mask.legend.inside.vp"))
+maskGrob <- gTree(children=gList(rectGrob(width = 10, height = 10,
+                                          gp=gpar(col = "white", fill="white")),
+                                 legendMask))
+# Lets see what maskGrob looks like
+grid.draw(maskGrob)
+upViewport(0)
+grid.rect()
+@
+
+When we apply the mask shown in \autoref{fig:latticeShowMask}, the
+result is shown in \autoref{fig:latticePostMask}.
+
+% Again, masking is kinda broken in phantomjs so cheat
+<<latticePostMask, echo = FALSE, fig.keep = "last", fig.width = 5, fig.height = 5, out.width = "3.5in", out.height = "3.5in", fig.cap = "The \\pkg{lattice} scatter plot with no grid lines present in the legend.">>=
+print(plot)
+grid.force()
+downViewport(vpPath("plot_01.toplevel.vp",
+                    "plot_01.legend.region.vp",
+                    "plot_01.legend.inside.vp"))
+registerMask("mask", mask(maskGrob, width=10, height=10))
+upViewport(0)
+grid.mask("grid", label="mask", grep=TRUE, global=TRUE)
+downViewport(vpPath("plot_01.toplevel.vp",
+                    "plot_01.legend.region.vp",
+                    "plot_01.legend.inside.vp"))
+lwidth <- grobWidth(grid.get("key.frame", grep = TRUE))
+lheight <- grobHeight(grid.get("key.frame", grep = TRUE))
+grid.draw(rectGrob(width = lwidth, height = lheight,
+                   gp = gpar(fill="white", col="white")))
+grid.draw(grid.get("key.frame", grep=TRUE))
+upViewport(0)
+@
+
+This example has shown how the use of masks allows us to customise an
+existing plot without having to modify any of its existing graphical
+components. Rather than altering any of the graphical components, we
+simply annotate the grid lines to be masked.
+
+\subsection{Contexts}
+
+What we have shown so far with clipping and masking allows for any
+grob to be clipped or masked. There may be circumstances where
+repeatedly masking or clipping is desired but repeatedly calling the
+clipping and masking functions would be a tedious operation. \grid{}
+provides the \code{grid.clip()} function to change the clipping region
+inside a viewport. Anything that is drawn after \code{grid.clip()} has
+been called will be clipped to that (rectangular) region.
+
+<<showGridClip, out.height = "2.5in", out.width = "2.5in", fig.cap = "Two \\grid{} grobs clipped to a region defined by \\code{grid.clip()}.">>=
+grid.clip(width = 2/3, height = 2/3)
+# The two grobs below will be clipped
+grid.rect(gp = gpar(fill = "grey"))
+grid.text("hello, world!", gp = gpar(fontsize = 48))
+@
+
+We can see from \autoref{fig:showGridClip} that the clipping region
+has been set by \code{grid.clip()} and that it truncates the drawing
+of both the text and the rectangle. Given that we are able to clip to
+a non-rectangular clipping path with \code{grid.clipPath()}, we might
+want to use non-rectangular clipping paths in the same way. This can
+be achieved using the \code{pushClipPath()} function. It is able to
+set a clipping \emph{context}. This context ensures that all following
+drawing operations are clipped to the region defined by
+\code{pushClipPath()}. We can re-implement the earlier example using a
+circle as a simple non-rectangular clipping path instead of the
+rectangle defined by \code{grid.clip()}.
+
+<<pushingClipCircle, out.width = "2.5in", out.height = "2.5in", fig.cap = "Establishing a non-rectangular clipping context with \\code{pushClipPath()}.", phantom = TRUE>>=
+myClipCircle <- clipPath(circleGrob(r = 0.4))
+pushClipPath(myClipCircle)
+# The two grobs below will be clipped to a circle instead
+grid.rect(gp = gpar(fill = "grey"))
+grid.text("hello, world!", gp = gpar(fontsize = 48))
+@
+
+Not only is it possible to \emph{push} a clipping context, it is also
+possible to \emph{pop} them. This is done using the
+\code{popClipPath()} function.
+
+<<pushingAndPoppingClipCircle, out.width = "2.5in", out.height = "2.5in", fig.cap = "Entering and leaving a clipping context.", phantom = TRUE>>=
+myClipCircle <- clipPath(circleGrob(r = 0.4))
+pushClipPath(myClipCircle)
+# The two grobs below will be clipped to a circle instead
+grid.rect(gp = gpar(fill = "grey"))
+grid.text("hello, world!", gp = gpar(fontsize = 48))
+popClipPath()
+# No longer clipped!
+grid.text("not clipped", y = 0.1,
+          gp = gpar(fontsize = 24))
+@
+
+We can see in \autoref{fig:pushingAndPoppingClipCircle} that the
+clipping context has been removed, allowing the text ``not clipped''
+to be entirely visible. It must be noted that multiple clipping
+contexts can be pushed, as is also the case with viewports. The
+behaviour for clipping contexts is the same as with
+\code{grid.clip()}, but with slightly more flexibility. When
+\code{grid.clip()} establishes a new clipping context, it can only be
+removed by leaving the viewport that it was established in. We have
+more flexibility with \code{pushClipPath()} because we can leave the
+clipping context without having to leave the viewport in which it was
+established (using \code{popClipPath()}).
+
+Not only are clipping contexts able to be set, masking contexts can be
+pushed into too. This is done using the \code{pushMask()} function and
+behaves in much the same way as \code{pushClipPath()}. Similarly, it
+is also possible to leave a masking context using the \code{popMask()}
+function. A simple demonstration of masking contexts in action is
+shown in \autoref{fig:pushAndPopMask}.
+
+% Cheating because phantomjs isn't good with masks
+<<pushAndPopMask, echo = FALSE, fig.show = "hold", fig.cap = "Establishing and leaving a masking context.">>=
+gridSVG.newpage()
+# Defining a mask, simply a grey circle
+cat('R> mymask <- mask(gTree(')
+cat('R+   children = gList(')
+cat('R+     rectGrob(gp = gpar(fill = "white")),')
+cat('R+     circleGrob(r = 0.4, gp = gpar(fill = "grey50")))))')
+cat('R> pushMask(mymask)')
+cat('R> grid.rect(gp = gpar(fill = "grey"))')
+cat('R> grid.text("I am masked", y = 0.6,')
+cat('R+           gp = gpar(fontsize = 36))')
+cat('R> popMask()')
+cat('R> grid.text("I am not masked", y = 0.4,')
+cat('R+           gp = gpar(fontsize = 36))')
+grid.rect(gp = gpar(fill = "grey"))
+grid.text("I am masked", y = 0.6,
+          gp = gpar(fontsize = 36))
+grid.circle(r = 0.4, gp = gpar(col = "white", fill = "white", alpha = 0.5))
+grid.text("I am not masked", y = 0.4,
+          gp = gpar(fontsize = 24))
+@
+
+By using contexts we avoid the need to repeatedly call the clipping
+and masking functions. It also allows us to write more declarative
+code that clearly shows how masking and clipping are occurring.
 
 \section{Filter Effects}
 
+It is possible to add special effects to SVG content with a feature
+called filter effects. Filter effects apply an image processing
+operation to existing graphical content that changes how they
+appear. Many of the available filter effects are commonly available in
+raster image editing software, such as Adobe Photoshop or the GNU
+Image Manipulation Program (GIMP) but are not commonly employed in
+vector graphics, primarily because of their complexity. With filter
+effects it is possible to apply complicated effects such as blurring,
+composition operations, blending and lighting effects.
 
-\dots
+There are a large number of possible filter effects that can be
+applied by \gridSVG{}, but many of them are complex and therefore
+difficult to describe. Consequently, we will only show a simple
+example where we apply a drop shadow to points in an existing
+image. It must be noted that this example barely scratches the surface
+when it comes to the possible filter effects that can be drawn. The
+aim is to produce a drop shadow that is located one millimetre below
+and one millimetre to the right of each point. To do this we first
+need to draw the plot that will later be filtered (see
+\autoref{fig:preFilter}).
+
+<<preFilter, fig.cap = "A \\pkg{lattice} scatter plot that will be enhanced with filter effects.">>=
+xyplot(mpg ~ disp, mtcars, group = am, pch = 16, cex = 1.5)
+@
+
+Again, like many of the previous examples because the \pkg{lattice}
+package is using a consistent naming scheme, we can easily find the
+name of the grob that draws the points. Given that the grob is on the
+display list, we can now create the drop shadow filter effect that
+will be applied to it.
+
+<<defineDropShadow>>=
+dropShadow <- filterEffect(
+    list(feGaussianBlur(input = "SourceAlpha",
+                        sd = 2, result = "blur"),
+         feOffset(input = "blur",
+                  unit(1, "mm"), unit(-1, "mm"),
+                  result = "offsetBlur"),
+         feMerge(list(feMergeNode(input = "offsetBlur"),
+                      feMergeNode(input = "SourceGraphic")))))
+@
+
+What this drop shadow effect describes is that we first apply the
+\code{feGaussianBlur()} filter effect primitive. This primitive takes
+the opacity of the source (in our case a collection of points) and
+applies a Gaussian blur with a standard deviation of 5. The result of
+this operation is named ``blur'' so that the \code{feOffset()}
+primitive can use it. \code{feOffset()} then uses ``blur'' and
+translates it to the right by one millimetre and down one
+millimetre. The result of the offset operation is called
+``offsetBlur''. Finally, we take ``offsetBlur'' (i.e. the drop
+shadow), and merge it with the source image (i.e. our points). The
+order in which the inputs are ``merged'' is important because we want
+the drop shadow to be behind the source image.
+
+It must be noted that the order in which the filter effect primitives
+is defined can be important when the \code{input} and \code{result}
+arguments are not explicitly given.
+
+The process that is undertaken to draw the drop shadow (before
+merging) is illustrated with a single point in
+\autoref{fig:dropShadowSteps}.
+
+<<dropShadowSteps, echo = FALSE, fig.height = 1.5, out.height = "1.5in", fig.width = 5, out.width = "5in", fig.cap = "The process taken to apply a drop shadow filter effect.", phantom = TRUE>>=
+fillCol <- "#0080FF"
+altFillCol <- "#FF00FF"
+pushViewport(viewport(width = 0.25, x = 0, just = "left"))
+grid.circle(r = 0.3, gp = gpar(fill = fillCol, col = fillCol))
+popViewport()
+pushViewport(viewport(width = 0.25, x = 0.25, just = "left"))
+grid.circle(r = 0.3, gp = gpar(fill = "black"))
+popViewport()
+pushViewport(viewport(width = 0.25, x = 0.5, just = "left"))
+grid.circle(r = 0.3, gp = gpar(fill = "black"), name = "blurcircle")
+grid.filter("blurcircle", filterEffect(feGaussianBlur(sd = 5)))
+popViewport()
+pushViewport(viewport(width = 0.25, x = 0.75, just = "left"))
+grid.circle(x = unit(0.5, "npc") + unit(3, "mm"),
+            y = unit(0.5, "npc") - unit(3, "mm"),
+            r = 0.3, gp = gpar(fill = "black"), name = "blurmovecircle")
+grid.circle(r = 0.3, gp = gpar(col = "red", lwd = 2, lty = "dashed"))
+grid.filter("blurmovecircle", filterEffect(feGaussianBlur(sd = 5)))
+popViewport()
+@
+
+At this point, we now have a filter effect definition, and points that
+can be filtered. All that is necessary is to apply the filter effect
+to the points using \code{grid.filter()} and export to SVG. The result
+is shown in \autoref{fig:drawPointsWithDropShadow}.
+
+<<drawPointsWithDropShadow, echo = -c(1, 3), fig.cap = "The \\pkg{lattice} plot from \\autoref{fig:preFilter} with a drop shadow filter effect applied.", fig.show = "hold", phantom = TRUE>>=
+xyplot(mpg ~ disp, mtcars, group = am, pch = 16, cex = 1.5)
+grid.filter("points", dropShadow, global = TRUE, grep = TRUE)
+cat('R> grid.export("points-with-drop-shadow.svg")')
+@
+
+This demonstration has shown how the use of filter effects in SVG
+allows us to create statistical plots with complex embellishment.
+
+\section{Definition and Registration}
+\label{sec:defreg}
+
+A key detail that has been not yet been discussed is the difference
+between defining and \emph{registering} the advanced SVG features
+within a \gridSVG{} image. These concepts are crucial for making best
+use of the SVG features we have mentioned. Indeed, although they have
+not been discussed, their use underpins the way in which these
+advanced SVG features are used in \gridSVG{}.
+
+We refer to the definition of a feature object (e.g. a mask or a
+gradient object) as being the object that describes what the content
+should look like, for example the object that is created by calling
+\code{pattern()}. If any of those definition objects contain \grid{}
+units (e.g. normalised parent coordinates), then the locations and
+dimensions that these units are describing are relative to a \grid{}
+viewport. By registering an image, the locations and dimensions used
+by feature objects become fixed and relative to the entire drawing
+canvas. This means that the effect is as if they are drawn to the
+canvas (but not visible).
+
+To demonstrate the concepts of definition and registration, we will
+first consider a simple pattern. The pattern is defined in
+\autoref{fig:patternDef}.
+
+<<patternDef, echo = 1, fig.cap = "A simple pattern definition.">>=
+pat <-
+    pattern(circleGrob(r = 0.3, gp = gpar(fill = "black")),
+            width = unit(0.1, "npc"), height = unit(0.1, "npc"))
+grid.draw(circleGrob(r = 0.3, gp = gpar(fill = "black")))
+grid.draw(rectGrob())
+@
+
+What \autoref{fig:patternDef} shows is that our pattern definition
+(\code{pat}) has a width and height that is one tenth of a viewport's
+width and height respectively. If we registered this definition, these
+dimensions would be translated into absolute units. For example, if
+the viewport was 10 centimetres wide and 10 centimetres high then the
+pattern would be registered with a width and height of 1
+centimetre. Registering a pattern is demonstrated below:
+
+<<patternReg, echo = 2>>=
+gridSVG.newpage()
+registerPatternFill("example", pat)
+gridSVG.newpage()
+@
+
+The first argument to \code{registerPatternFill()} is a label that we
+used to identify the registered pattern object. The pattern object is
+the second argument that we give to the function and its locations and
+dimensions have now become fixed.
+
+We shall now illustrate this process by registering the pattern
+definition in two different viewports. One viewport will have
+dimensions that are each twice as large as those in the other
+viewport.
+
+<<patternRegDiffViewports, fig.keep = "none">>=
+# Pattern width/height is 1/10th whole page
+registerPatternFill("pagePattern", pat)
+# Now pushing into a smaller viewport
+pushViewport(viewport(width = 0.5, height = 0.5))
+# Registering a pattern whose width/height is
+# 1/10th of the current viewport
+registerPatternFill("smallPattern", pat)
+@
+
+We have registered the same pattern definition under two different
+labels, \code{pagePattern} and \code{smallPattern}. An advantage of
+registering a pattern means that we do not need to provide the pattern
+definition object when applying it a grob. The registration allows us
+to refer to the pattern by its label instead of providing a definition
+object.
+
+We will now draw two rectangles that use the two registered
+patterns. The effect of the registration process should now be clear
+to see in \autoref{fig:useRegisteredPattern}.
+
+<<useRegisteredPattern, echo = -7, fig.height = 2, out.height = "2in", fig.cap = "Applying a pattern that was registered in two different drawing contexts.", fig.show = "hold", phantom = TRUE>>=
+# Creating simple rectangles to fill
+grid.rect(x = 0, width = 3/8, just = "left",
+          name = "large")
+grid.rect(x = 1, width = 3/8, just = "right",
+          name = "small")
+# Registering patterns by label
+grid.patternFill("large", label = "pagePattern")
+grid.patternFill("small", label = "smallPattern")
+cat('R> grid.export("registered-patterns-example.svg")')
+@
+
+What \autoref{fig:useRegisteredPattern} shows is that despite using
+the same pattern definition, the fact that we registered it in
+different viewports means that the registered patterns appear
+different to each other.
+
+Another point to note about registration of definition objects is that
+this always occurs, even without explicitly registering a definition
+object. An example of this when we call any function like
+\code{grid.patternFill()} and give it a definition object. It will
+register the object with an automatically generated label, and then
+apply the registered definition.
+
+\subsection{Inspecting Registered Definitions}
+
+When any definition object is registered, it is stored in an
+off-screen display list that can be inspected by calling
+\code{listSVGDefinitions()}, just like a \grid{} scene can be
+inspected by calling \code{grid.ls()}.
+
+<<listDefs>>=
+listSVGDefinitions()
+@
+
+This output shows that we currently have two pattern fill definitions
+registered with the labels \code{pagePattern} and
+\code{smallPattern}. Recall that these are the labels that patterns
+were registered to when creating \autoref{fig:useRegisteredPattern}.
+
+This display list is retained even after creating a new \grid{}
+page. This is because we may want to use the same definition across
+multiple images without needing to register the definition again. This
+behaviour may be a hindrance in some circumstances because it may make
+reproducibility more difficult. To clear the list of registered
+definitions requires calling \code{gridSVG.newpage()} instead of
+\code{grid.newpage()}.
+
+<<gridsvgnewpage, fig.keep = "none">>=
+listSVGDefinitions()
+grid.newpage()
+listSVGDefinitions()
+gridSVG.newpage()
+# No output
+listSVGDefinitions()
+@
+
+This is particularly useful in order to apply many different gradients
+or patterns (or any other type of registered definition) to a single
+grob that has multiple sub-grobs. In fact, this has been demonstrated
+earlier this chapter in \autoref{fig:bcApplyPatterns}. To explain this
+in more detail, consider the plot in \autoref{fig:preGradLatticePlot}.
+
+<<preGradLatticePlot, fig.width = 4, out.width = "4in", fig.height = 4, out.height = "4in", fig.cap = "A simple \\pkg{lattice} scatter plot.">>=
+xyplot(mpg ~ disp, mtcars, pch = 16, cex = 1.5)
+grid.ls()
+@
+
+We can apply radial gradients to the data points, which are drawn by a
+grob named \code{plot\_01.xyplot.points.panel.1.1}. However, we want
+to apply a radial gradient with each colour showing whether the data
+point represents a car with a manual transmission or an automatic
+transmission. For cars with automatic transmission we will apply a
+blue radial gradient, while cars with manual transmission will have a
+red radial gradient applied. The result is shown in
+\autoref{fig:applyingregistered}.
+
+<<applyingregistered, fig.width = 4, fig.height = 4, out.width = "4in", out.height = "4in", fig.keep = "last", fig.show = "hold", fig.cap = "Applying registered gradients by label to alter \\autoref{fig:preGradLatticePlot}.", phantom = TRUE>>=
+xyplot(mpg ~ disp, mtcars, pch = 16, cex = 1.5)
+# Defining gradients
+redGrad <- radialGradient(c("red", "black"))
+blueGrad <- radialGradient(c("blue", "black"))
+# Registering
+registerGradientFill("red", redGrad)
+registerGradientFill("blue", blueGrad)
+# Applying
+grid.gradientFill("plot_01.xyplot.points.panel.1.1",
+                  label = ifelse(mtcars$am == 0, "blue", "red"),
+                  group = FALSE)
+@
+
+The key point to note is that because we have registered our gradient
+definitions we are able to create a character vector of labels that
+selects which gradient will be applied to each data point. This is
+often necessary if we wish to apply any advanced SVG feature to a
+sub-grob instead of the grob's SVG grouping element (\code{<g>}).
+
+\section{Element Grobs}
+
+We have shown many features of \gridSVG{} that expose graphical
+functionality to \R{} that would not otherwise be present. Whilst
+there are many new features available that expose the vast majority of
+the SVG feature set, it is not possible to provide \emph{all} of the
+SVG functionality without writing SVG by hand. This is done by using
+the \code{grid.element()} function, which draws a grob on the \grid{}
+display list that is treated as if it were plain SVG. This means that
+when \code{grid.export()} is called, the \grid{} grobs are translated
+directly to SVG elements. Simple examples showing its use are shown
+below:
+
+<<gridElementEx, fig.keep = "none">>=
+# Single 'example' element
+grid.element("example")
+# Now drawing an element with attributes
+grid.element("second", attrs = list(a = "b", c = "d"))
+# We can nest elements
+grid.element("parent", children =
+    gList(elementGrob("child", attrs = list(e = "f"))))
+# We can also nest grobs
+grid.element("grobpar", children = gList(circleGrob()))
+@
+
+After exporting, the relevant SVG output is shown below:
+
+<<gridElementOutput, echo = FALSE, fig.keep = "none">>=
+# Single 'example' element
+grid.element("example")
+# Now drawing an element with attributes
+grid.element("second", attrs = list(a = "b", c = "d"))
+# We can nest elements
+grid.element("parent", children =
+    gList(elementGrob("child", attrs = list(e = "f"))))
+# We can also nest grobs
+grid.element("grobpar", children = gList(circleGrob()))
+tmp <- grid.export(NULL)$svg
+tmp <- getNodeSet(tmp, "//*[@id='gridSVG']")[[1]]
+children <- xmlChildren(tmp)
+tmp <- lapply(children[1:4], function(x) { print(x) ; cat("\n") })
+@
+
+We can see that there is a very direct relationship between a
+\gridSVG{} element grob and its resulting SVG output. In fact, the
+only extra annotation that an element grob is given (by default) is an
+\code{id} attribute. This is added so that we can still refer to the
+generated content and may be useful in conjunction with the tools
+shown in \autoref{sec:mappings}.
+
+A case where the \code{grid.element()} interface can be used is to
+insert live HTML content into an SVG image. This is achieved by using
+the \code{<foreignObject>} SVG element. In this example we are going
+to draw a simple \grid{} image, but a portion of the image will be
+showing an HTML document that is loaded from the University of
+Auckland's Department of Statistics homepage
+(\url{http://stat.auckland.ac.nz/}).
+
+<<fullGridElementEx, echo = -6, fig.width = 5, fig.height = 5, out.width = "3.5in", out.height = "3.5in", fig.show = "hold", fig.cap = "An SVG image produced by \\gridSVG{} with a live HTML document embedded.", phantom = TRUE>>=
+grid.rect(gp = gpar(fill = "grey"))
+grid.text("HTML Document", y = 0.9, gp = gpar(fontsize = 24))
+# Creating the body of the (X)HTML document
+htmlBody <-
+  elementGrob("body",
+    namespaceDefinitions = "http://www.w3.org/1999/xhtml",
+    children = gList(
+      elementGrob("iframe",
+        attrs = list(src = "http://www.stat.auckland.ac.nz/",
+                     width = 300, height = 400))))
+grid.element("foreignObject",
+             attrs = list(
+                 x = 30, y = 60,
+                 width = 300, height = 400,
+                 transform = "translate(0, 360) scale(1, -1)"),
+             children = gList(htmlBody))
+cat('R> grid.export("svg-with-html.svg")')
+@
+
+\autoref{fig:fullGridElementEx} demonstrates not only the flexibility
+of SVG, but also a way in which we can write sophisticated SVG markup
+in \R{}. A notable limitation in this approach is that any positions
+or dimensions (e.g. \code{x}, \code{y}, \code{width}, \code{height})
+must be hard-coded, therefore trial and error may be required to
+correctly position content drawn by \code{grid.element()}.
+
+\section{Conclusion}
+
+This chapter describes new features of \gridSVG{} that enable us to
+use graphical features that are not present in the \R{} graphics
+engine. Many of these features are complicated to do by writing SVG
+markup ourselves, and are also rarely available in alternative (in
+particular \proglang{JavaScript}-based) graphics systems. \gridSVG{}
+not only makes it possible for us to use these SVG features, but it
+also provides an easy-to-use interface.

@@ -1,0 +1,14 @@
+\cleardoublepage
+\phantomsection
+\chapter*{Acknowledgements}
+
+I would like to thank Dr. Paul Murrell for not only introducing me to
+\grid{} graphics, but also to \gridSVG{}. Without his prior work, none
+of this would have been possible. Whenever I needed guidance, he was
+always there to give clarity to my thoughts or an insightful path for
+me to pursue. His supervision throughout the duration of my thesis was
+fantastic and I could not have asked for anything more.
+
+I would also like to thank Prof. Chris Wild for leading me to think of
+the motivating idea for this thesis. His interest in my work, and the
+suggestions he put forward were greatly appreciated.

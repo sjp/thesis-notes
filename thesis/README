@@ -44,4 +44,7 @@ This thesis requires:
 Usage:
 ------
 
-In order to generate the resulting report.pdf file simply run `make`.
+In order to generate the resulting thesis.pdf file it is necessary to
+first install the 'gtable' package found in the 'bin' folder.
+
+Then to generate the 'thesis.pdf' document simply run 'make'.

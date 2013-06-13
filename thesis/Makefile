@@ -1,4 +1,5 @@
 DOCUMENT = thesis
+DOCUMENT_BIB = references.bib
 DOCUMENT_RNW = $(DOCUMENT).Rnw
 DOCUMENT_TEX = $(DOCUMENT).tex
 DOCUMENT_PDF = $(DOCUMENT).pdf
@@ -10,7 +11,7 @@ CHAPTER_TEXS := $(patsubst tex/%.Rnw, tex/%.tex, $(wildcard tex/*.Rnw))
 
 all: $(DOCUMENT_PDF)
 
-$(DOCUMENT_PDF): $(DOCUMENT_TEX) $(CHAPTER_TEXS)
+$(DOCUMENT_PDF): $(DOCUMENT_TEX) $(DOCUMENT_BIB) $(CHAPTER_TEXS)
 	sed -i 's/^.*upquote.*$$//' $(DOCUMENT_TEX) # upquote + inconsolata broken
 	pdflatex $(DOCUMENT_TEX)
 	bibtex $(DOCUMENT)
@@ -27,8 +28,8 @@ tex/%.tex: tex/%.Rnw
 	R -e "library(knitr) ; knit('$<', '$@')"
 
 clean:
-	-ls | grep -E -v '(.*Rnw|bin|images|Makefile|biblatex.*\.tex|.*\.R|README|references\.bib)' | xargs rm
-	-rm $(CHAPTER_TEXS) figures/* tex/*svg*
+	-ls | grep -E -v '(.*Rnw|bin|examples|images|Makefile|biblatex.*\.tex|.*\.R|README|references\.bib)' | xargs rm
+	-rm $(CHAPTER_TEXS) figure/* tex/*svg* tex/*.js tex/*.tex
 
 .PHONY: show
 show: $(DOCUMENT_PDF)

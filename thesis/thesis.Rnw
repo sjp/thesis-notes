@@ -1,5 +1,5 @@
 \documentclass[11pt, a4paper, twoside]{book}
-\usepackage{graphicx, color, xcolor}
+\usepackage{graphicx, color}
 
 % Allowing dots in graphical filenames
 \usepackage{grffile}
@@ -24,14 +24,14 @@
 \usepackage{lmodern}
 \usepackage{inconsolata}
 
-% Using these packages for vector graphics, e.g. the package
-% relationship diagram.
-\usepackage{pgf, tikz}
-\usetikzlibrary{arrows, positioning, fit, shapes}
-
-% Ensuring we get hyperlinks
+% Ensuring we get hyperlinks and good floats
 \usepackage{float}
+\usepackage[hyphens]{url}
 \usepackage{hyperref}
+\usepackage{subcaption}
+% Get (8.9a) instead of (a)
+\renewcommand{\thesubfigure}{\thefigure \alph{subfigure}}
+
 
 \usepackage[nottoc,notlof,notlot]{tocbibind}
 
@@ -73,14 +73,14 @@
 \newcommand{\grid}{\pkg{grid}}
 \newcommand{\gridSVG}{\pkg{gridSVG}}
 \newcommand{\R}{\proglang{R}}
-\newcommand{\proglang}[1]{\textsc{#1}}
+\newcommand{\proglang}[1]{\textsf{#1}}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\pkg}[1]{\textsf{#1}}
 
 % Document properties.
 \newcommand{\doctitle}{Dynamic, Interactive and Reactive Statistical Graphics for the Web}
 \newcommand{\docauthor}{Simon J. Potter}
-\newcommand{\docdate}{June 7, 2013}
+\newcommand{\docdate}{June 14, 2013}
 \title{\doctitle{}}
 \author{\docauthor{}}
 \date{\docdate{}}
@@ -98,8 +98,8 @@
 
 \fancyhf{}
 \fancyhead[LE,RO]{\thepage}
-\fancyhead[RE]{\thechapter{}~ \nouppercase{\leftmark}}
-\fancyhead[LO]{\thesection{}~ \nouppercase{\rightmark}}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LO]{\nouppercase{\rightmark}}
 
 \fancypagestyle{plain}{ %
 \fancyhf{} % remove everything
@@ -137,6 +137,8 @@ source("knitr-settings.R")
 \setcounter{page}{1}
 
 \input{./tex/abstract.tex}
+\input{./tex/acknowledgements.tex}
+\input{./tex/preface.tex}
 
 \tableofcontents
 \cleardoublepage
@@ -155,6 +157,9 @@ source("knitr-settings.R")
 
 \mainmatter
 
+\fancyhead[RE]{\thechapter{}~ \nouppercase{\leftmark}}
+\fancyhead[LO]{\thesection{}~ \nouppercase{\rightmark}}
+
 \setcounter{page}{1}
 \renewcommand{\thepage}{\arabic{page}}
 
@@ -167,7 +172,6 @@ source("knitr-settings.R")
 \input{./tex/referenced-content.tex}
 \input{./tex/examples.tex}
 \input{./tex/discussion.tex}
-\input{./tex/conclusion.tex}
 
 %%%%%%%%%%%%%%%%%%%
 % END MAIN MATTER %

@@ -1,0 +1,53 @@
+\begin{titlepage}
+\begin{center}
+\singlespacing
+% Space until centre of doc
+\vspace*{2.5cm}
+
+% Upper part of the page
+% Guide to Theses and Dissertations recommends against including
+% the University of Auckland logo.
+%\includegraphics[width = 100pt]{./images/uoa-logo.pdf}
+
+\vspace{1cm}
+
+% Header text
+\textsc{\LARGE University of Auckland} \\[0.4cm]
+\textsc{\Large Department of Statistics} \\[1cm]
+
+% Title
+\hrule
+\vspace{0.3cm} % Not necessary but looks slightly better when closer to the bottom of the box
+{\Large \doctitle{}} \\[0.2cm]
+\hrule
+\vspace{1cm}
+
+% Author and supervisor
+\begin{minipage}{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Author:}\\
+\docauthor{}
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{0.4\textwidth}
+\begin{flushright} \large
+\emph{Supervisor:} \\
+Dr. Paul Murrell
+\end{flushright}
+\end{minipage}
+
+% Space until end of page
+\vfill
+
+% Bottom of the page
+{\large
+A thesis submitted in partial fulfilment of the requirements for the
+degree of Master of Science in Statistics, The University of Auckland, 2013.}
+
+\end{center}
+\end{titlepage}
+
+\onehalfspacing
+
+% Uncomment for the default
+% \maketitle

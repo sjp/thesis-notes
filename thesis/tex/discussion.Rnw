@@ -1,3 +1,359 @@
 \chapter{Discussion}
 
-\dots
+\section{Improvements}
+
+\subsection{Naming}
+
+In the past, it was not guaranteed that a \gridSVG{} plot would
+generate plots where each component was uniquely identifiable. The
+straightforward approach previously performed was simply assigning the
+name of a \grid{} grob (or viewport) to the \code{id} attribute of the
+associated SVG content. Not only was the uniqueness of SVG \code{id}
+attributes not guaranteed within the SVG image, it was also not
+guaranteed to be the case if the SVG image was embedded inline in an
+HTML document. The ability to apply a consistent naming scheme that
+can be controlled by a user provides us with a means of safely and
+uniquely naming SVG elements.
+
+Named SVG elements are of no use unless we can identify them. We know
+in advance (from a \grid{} scene) what the names of grobs and
+viewports are, so mapping grob and viewport names to their equivalent
+SVG \code{id} attributes is an essential step for being able to
+manipulate \gridSVG{} output. \gridSVG{} now allows name mapping
+information to be exported as it generates an SVG image. By exporting
+name mapping information along with SVG output, \gridSVG{} makes it
+possible to \emph{query} this information. This provides us with the
+essential step necessary to identify exported pieces of a plot.
+
+The identification of graphical components is rarely a consideration
+by other software that create SVG images \autocite{MurLabels13}. This
+is because they typically do not intend for the resulting image to be
+manipulated in any way. This gives \gridSVG{} an advantage over many
+other SVG generating implementations because it is easier to
+manipulate, at the cost of having to give sensible (and not
+automatically generated) names to \grid{} grobs.
+
+\subsection{Coordinate Systems}
+
+The ability to retain coordinate information is an essential component
+for building a reactive \gridSVG{} plot. It is necessary for retaining
+the drawing contexts that pieces of a plot are drawn in. This allows
+us to redraw (for example) a LOESS curve and only a LOESS curve
+without having to redraw the entire image that it originally appeared
+in. This is because we can revisit the drawing context that the curve
+was created within. It is also useful because coordinate information
+can be used in \proglang{JavaScript} without needing to query \R{} to
+obtain a location or dimension from a particular viewport.
+
+In \proglang{JavaScript} it is rare for any complex coordinate systems
+to be used, or even viewports. In SVG it is possible to specify a
+location or dimension by using pixels or an absolute unit
+(e.g. inches, centimetres), or a relative unit (e.g. a percentage) but
+no complex units --- units composed of more than one type of
+measurement --- can be used. Many \proglang{JavaScript}-based graphing
+libraries provide a facility to determine a location via a numeric
+scale that generates the correct SVG location. A limitation of the
+approach these \proglang{JavaScript} libraries take is that often the
+only units that can be used are either the equivalent of \grid{}'s
+``native'' units, or an absolute unit. Using an exported \grid{}
+coordinate system enables us to use any \grid{} unit and allows for
+more complex units to be used. This means that it is possible to plot
+a point with an $x$-location of 0.5 ``npc'' plus 2 centimetres,
+relative to a particular viewport. Without the ability to use
+viewports (or a similar concept) or complex units in a
+\proglang{JavaScript} implementation, we cannot perform the described
+positioning (similarly for lengths and widths).
+
+\subsection{Node-based SVG}
+
+The ability to generate an SVG image as a collection of in-memory XML
+nodes has several advantages. The initial motivation for rewriting
+\gridSVG{}'s output layer to use the \pkg{XML} package was to ensure
+that images could be generated in memory. This is not strictly
+necessary but it is advantageous when attempting to serve a \gridSVG{}
+image directly from a web server because it avoids the need to use a
+hard disk for temporary storage that is an additional and unnecessary
+complication.
+
+There have been further benefits from the switch to the node-based
+approach. Many of these are a convenient consequence of using the
+\pkg{XML}. For example, when \proglang{JavaScript} code and SVG
+metadata is inserted into the SVG image by \gridSVG{}, it is performed
+after the rest of the image has been generated. This demonstrates the
+flexibility of the new approach by allowing us to work with a workable
+document tree, rather than simply some text in a file.
+
+The greatest advantage to using node-based SVG generation is that it
+allows us to \emph{query} a document that is resident in memory. This
+means we can read attributes from specific nodes using standardised
+and easy to use tools instead of regular expressions. Being able to
+get a piece of a \gridSVG{}-generated image is also easy. In essence,
+we now immediately have a DOM to work with, which \gridSVG{}
+previously lacked. This is important because getting a piece of a plot
+or indeed specific attribute values from a plot is necessary if we
+want to send that information to a web browser.
+
+\subsection{Content Selection}
+
+It is now possible to select content in \R{} in the same way that is
+possible to select any content in a web page, using CSS selectors. The
+\pkg{selectr} package allows us to use the same selectors on a
+\gridSVG{} image in \R{} as we would in a web browser with
+\proglang{JavaScript}. This avoids the need to write two different
+selector queries --- one XPath expression and one CSS selector ---
+which may be prone to error and adds unnecessary complexity. Content
+manipulation can more easily be replicated between \R{} and an
+equivalent operation in \proglang{JavaScript} because the selection of
+SVG content is expressed in the same way.
+
+\subsection{Animation Sequencing}
+
+One of the key advantages of animation with SVG is that we can
+declaratively animate content, clearly describing an animation action,
+when that action occurs and for how long it occurs. \gridSVG{} is able
+to animate SVG content using \code{grid.animate()}. This makes use of
+SMIL animation (Synchronized Multimedia Integration Language)
+\autocite{SMIL11} which allows us to encode animations within an SVG
+image. Using SMIL animations is preferred to any frame-based
+alternatives because it is faster in most browsers, in addition to
+being more flexible. For example, when describing how a circle moves
+from its original $x$-location of $x_0$ to $x_t$, where $x_t$ is the
+new location at time $t$, a naive frame-based implementation may
+interpolate between the locations linearly. This describes what is
+called an easing function, specifically this is a linear easing
+function. There are many easing functions that can be used but the
+important thing to note is that changing between them in SVG is as
+simple as changing the value of an attribute in an \code{<animate>}
+element. This is exposed in \code{grid.animate()} via the
+\code{interpolate} argument. Performing the same task using
+frame-based animations is complex because it often requires writing
+the easing functions and calculating each interpolated step of the
+animation ourselves in addition to procedurally applying the
+animation.
+
+The main limitation of SMIL animation is that all information
+regarding animations must be known at the time that the SVG image was
+generated. CSS transitions allow us to modify the image using
+animation with all of the same advantages that SMIL animation has but
+transitions are not required to be known at the time the SVG image was
+generated. The \pkg{D3} library is particularly powerful in performing
+this task so \gridSVG{} images are easily animated post-creation using
+\pkg{D3}. This alone demonstrates the benefits of leveraging
+\proglang{JavaScript} as we can ``stand upon the shoulders of Giants''
+but it is not sufficient for accurately describing (and applying) a
+complex animation sequence. When constructing animation sequences
+(such as those from the Visual Inference Tools package) the
+\pkg{animaker} package is particularly useful because it captures the
+intent of the animation in an easy and flexible manner.
+
+\pkg{animaker} is designed only to \pkg{describe} an animation
+sequence, delegating any animation actions to other software. By
+exporting descriptions created by \pkg{animaker} to JSON, we allow
+alternative systems to use the timing scheme generated by
+\pkg{animaker}. To make this easy to use in \proglang{JavaScript}, the
+\pkg{TimingManager} library was created. This means that \gridSVG{}
+graphics can now systematically build and apply animation sequences
+that leverage SMIL animation and CSS transitions.
+
+Without \pkg{animaker} and \pkg{TimingManager} to describe animation
+sequences, and \pkg{D3} to apply them, animations acting upon existing
+\gridSVG{} graphics would be far more difficult to perform.
+
+\subsection{Advanced SVG Content}
+
+\gridSVG{} is no longer limited to drawing content that \grid{} can
+draw in \R{}. By leveraging features of SVG that are not available in
+\grid{} graphics we can produce plots that appear more
+sophisticated. The features that can now be drawn are patterns,
+opacity masks, non-rectangular clipping paths, filter effects and
+gradients. Instead of simply being a thin wrapper to SVG elements,
+\gridSVG{} provides an interface that is familiar to users of \grid{}
+graphics. This means that these advanced features can make use of
+\grid{} facilities like grobs, viewports and units.
+
+The advantage of exposing these features to a user, even if they
+cannot view them in \R{}, is that implementing these features in other
+systems (for example in \pkg{D3}) is very difficult. This may go some
+way towards explaining why they are uncommon in SVG plots,
+particularly \emph{statistical} SVG plots.
+
+Finally, it is now possible to directly add SVG elements to \gridSVG{}
+images using \code{grid.element()}. Anything that cannot drawn using
+the available \gridSVG{} features can now be drawn using a grob-like
+interface to SVG elements. This is unlikely to be necessary for most
+use cases but in the rare circumstance where more extensive
+customisation of a \gridSVG{} plot is necessary it may prove useful.
+
+It remains to be seen exactly how popular these features will be. This
+is primarily because they are not commonly used by existing SVG plots
+on the web. Because these features are not available in \R{} graphics,
+there may be users who want to utilise the features using \R{} but,
+until now, could not do so. It may be the case that people are not
+using these features because they are not useful, or perhaps that they
+cannot or find it difficult to do so. Regardless, the fact that
+\gridSVG{} now provides an interface to advanced SVG content means
+that it is now possible to draw these things in \grid{} graphics,
+which was not the case previously.
+
+\section{Complexity}
+
+We have achieved the goal of creating plots whose pieces can be
+manipulated, but one of the problems is that there are many separate
+pieces of software that are necessary to create them. For a typical
+\gridSVG{} web application that we can now create, we require someone
+to know all of the following tools and technologies: HTML, CSS, \R{},
+\grid{}, \gridSVG{}, an \R{} web server, and \pkg{D3} (and/or other
+\proglang{JavaScript} libraries). Although \R{} is commonly used
+amongst the statistical community, the web-based technologies are
+not. In particular, \proglang{JavaScript} is unlikely to be known by
+many statisticians. However, if the goal is to create web applications
+with responsive \gridSVG{} graphics, then it is a reasonable request
+that people understand the technologies that they are working with.
+
+The broad programming knowledge required to create these applications
+may limit its adoption. However, if people do possess the necessary
+knowledge the potential applications are vast --- far more is possible
+than the simple examples shown in \autoref{chap:examples}.
+
+\section{Limitations}
+
+Although it is possible to create sophisticated and responsive \grid{}
+graphics for use in a web browser there are several limitations that
+are present.
+
+One of the key limitations is that \gridSVG{} is limited to only
+exporting \grid{} graphics. This means that the vast library of plots
+that have been created in \R{}'s base graphics engine are not able to
+be enhanced by \gridSVG{}. The only option for exposing these plots to
+a web browser containing features similar to those provided by
+\gridSVG{} are with \pkg{SVGAnnotation} or \pkg{animation}. Graphics
+that are dynamically generated by packages like \pkg{shiny} can also
+use base graphics because they often rely upon the \code{png()}
+graphics device.
+
+It is also the case that \gridSVG{} is not a complete export of a
+\grid{} scene to SVG either. Some features are not yet supported, such
+as viewport rotation, but the vast majority of \grid{} content can be
+exported without issue. One of the key issues present is when custom
+grobs are created and used by packages other than \grid{}. In order to
+be exported to SVG correctly, they need to support ``forcing''
+\autocite{Mur12}. This means that custom grobs need to support the
+\grid{} \code{makeContent()} and \code{makeContext()} methods. If
+these are not present and are necessary, then the grobs will not be
+exported by \gridSVG{}. Unfortunately, to correct this problem
+requires package authors to update their \grid{} code to support these
+methods, which may be a time-consuming process for someone who simply
+wishes to use \gridSVG{} in the same way they can see content in
+\grid{}.
+
+Related to the previous limitation is that \gridSVG{} is heavily
+reliant on \grid{} grobs having \emph{useful} names. This is because
+automatically generated grob and viewport names are not reproducible
+(or at least should not be relied upon) and also that it is difficult
+to determine exactly what a particular grob name refers to. For
+example, without a reasonable \grid{} naming scheme in place, such as
+the scheme present in \pkg{lattice}
+\autocite{RJournal:2012-2:Murrell}, it is difficult to work out what
+the names \code{GRID.text.1} and \code{GRID.text.2} might refer to ---
+are they titles or legend text or other plot annotations? We cannot
+quickly establish the answer to this question without reasonably named
+\grid{} grobs. If we have reasonably named grobs, image manipulation
+in both \gridSVG{} and \proglang{JavaScript} is simplified greatly.
+
+Another limitation of \gridSVG{} is one that can only be worked around
+and not fixed --- \gridSVG{} is slow. In general, most images can be
+produced within a few seconds but it is possible to spend a long time
+generating images. This is partially a consequence of \R{} being a
+slow environment to execute code within, but also that \gridSVG{}'s
+operations depend on the \pkg{XML} package. \pkg{XML} is sufficiently
+fast for most operations but it can be slow to generate some
+images. In general, the limitation of \gridSVG{} being slow also
+applies to vector graphics in general, i.e. when a \grid{} scene has a
+sufficiently large amount of grobs (or sub-grobs) it is appropriate to
+use a raster image format instead (e.g. PNG). The raster image in this
+case will create an image faster, in addition to producing a smaller
+image file. However, with raster images we do not have the benefits of
+what SVG and indeed \gridSVG{} can offer. A trade-off is clearly
+present; we can generate an image quickly without any additional
+features, or choose to have dynamic and interactive images where the
+cost is time.
+
+It is known that \gridSVG{} plots can be interactive by using
+\pkg{JavaScript} to manipulate SVG content. However, it is difficult
+to modify anything to a great degree without communicating with
+\R{}. This step is quite slow in comparison to systems with
+interactive graphics. Desktop software such as \pkg{Mondrian}
+\autocite{The08} and \pkg{GGobi} \autocite{Coo07}, and the \R{}
+package \pkg{rgl} \autocite{Adl13} are designed to be able to
+manipulate a 2D or 3D scene simply by using a mouse cursor and/or
+keyboard shortcuts. These rely on the use of hardware accelerated
+drawing and a custom graphics system to create highly interactive
+scenes. Alternatively, \pkg{D3} also provides the ability to generate
+highly interactive plots such as a spinning globe with cartographic
+projections being generated immediately. Such plots are impossible
+with \gridSVG{} because it requires live code to generating graphical
+content, and therefore a request-response model is inappropriate as it
+is too slow. By restricting ourselves to enhancing \R{} graphics we
+not only limit ourselves to 2D graphics, but also to plots that are
+not as interactive as those on alternative systems.
+
+A final limitation is that it can be a time-consuming process to
+generate something as simple as a plot with tooltips. This is because
+there are no high level functions that automate this
+process. \gridSVG{} only provides the \emph{tools} to generate highly
+interactive and reactive graphics.
+
+\section{Future Directions}
+
+There are some areas of the SVG specification and indeed \grid{}
+graphics that \gridSVG{} does not fully support. \gridSVG{} could
+become a more complete piece of software if it filled these gaps in
+functionality. These missing features include viewport rotation and
+also some of the more complicated SVG animation features. Viewport
+rotation may be particularly complicated to implement due to features
+such as animation, which may become a lot more complicated as a
+result. The SVG animation features, implemented by the \code{<set>},
+\code{<animateMotion>} and \code{<animateColor>} elements could be
+supported by \gridSVG{}'s \code{grid.animate()} function. This would
+allow, for example, a colour to animate between red and blue as part
+of an animation sequence without requiring any knowledge of
+SVG. Currently this is possible but it requires knowing what the
+appropriate SVG attribute names are, which we would like to avoid.
+
+The clearest direction for \gridSVG{} in the future is for additional
+\R{} packages to build upon the existing tools that have been
+provided. This means that instead of having to write a significant
+amount of code to get a simple web application with an interactive
+\gridSVG{} plot, a user should simply be able to call a high level
+function that performs this task instead. Such extensibility is one of
+\R{}'s great assets and many packages take advantage of it. In fact,
+is it rare to find a contributed package that does not build upon
+other contributed packages.
+
+What would be ideal is if there were packages that built directly upon
+\gridSVG{} in the same way that \pkg{shiny} builds upon the
+\pkg{websockets} package. In other words, a package that is able to
+conveniently provide high level functionality not only to \gridSVG{}
+but also for \gridSVG{}-based web applications would be a good avenue
+for future development.
+
+\section{Conclusion}
+
+The development of the \gridSVG{} package has made it possible to
+create a web application where pieces of plots generated by \R{} can
+be created, updated, or removed. Not only is it now possible to
+perform these tasks, many tools and functionality have been created to
+make this a relatively easy process. The development of the
+\gridSVG{}, \pkg{selectr} and \pkg{animaker} packages enable us to
+produce reactive web-based graphics that are both interactive and
+animated.
+
+By combining the facilities present in a web browser with
+computational and graphical facilities provided by \R{}, we can
+produce interactive \R{} graphics that react to changes in the
+browser. As a result, animation can be applied to these changes,
+clearly demonstrating the visual effects of a change in state.
+
+The development of \gridSVG{} has achieved the goal of enabling
+\gridSVG{} to be a bridge between \R{} graphics and the facilities
+provided by a web browser.

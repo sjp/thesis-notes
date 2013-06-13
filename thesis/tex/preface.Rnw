@@ -1,0 +1,117 @@
+\cleardoublepage
+\phantomsection
+\chapter*{Preface}
+
+The content described in this thesis refers to web pages and images
+that are dynamic, interactive and animated. The nature of this printed
+document means that it cannot accurately reproduce some of the
+described content. However, technical reports have been published for
+most chapters and are viewable as web pages which demonstrate the full
+dynamic and interactive features of \gridSVG{} images. All technical
+reports were published on the University of Auckland's Department of
+Statistics Technical Report Blog
+(\url{http://stattech.wordpress.fos.auckland.ac.nz/}). These reports
+contain examples (and their source code) that are interactive and
+animated, consequently they may be of interest to readers and are
+listed below:
+
+\begin{itemize}
+\sloppy
+\item Title: Working with the \gridSVG{} Coordinate System \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2012-6-working-with-the-gridsvg-coordinate-system/} \\
+      Notes: Relates to the content written in \autoref{chap:coords}.
+
+\item Title: A Structured Approach for Generating SVG \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2012-7-a-structured-approach-for-generating-svg/} \\
+      Notes: Relates to the content written in \autoref{chap:genxml}.
+
+\item Title: Introducing the \pkg{selectr} Package \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2012-10-introducing-the-selectr-package/} \\
+      Notes: Relates to the content written in \autoref{chap:selectr}.
+
+\item Title: Generating Animation Sequence Descriptions \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2012-11-generating-animation-sequence-descriptions/} \\
+      Notes: Relates to the content written in \autoref{chap:animseq}. In particular this relates to \autoref{sec:descseq}.
+
+\item Title: \pkg{TimingManager}: Animation Sequences in \proglang{JavaScript} \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2012-13-timingmanager-animation-sequences-in-javascript/} \\
+      Notes: Relates to the content written in \autoref{chap:animseq}. In particular this relates to \autoref{sec:applyseq}.
+
+\item Title: Generating Unique Names in \gridSVG{} \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2013-3-generating-unique-names-in-gridsvg/} \\
+      Notes: Relates to the content written in \autoref{chap:naming}.
+
+\item Title: Generating Structured and Labelled SVG \\
+      {\footnotesize URL:} \url{http://stattech.wordpress.fos.auckland.ac.nz/2013-4-generating-structured-and-labelled-svg/} \\
+      Notes: Relates to the content written in \autoref{chap:naming}. It gives an overview on why and how it is particularly useful.
+
+\item Title: Advanced SVG Graphics from \R{} \\
+      {\footnotesize URL:} \url{http://www.stat.auckland.ac.nz/~paul/Reports/leaf/leaf.html} \\
+      Notes: Relates to the content written in \autoref{chap:refcontent}.
+
+\end{itemize}
+
+\fussy
+
+\section*{Software}
+
+The software developed during the course of this thesis are hosted in
+various locations online. These are listed below:
+
+\begin{itemize}
+
+\item \gridSVG{}
+
+  The majority of the content in this thesis describes features of
+  \gridSVG{} that are present in version 1.2.
+
+  This \R{} package is hosted on \R{}'s CRAN and is therefore installable
+  in \R{} by running the command
+  \code{install.packages("gridSVG")}. It is developed on R-Forge, so
+  more up-to-date versions of \gridSVG{} may be available at
+  \url{http://r-forge.r-project.org/projects/gridsvg/}.
+
+\newpage
+
+\item \pkg{selectr}
+
+  This \R{} package is hosted on \R{}'s CRAN and can be installed by
+  running the command \code{install.packages("selectr")}. It is
+  developed on GitHub at \url{https://github.com/sjp/selectr/}, where
+  more recent versions of the package may be available.
+
+\item \pkg{animaker}
+
+  At the time of writing, this \R{} package is not available on
+  CRAN. However, the code is freely available online on GitHub
+  \url{https://github.com/pmur002/animaker/}. This does means that
+  users will have to download, build and install the package in order
+  to use \pkg{animaker}.
+
+\item \pkg{TimingManager}
+
+  This is a \proglang{JavaScript} library that is available at
+  \url{http://sjp.co.nz/projects/timing-manager/}. Development occurs
+  on GitHub at \url{https://github.com/sjp/TimingManager/} where more
+  recent versions of the library may be available.
+
+\end{itemize}
+
+\section*{Conventions}
+
+The following typographical conventions are used throughout this
+thesis:
+
+\begin{description}
+
+\item[{\sf softwareName}] Indicates that the text is a proper noun,
+  referring to the name of a software application or package, or a
+  programming language.
+
+\item[{\tt code}] Indicates computer code in a broad sense. This may
+  include: SVG and HTML tags, keywords, attributes, values, variables.
+
+\item[{\tt function()}] Indicates computer code that refers to a
+  function.
+
+\end{description}

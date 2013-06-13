@@ -1,3 +1,281 @@
-\chapter{Examples}
+<<echo = FALSE, results = "hide", message = FALSE>>=
+source("../knitr-settings.R")
+@
 
-\dots
+\chapter{Examples}
+\label{chap:examples}
+
+In this chapter we will show three examples of the types of
+interactive graphics that \gridSVG{} is now capable of producing. In
+particular, these examples demonstrate how \gridSVG{} is used to
+update a \emph{piece} of a plot, rather than redrawing an entire
+plot. Unfortunately, due to the static nature of this printed
+document, the animations and interactivity cannot be adequately
+captured. Consequently, one must assume that \pkg{D3} is performing
+the described animations.
+
+To view these examples as they were intended, an \R{} package is
+available (at \url{http://sjp.co.nz/projects/msc-thesis/}) which
+contains all of the examples and instructions on how to run them. The
+examples can be viewed in a web browser and are served from an \R{}
+web server that runs on a user's machine.
+
+\section{LOESS Smoothing}
+
+This interactive LOESS smoothing example was mentioned in
+\autoref{chap:intro} as a goal for the types of interactive and
+animated graphics that we want \gridSVG{} to produce. LOESS smoothing
+is a commonly used technique that allows for a trend to be made
+visible in a noisy dataset. The key parameter of interest is the
+``span'' parameter that determines the size of the spanning window
+used for local regression. By setting a higher value of ``span'', more
+data points will be used to construct the smoother at each point along
+the curve. This means the LOESS curve will be more smooth than one
+constructed with a lower ``span''. \autoref{fig:loess1} shows a plot
+with a red LOESS curve added to it.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=4in]{images/loess-1.png}
+  \caption{A LOESS curve fitted to a dataset with a default span parameter of 0.75.}
+  \label{fig:loess1}
+\end{figure}
+
+The HTML slider control allows us to change the value of the ``span''
+parameter in an easy manner. Setting ``span'' to a low value of 0.05
+allows us to observe its effect by transitioning the line to become
+more ``noisy'', as illustrated in \autoref{fig:loess2}. Indeed, the
+spanning window is so small that the LOESS curve is no longer a curve
+but a jagged line that is drawn through each data point.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=4in]{images/loess-2.png}
+  \caption{Setting the span parameter to a low value of 0.05 causes the line to become more ``noisy''.}
+  \label{fig:loess2}
+\end{figure}
+
+We can see the effect of changing the span parameter to a more
+reasonable value of 0.25 in \autoref{fig:loess3}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=4in]{images/loess-3.png}
+  \caption{The LOESS curve after transitioning to a new span value of 0.25.}
+  \label{fig:loess3}
+\end{figure}
+
+The method that by which this interactive demonstration occurs is that
+a web page is initially loaded with everything shown in
+\autoref{fig:loess1}. When the span parameter changes via the HTML
+slider control, a message is sent back to \R{} requesting new line
+coordinates for the LOESS curve. \R{} then calculates the new line
+coordinates using \grid{} graphics, which are then exported to SVG by
+\gridSVG{}. The resulting line coordinates are retrieved from the
+newly generated SVG and sent back to the browser as a response to its
+request message. Once the browser gets this message \pkg{D3} is used
+to transition the LOESS curve from its old line coordinates to the
+newly generated line coordinates.
+
+\section{Interactive ARIMA Model Diagnostics}
+
+This example is a tool created to ease model diagnostics when building
+ARIMA time series models. There are three key parameters of interest:
+AR($p$), Differencing ($d$), and MA($q$). When building models that
+have been constructed using these parameters, plots showing the
+autocorrelation (ACF) and partial autocorrelation (PACF) functions are
+very useful for assessing whether the constructed models are a good
+fit.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=5in]{images/arima-1.png}
+  \caption{An ARIMA$(0,0,0)$ model fitted to data. ACF and PACF plots are drawn from the errors from the model.}
+  \label{fig:arima1}
+\end{figure}
+
+There are many different possible models that can be constructed with
+these parameters, for example even if we restrict $p$, $d$ and $q$ to
+only take integer values in the range $[0, 3]$, there are 64 possible
+models. This can make model comparisons difficult if we are assessing
+them visually using plots of the autocorrelation and partial
+autocorrelation functions. This tool assists with the process because
+it not only shows what the ACF and PACF plots look like, but also
+\emph{transitions} the error lines in each plot to new positions. This
+allows easy comparison between two models because the human eye is
+very good at detecting movement. Therefore, we can more easily observe
+differences between two models when there are transitions present than
+when comparing static images.
+
+When diagnosing the ARIMA$(0,0,0)$ model in \autoref{fig:arima1} we
+can see that there are multiple lags with significant errors in the
+ACF plot that drop off gradually at higher lags. In addition, the PACF
+plot clearly shows a single significant error at the first lag. This
+indicates that ARIMA$(1,0,0)$ might be an appropriate model. To test
+this we can simply increment the value of $p$ in the HTML numeric
+picker control. This causes a message to be sent to \R{} that
+requests new line coordinates for the errors in each of the plots. In
+order to get this information a new ARIMA model is fitted to the
+data. From the errors of this model, ACF and PACF plots are
+constructed. We collect the relevant pieces of these plots and send
+the information to the browser where D3 uses this new information to
+transition the lines to the appropriate positions.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=5in]{images/arima-2.png}
+  \caption{An ARIMA$(1,0,0)$ model fitted to data. The lines in each plot ACF and PACF plots were transitioned to these locations from their original states in \autoref{fig:arima1}.}
+  \label{fig:arima2}
+\end{figure}
+
+The diagnostic plots shown in \autoref{fig:arima2} suggest that
+ARIMA$(1,0,0)$ is an adequate model for this dataset. To test whether
+this indeed the case we can attempt to add a moving average term,
+i.e. an ARIMA$(1,0,1)$ model.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=5in]{images/arima-3.png}
+  \caption{An ARIMA$(1,0,1)$ model fitted to data. No obvious changes were visible when transitioning from the model used in \autoref{fig:arima2}.}
+  \label{fig:arima3}
+\end{figure}
+
+Because there was no obvious movement evident when adding a moving
+average term, it is clear to the user that adding a moving average
+term does not capture any variability that was previously in the
+errors. Although this dataset is clearly demonstrating an AR(1)
+process, more complicated datasets may make this tool even more
+beneficial.
+
+\section{Sampling Variation Teaching Visualisation}
+
+The VIT (Visual Inference Tools) package \autocite{Wild13} creates
+animations are used for teaching statistical concepts such as
+bootstrap confidence interval construction, permutation testing and
+confidence intervals. One of the animations it can create is used for
+teaching the concept of sampling variation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=5in]{images/sampvar-1.png}
+  \caption{Visual Inference Tools running a sampling variation animation.}
+  \label{fig:sampvar1}
+\end{figure}
+
+This example differs from the LOESS and ARIMA examples because it
+requires far more coordination once data has been given to the
+browser. This additional complexity is reduced immensely when the
+\pkg{animaker} package is used to describe and apply the animation
+sequencing. This is a huge advantage that a \gridSVG{} implementation
+has over VIT. VIT has no way of keeping track of time because it
+repeatedly draws as quickly as possible. This means that VIT
+animations vary in length depending on how complex the \grid{} scene
+is in addition to being ``choppy''. These limitations are not present
+when animating SVG content because we can declaratively say what, when
+and for how long graphical content is being animated.
+
+The sampling variation animation sequence that needs to be described
+by \pkg{animaker} is the following:
+
+\begin{itemize}
+\item Select a sample from a population in the Data panel.
+\item Pull the currently selected sample into the Sample panel.
+\item Generate a sample statistic, and leaving a ``ghost'' statistic
+  behind.
+\item Pull the sample statistic into the Statistic panel and turn it
+  into a point.
+\item Repeat to build up a distribution of sample statistics.
+\end{itemize}
+
+A single iteration of this process is described in the following animation
+sequence and illustrated in \autoref{fig:sampvarAnimSeq}.
+
+<<sampvarAnimSeq, message = FALSE, fig.width = 5, out.width = NULL, out.height = "2in", fig.cap = "A single iteration of the Sampling Variation animation sequence.">>=
+library(animaker)
+sampSelect <- atomic(label = "sampleSelect",
+                     start = 1.5,
+                     durn = 1.5)
+sampDrop <- atomic(label = "sampleDrop",
+                   durn = 1.5)
+sampStat <- atomic(label = "sampleStat",
+                   durn = 1)
+sampStatDrop <- atomic(label = "sampleStatDrop",
+                       durn = 1.5)
+sampRemove <- atomic(label = "sampleRemove")
+statPoint <- atomic(label = "statPoint",
+                    durn = 0.5)
+# Collect all of the animations into a single iteration
+singleIter <- vec(sampSelect,
+                  sampDrop,
+                  sampStat,
+                  sampStatDrop,
+                  sampRemove,
+                  statPoint,
+                  label = "singleIter")
+plot(singleIter)
+@
+
+Given that an animation sequence has now been described it can be
+applied in the browser using the \pkg{TimingManager} library. This
+step is not shown but the resulting animation is shown in
+\autoref{fig:sampvaranim}. Although difficult to observe, the key
+idea here is that we know exactly when an animation occurs, what it is
+doing, and how long the animation runs for. The animation runs
+smoothly and improves upon some of the limitations of the source
+implementation.
+
+\begin{figure}[H]
+  \centering
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=5in]{images/sampvar-anim-1.png}
+    \caption{The web page before the ``Start'' button has been clicked.}
+  \end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[H]
+  \ContinuedFloat
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=5in]{images/sampvar-anim-2.png}
+    \caption{Selecting a sample from a population.}
+  \end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[H]
+  \ContinuedFloat
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=5in]{images/sampvar-anim-3.png}
+    \caption{Dropping the selected sample to the ``Sample'' panel and generating a sample statistic (the sample mean).}
+  \end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[H]
+  \ContinuedFloat
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=5in]{images/sampvar-anim-4.png}
+    \caption{Dropping the sample statistic to the ``Statistic'' panel.}
+  \end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[H]
+  \ContinuedFloat
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=5in]{images/sampvar-anim-5.png}
+    \caption{The sample statistic has become a point and a ``ghost'' sample statistic has been left behind in the ``Sample'' panel.}
+  \end{subfigure}
+\end{figure}
+\clearpage
+\begin{figure}[H]
+  \ContinuedFloat
+  \begin{subfigure}{\textwidth}
+    \centering
+    \includegraphics[width=5in]{images/sampvar-anim-6.png}
+    \caption{The page after 20 iterations.}
+  \end{subfigure}
+  \caption{A sampling variation teaching animation using \gridSVG{} and \pkg{D3}.}
+  \label{fig:sampvaranim}
+\end{figure}

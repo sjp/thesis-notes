@@ -1,0 +1,19 @@
+\cleardoublepage
+\phantomsection
+\chapter*{\centerline{Abstract}}
+
+\hrule
+\vspace{4mm}
+
+This thesis describes a body of work in the area of web-based
+statistical graphics. This is primarily concerned with the development
+of \gridSVG{}, a package for the \R{} statistical software system. The
+result of developing \gridSVG{} is that flexible dynamic, interactive,
+reactive graphics for web pages can now be produced by \R{}. In
+addition, two other packages have been developed to assist the
+creation of graphics with \gridSVG{}: \pkg{selectr} and
+\pkg{animaker}. The motivation and development of all three packages
+and their intended use cases are discussed.
+
+\vspace{4mm}
+\hrule
