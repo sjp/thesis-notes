@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--This one seems to work all the time, but really small on ipad-->
+  <meta name="viewport" content="initial-scale=0.4">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+  <script src="js/d3-min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="title-slide segue nobackground">
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Motivation</h2>
+    </hgroup>
+    <article class="flexbox vcenter">
+      <p>The VIT package (<a href="http://www.stat.auckland.ac.nz/~wild/VIT/">http://www.stat.auckland.ac.nz/~wild/VIT/</a>)</p>
+      <img src="images/vit-640w.png" width="640" height="441" alt="VIT Sampling Variation" title="VIT Sampling Variation">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Where VIT Shines</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Easy to use via a GUI</li>
+        <li>Animations work pretty well</li>
+        <li>Heavy use of R's facilities for both statistics and graphics</li>
+        <li>Programmed entirely in R</li>
+        <li>Cross Platform (works on at least Windows, OSX and Linux)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>How VIT Creates Animations</h2>
+    </hgroup>
+    <article>
+      <div class="centered" style="margin-top:2em">
+        <button id="vit-frame-prev">Previous</button> <button id="vit-frame-next">Next</button>
+      </div>
+      <img id="vit-frame-img" src="images/vit-frame-22.png" width="640" height="480" alt="VIT Frame" style="display:block;margin-left:auto;margin-right:auto;">
+    </article>
+  </slide>
+  <script>
+    var VIT_FRAME_MIN = 22;
+    var VIT_FRAME_MAX = 69;
+    var vitFrameCounter = 22;
+    var decrVitFrame = function() {
+        if (vitFrameCounter > VIT_FRAME_MIN)
+            vitFrameCounter -= 1;
+        var newURL = "images/vit-frame-" + vitFrameCounter +
+                     ".png";
+        d3.select("#vit-frame-img")
+            .attr("src", newURL);
+    };
+    var incrVitFrame = function() {
+        if (vitFrameCounter < VIT_FRAME_MAX)
+            vitFrameCounter += 1;
+        var newURL = "images/vit-frame-" + vitFrameCounter +
+                     ".png";
+        d3.select("#vit-frame-img")
+            .attr("src", newURL);
+    };
+    d3.select("#vit-frame-prev")
+        .on("click", decrVitFrame);
+    d3.select("#vit-frame-next")
+        .on("click", incrVitFrame);
+  </script>
+
+  <slide>
+    <hgroup>
+      <h2>VIT Weaknesses</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Repeated drawing is slow</li>
+        <li>No access to <em>time</em>. Animations work on a per-frame basis.</li>
+        <li>Animation sequences are very difficult to manage</li>
+        <li>The GUI and animations are described <em>procedurally</em>, rather than declaratively</li>
+        <li>Difficult to distribute &mdash; requires R and RGtk2 (along with a few other large packages)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>How about gridSVG?</h2>
+    </hgroup>
+    <article>
+      <p>Using gridSVG to manage the task of drawing has several advantages:</p>
+      <ul>
+        <li>Declarative animation that can track time (e.g. "from A to B in 3s")</li>
+        <li>Interactivity (via hyperlinking and JavaScript)</li>
+        <li>Vector graphics</li>
+        <li>Viewable by any modern web browser (even IE!)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Intro to gridSVG</h2>
+    </hgroup>
+    <article>
+      <p>gridSVG uses the grid graphics engine to produce SVG that retains the names of grid objects.</p>
+      <pre class="prettyprint" data-lang="r">
+library(gridSVG)
+grid.rect(name = "myrect")
+grid.circle(name = "mycircle")
+grid.ls()
+</pre>
+<pre>
+myrect
+mycircle
+</pre>
+      <img class="centerblock" src="images/example.svg" width="192" height="192" alt="Simple gridSVG example">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>gridSVG Output</h2>
+    </hgroup>
+    <article>
+<pre class="prettyprint" data-lang="r">
+grid.export("example.svg")
+</pre>
+<pre class="prettyprint" data-lang="xml">
+&lt;svg&gt;
+  &lt;g transform=&quot;translate(0, 192) scale(1, -1)&quot;&gt;
+    &lt;g id=&quot;gridSVG&quot;&gt;
+      &lt;g <b>id=&quot;myrect.1&quot;</b>&gt;
+        &lt;rect <b>id=&quot;myrect.1.1&quot;</b> x=&quot;0&quot; y=&quot;0&quot; width=&quot;192&quot; height=&quot;192&quot;/&gt;
+      &lt;/g&gt;
+      &lt;g <b>id=&quot;mycircle.1&quot;</b>&gt;
+        &lt;circle <b>id=&quot;mycircle.1.1&quot;</b> cx=&quot;96&quot; cy=&quot;96&quot; r=&quot;96&quot;/&gt;
+      &lt;/g&gt;
+    &lt;/g&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;
+</pre>
+    </article>
+  </slide>  
+
+  <slide>
+    <hgroup>
+      <h2>Why not gridSVG?</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Slow to generate graphics</li>
+        <li>Would require a web page to be loaded once an SVG was created</li>
+        <li>Each animation would require a new SVG file</li>
+        <li>Too much work!</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Why not gridSVG?</h2>
+    </hgroup>
+    <article>
+        <p>We can load a web page with SVG content, but lose the ability to communicate with R.</p>
+        <img class="centerblock" src="images/one-way-street.svg" width="768" height="384" alt="gridSVG can only encode information in a plot once">
+    </article>
+  </slide>
+
+<!--
+Code for image
+
+dev.new(width = 8, height = 4)
+pushViewport(viewport(x = 0, just = "left", width = 0.5))
+grid.text("R", x = 0.2, gp = gpar(fontsize = 96))
+grid.lines(y = c(0.7, 0.7), x = c(0.4, 1.3),
+           arrow = arrow(angle = 20, length = unit(0.3, "inches"),
+           type = "closed"), gp = gpar(lwd = 3, fill = "black"))
+grid.lines(y = c(0.3, 0.3), x = c(1.3, 0.4),
+           arrow = arrow(angle = 20, length = unit(0.3, "inches"),
+           type = "closed"), gp = gpar(lwd = 3, fill = "black"))
+lxs <- rep(c(0.5, 0.7), 3) +
+       rep(seq(0, 0.5, length.out = 3), each = 2)
+lys <- rep(c(0.1, 0.5), 3)
+grid.polyline(y = lys, x = lxs, id.lengths = rep(2, 3),
+              gp = gpar(lwd = 3, col = "red"))
+upViewport()
+pushViewport(viewport(x = 0.7, just = "left", width = 0.3))
+# Some default settings
+pushViewport(viewport(gp=gpar(col="black", fill=NA)))
+
+n <- 30
+L <- 50 #mm
+A <- 20 #mm
+t <- seq(0, 2*pi, length=n)
+x <- A*cos(t)
+v <- -A*sin(t)
+theta <- atan(x/L)
+y <- L*cos(theta)
+
+pushViewport(viewport(layout=grid.layout(4, 1,
+                         widths=unit(2.2*A, "null"),
+                         heights=unit(c(1, L + 10, 2.2*A, 2),
+                           c("lines", "null", "null", "lines")),
+                         respect=TRUE)))
+pushViewport(viewport(layout.pos.row=2,
+                       xscale=A * c(-1.1, 1.1),
+                       yscale=c(0, L + 10)))
+grid.rect()
+grid.path(name="chain",
+          x=unit(c(0.5, x[1]), c("npc", "native")),
+          y=unit(1, "npc") - unit(c(0, abs(y)[1]), c("npc", "native")))
+grid.animate("chain",
+             x=animUnit(unit(c(rep(0.5, n), x),
+                             c(rep(c("npc", "native"), each=n))),
+                        timeid=rep(1:n, 2)),
+             y=animUnit(unit.c(unit(rep(1, n), "npc"),
+                        unit(1, "npc") - unit(y, "native")),
+                        timeid=rep(1:n, 2)),
+             duration=5, rep=TRUE)
+grid.circle(name="weight",
+            x=unit(x[1], "native"),
+            y=unit(1, "npc") - unit(y[1], "native"),
+            r=unit(1, "mm"),
+            gp=gpar(fill="black"))
+grid.animate("weight",
+             x=unit(x, "native"),
+             y=unit(1, "npc") - unit(abs(y), "native"),
+             duration=5, rep=TRUE)
+popViewport()
+
+pushViewport(viewport(layout.pos.row=3,
+                       xscale=A * c(-1.1, 1.1),
+                       yscale=A * c(-1.1, 1.1)))
+grid.rect()
+grid.lines(x=unit(c(0, 0), "native"),
+           gp=gpar(lty="dashed", col="grey"))
+grid.lines(y=unit(c(0, 0), "native"),
+           gp=gpar(lty="dashed", col="grey"))
+grid.text("Displacement", y=unit(-1, "lines"))
+grid.text("Velocity", x=unit(-1, "lines"), rot=90)
+grid.circle(name="key",
+            x=unit(x[1], "native"),
+            y=unit(v[1], "native"),
+            r=unit(1, "mm"),
+            gp=gpar(fill="black"))
+grid.animate("key",
+             x=unit(x, "native"),
+             y=unit(v, "native"),
+             duration=5, rep=TRUE)
+popViewport(2)
+popViewport()
+upViewport()
+grid.export(".....svg")
+
+-->
+
+  <slide>
+    <hgroup>
+      <h2>R as a Web Server</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>How about using R as a web server? (not new: Rook, Rserve, shiny, rApache, ...)</li>
+        <li>In theory we can generate plots in response to user requests</li>
+        <li>We could then provide a web-based interface to applications</li>
+        <li>This also gives us access to powerful JavaScript libraries</li>
+      </ul>
+      <p>A 'shiny' <a href="http://localhost:13060">example</a> follows...</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>JavaScript Examples with D3</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li><a href="examples/pop-pyramid.html">Population Pyramid</a></li>
+        <li><a href="examples/grouped-stacked.html">Bar charts</a></li>
+        <li><a href="examples/d3-geo-demo.html">Geographic examples</a></li>
+      </ul>
+      <p>All examples authored by Mike Bostock (creator of D3)</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>A New Approach</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>How about using R a web server to generate <b>gridSVG</b> plots?</li>
+        <li>We also want <em>parts</em> of a plot to be updated too</li>
+      </ul>
+      <p>The key idea:</p>
+      <ul>
+        <li>R is awesome for statistics (and statistical graphics!)</li>
+        <li>JavaScript libraries are powerful for assisting with interactivity and animation</li>
+        <li>Use gridSVG to generate plots (and pieces of plots) for JavaScript libraries (like D3) to play with</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Naming</h2>
+    </hgroup>
+    <article>
+      <p>The problem:</p>
+      <ul>
+        <li>SVG allows us to name each piece of a plot (key reason for using gridSVG)</li>
+        <li>SVG is an XML grammar</li>
+        <li>XML requires <b>unique</b> names for each component</li>
+        <li>grid is more relaxed with naming, so no <b>simple</b> mapping is possible</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Naming</h2>
+    </hgroup>
+    <article>
+      <p>Consider the following code:</p>
+      <pre class="prettyprint" data-lang="r">
+library(grid)
+pushViewport(viewport(<b>name = "a"</b>))
+grid.rect(<b>name = "a"</b>)
+grid.circle(<b>name = "a"</b>)
+grid.draw(gTree(<b>name = "a"</b>,
+  children = gList(
+    circleGrob(<b>name = "a"</b>),
+    rectGrob(<b>name = "a"</b>))))
+popViewport()
+</pre>
+      <p>If we want to retain access to these names, and also produce valid SVG, we need a <b>naming scheme</b>!</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Naming</h2>
+    </hgroup>
+    <article>
+      <p>The basic idea is to keep a counter for each time gridSVG meets a grob or viewport.</p>
+      <p>The resulting SVG ID is the name suffixed with the counter (separated by a <code>.</code>).</p>
+      <pre class="prettyprint" data-lang="r">
+pushViewport(viewport(name = "a"))
+</pre>
+      <p><code>a.1</code></p>
+      <pre class="prettyprint" data-lang="r">
+grid.rect(name = "a")
+</pre>
+      <p><code>a.2</code></p>
+      <p>And so on...</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Naming</h2>
+    </hgroup>
+    <article>
+      <p>It is a bit more complicated than this.</p>
+      <p>We also have a way of controlling what the IDs look like (arguments to <code>grid.export()</code>):</p>
+      <ul>
+          <li><code>prefix</code> &mdash; Allows every generated ID to be prefixed with a given string</li>
+          <li><code>usePaths</code> &mdash; Determine whether path information is retained in names</li>
+          <li><code>uniqueNames</code> &mdash; Allow a direct mapping from grid names to SVG IDs</li>
+      </ul>
+      <p>There are also further ways of controlling output: <code>addClasses</code>, <code>annotate</code>, and <code>setSVGoptions()</code></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Name Mapping</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>We know that gridSVG maps grid names to SVG IDs</li>
+        <li>It is difficult to work out what the exact ID is in advance</li>
+      </ul>
+      <p>gridSVG now exports name mapping information so we can find out what the IDs are:</p> 
+      <p><code>gridSVGMappings()</code> and <code>getSVGMappings()</code></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Name Mapping</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="r">
+pushViewport(viewport(name = "a"))
+grid.rect(name = "a")
+</pre>
+      <p>What did these names turn into?</p>
+      <pre class="prettyprint" data-lang="r">
+getSVGMappings("a", type = "vp")
+[1] "a.1"
+getSVGMappings("a", type = "grob")
+[1] "a.2"
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Name Mapping</h2>
+    </hgroup>
+    <article>
+      <p>We can also find out how to select the content using XPath or CSS Selectors.</p>
+      <pre class="prettyprint" data-lang="r">
+getSVGMappings("a", type = "vp", result = "xpath")
+[1] "//*[@id='a.1']"
+getSVGMappings("a", type = "vp", result = "selector")
+[1] "#a\\.1"
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+    </hgroup>
+    <article>
+      <p>Problem: We want to generate an image in-memory, but couldn't because gridSVG would always save to a file</p>
+      <p>Solution: Use the wonderful <code>XML</code> package.</p>
+      <p>This also gives us many other benefits!</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+    </hgroup>
+    <article>
+      <p>Benefits of <code>XML</code></p>
+      <ul>
+        <li>Easier and more reliable image construction</li>
+        <li>Able to generate in-memory</li>
+        <li>Can select <b>pieces</b> of the plot using XPath</li>
+        <li>And add or remove to an image at any point (not just appending)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+      <h3>An Example</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="r">
+library(ggplot2)
+qplot(mpg, wt, data=mtcars, colour=cyl)
+</pre>
+      <p>We'll try to remove the legend without using any plotting commands.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+    </hgroup>
+    <article>
+      <img class="centerblock" src="images/ggplot-xml-fig1.svg" width="504" height="504" alt="A ggplot2 qplot">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="r">
+svgdoc &lt;- grid.export(&quot;&quot;)$svg
+legendNode &lt;- 
+    getNodeSet(svgdoc,
+               &quot;//svg:g[@id=&apos;layout::guide-box.3-5-3-5.1&apos;]&quot;,
+                c(svg=&quot;http://www.w3.org/2000/svg&quot;))[[1]]
+removeChildren(xmlParent(legendNode), legendNode)
+saveXML(svgdoc, file = &quot;ggplot-xml-fig2.svg&quot;)
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+    </hgroup>
+    <article>
+      <img class="centerblock" src="images/ggplot-xml-fig2.svg" width="504" height="504" alt="A ggplot2 qplot with its legend removed">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Node-based SVG</h2>
+    </hgroup>
+    <article>
+      <img class="centerblock" src="images/ggplot-xml-fig3.png" alt="A ggplot2 qplot with only its legend">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Coordinate System</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>grid viewports have a scale, location and dimension</li>
+        <li>gridSVG lost the scale and translated all locations and dimensions to <b>pixels</b></li>
+        <li>No way of accessing any locations once we exported to SVG</li>
+      </ul>
+      <p>We need a way of retaining viewport coordinate system information</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Coordinate System</h2>
+    </hgroup>
+    <article>
+      <p>We export a viewport's coordinate system to JSON, a structured data format.</p>
+      <pre class="prettyprint" data-lang="r">
+pushViewport(viewport(x = unit(0.5, "npc"),
+                      y = unit(0, "npc"),
+                      width = unit(3, "inches"),
+                      height = unit(7, "cm"),
+                      xscale = c(0, 20),
+                      yscale = c(0, 20),
+                      <b>name = "example"</b>))
+popViewport()
+grid.export("coords-example.svg", <b>exportCoords = "file"</b>)
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Coordinate System</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="js">
+{
+    "example.1": {
+        "x": 191.83,
+        "y": -132.44,
+        "width": 288.34,
+        "height": 264.88,
+        "xscale": [0, 20],
+        "yscale": [0, 20],
+        "inch":  96.11 
+    } 
+}
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Coordinate System</h2>
+    </hgroup>
+    <article>
+      <p>So how do we use this?</p>
+      <p>First, read in the data using <code>gridSVGCoords()</code></p>
+      <p>Then use one of the following functions:</p>
+      <ul>
+          <li><code>viewportConvertX()</code></li>
+          <li><code>viewportConvertY()</code></li>
+          <li><code>viewportConvertWidth()</code></li>
+          <li><code>viewportConvertHeight()</code></li>
+      </ul>
+      <p>We can also recreate a viewport using <code>viewportCreate()</code></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Using Coordinate System Information</h2>
+    </hgroup>
+    <article>
+      <p>We can convert grid units to SVG pixels</p>
+      <pre class="prettyprint" data-lang="r">
+viewportConvertX("example.1", 3, "native")
+[1] 110.45
+viewportConvertY("example.1", 14, "native");
+[1] 283.1
+</pre>
+      <p>We can also go from SVG pixels to grid units</p>
+      <pre class="prettyprint" data-lang="r">
+viewportConvertX("example.1", 110.45, "svg", "native")
+[1] 3
+viewportConvertY("example.1", 283.1, "svg" "native");
+[1] 14
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Example</h2>
+    </hgroup>
+    <article>
+      <iframe data-src="examples/coords/coordinates.html"></iframe>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Summary so far</h2>
+    </hgroup>
+    <article>
+      <p>What we now have in gridSVG:</p>
+      <ul>
+        <li>Valid SVG names, including a convenient way of identifying graphical components (via name mapping information)</li>
+        <li>Node-based images, enabling us to build images in-memory and manipulate images easily</li>
+        <li>Coordinate system retention, so we know where to put new content</li>
+      </ul>
+      <p>With this information at hand, we can re-build the <a href="http://127.0.0.1:13060/custom/loess">LOESS smoother example using gridSVG</a></p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Content Selection</h2>
+    </hgroup>
+    <article>
+      <p>The XPath query used to select a legend from a ggplot2 plot:</p>
+      <pre>//svg:g[@id='layout::guide-box.3-5-3-5.1']</pre>
+      <p>A bit verbose, fortunately there is an alternative query language &mdash; CSS selectors.</p>
+      <p>CSS selectors are often used in JavaScript libraries</p>
+      <pre class="prettyprint" data-lang="js">
+$(".header-nav") // jQuery
+d3.selectAll(".header-nav") // D3
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Comparing XPath and CSS Selectors</h2>
+    </hgroup>
+    <article>
+      <table>
+        <thead>
+          <tr>
+            <th>CSS Selector</th>
+            <th>XPath Expression</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>#test</code></td>
+            <td><code>*[@id = 'test']</code></td>
+          </tr>
+          <tr>
+            <td><code>.test</code></td>
+            <td><code>*[@class and contains(concat(' ', normalize-space(@class), ' '), ' test ')]</code></td>
+          </tr>
+          <tr>
+            <td><code>body p</code></td>
+            <td><code>body/descendant-or-self::*/p</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="margin-top:20px">CSS Selectors offer a <b>subset</b> of the functionality of XPath, but are far easier to write</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>One problem: the <code>XML</code> package doesn't let us use CSS selectors!</li>
+        <li>What if we could translate CSS selectors to XPath?</li>
+        <li>A Python package, <code>cssselect</code> can do this!</li>
+        <li><code>selectr</code> is a port of <code>cssselect</code> to R</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr Examples</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="r">
+library(selectr)
+css_to_xpath("#test")
+[1] "descendant-or-self::*[@id = 'test']"
+css_to_xpath(".test")
+[1] "descendant-or-self::*[@class and contains(concat(' ', normalize-space(@class), ' '), ' test ')]"
+css_to_xpath("body p")
+[1] "descendant-or-self::body/descendant-or-self::*/p"
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr Examples</h2>
+    </hgroup>
+    <article>
+      <p>Let's use this on a &ldquo;real&rdquo; document? Let's use the Department's Technical Report Blog.</p>
+      <pre class="prettyprint" data-lang="r">
+library(XML)
+page <- htmlParse("http://stattech.wordpress.fos.auckland.ac.nz/")
+# What is the page title?
+<b>querySelector</b>(page, "title")
+</pre>
+      <pre class="prettyprint" data-lang="xml">
+&lt;title&gt;Stat Tech | Statistics Technical Blog&lt;/title&gt;
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr Examples</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="r">
+# What are all of the links to technical reports?
+<b>querySelectorAll</b>(page, "h1.entry-title &gt; a")
+</pre>
+      <pre style="overflow:scroll">
+[[1]]
+&lt;a href=&quot;http://stattech.wordpress.fos.auckland.ac.nz/2013-5-open-data-in-new-zealand/&quot; title=&quot;Permalink to 2013-5 Open Data in New Zealand&quot; rel=&quot;bookmark&quot;&gt;2013-5 Open Data in New Zealand&lt;/a&gt; 
+
+[[2]]
+&lt;a href=&quot;http://stattech.wordpress.fos.auckland.ac.nz/2013-4-generating-structured-and-labelled-svg/&quot; title=&quot;Permalink to 2013-4 Generating Structured and Labelled SVG&quot; rel=&quot;bookmark&quot;&gt;2013-4 Generating Structured and Labelled SVG&lt;/a&gt; 
+
+[[3]]
+&lt;a href=&quot;http://stattech.wordpress.fos.auckland.ac.nz/2013-3-generating-unique-names-in-gridsvg/&quot; title=&quot;Permalink to 2013-3 Generating unique names in gridSVG&quot; rel=&quot;bookmark&quot;&gt;2013-3 Generating unique names in gridSVG&lt;/a&gt; 
+...
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr</h2>
+    </hgroup>
+    <article>
+      <p>Similarly we can query <b>namespaced content</b> like SVG images with <code>querySelectorNS()</code> and <code>querySelectorAllNS()</code>:</p>
+      <pre class="prettyprint" data-lang="r">
+svgdoc &lt;- xmlParse(system.file(&quot;tests/svg-mathml.svg&quot;,
+                               package = &quot;selectr&quot;))
+# Search for &lt;script&gt; elements in the SVG namespace
+querySelectorNS(svgdoc, &quot;svg|script&quot;,
+                c(svg = &quot;http://www.w3.org/2000/svg&quot;))
+</pre>
+      <pre>
+&lt;script type=&quot;application/ecmascript&quot; xlink:href=&quot;test2.svg.coords.js&quot;/&gt; 
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="r">
+querySelectorAllNS(svgdoc, &quot;svg|script&quot;,
+                   c(svg = &quot;http://www.w3.org/2000/svg&quot;))
+</pre>
+      <pre>
+[[1]]
+&lt;script type=&quot;application/ecmascript&quot; xlink:href=&quot;test2.svg.coords.js&quot;/&gt; 
+
+[[2]]
+&lt;script type=&quot;application/ecmascript&quot; xlink:href=&quot;test2.svg.convert.js&quot;/&gt; 
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>selectr Summary</h2>
+    </hgroup>
+    <article>
+      <p>Perform a translation from CSS Selectors to XPath</p>
+      <ul>
+        <li><code>css_to_xpath()</code></li>
+      </ul>
+      <p>Search for content matching a selector</p>
+      <ul>
+        <li><code>querySelector()</code> &mdash; first match</li>
+        <li><code>querySelectorAll()</code> &mdash; all matches</li>
+      </ul>
+      <p>Search for namespaced content (e.g. XHTML, SVG, MathML)</p>
+      <ul>
+        <li><code>querySelectorNS()</code></li>
+        <li><code>querySelectorAllNS()</code></li>  
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Another gridSVG Example</h2>
+    </hgroup>
+    <article>
+      <p>Let's have a look at an <a href="http://127.0.0.1:13060/custom/arima">ARIMA diagnostics example</a>.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <ul>
+        <li>Sequencing animations is difficult to do by hand</li>
+        <li>We want to ensure that animation B follows animation A</li>
+        <li>Doing this by changing starting times for animations does not scale</li>
+        <li>VIT has many distinct animations that could benefit from sequencing (if it had access to time)</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>To solve these problems, the 'animaker' package was created.</p>
+      <ul>
+          <li>It controls the sequencing of animations</li>
+          <li>Does not determine what the animations do</li>
+          <li>Manages only start times and durations</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>An atomic animation is the simplest of all animations</p>
+      <p>It has three parameters:</p>
+      <ul>
+        <li><code>start</code> &mdash; the starting time</li>
+        <li><code>durn</code> &mdash; the duration</li>
+        <li><code>label</code> &mdash; a description for the animation</li>
+    </article>
+    <pre class="prettyprint" data-lang="r">
+atomic(start = 3, durn = 1, label = "example")
+</pre>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>Atomic animations can be combined in two ways:</p>
+      <ul>
+          <li>In series: a 'sequence' animation</li>
+          <li>In parallel: a 'track' animation</li>
+      </ul>
+      <p>We can also make sequences of tracks and tracks of sequences.</p>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>A sequence</p>
+      <pre class="prettyprint" data-lang="r">
+a &lt;- atomic(start = 0, durn = 3, label = "a")
+b &lt;- atomic(start = 1, durn = 2, label = "b")
+c &lt;- atomic(start = 0, durn = 1, label = "c")
+exampleSeq <- vec(a, b, c, label = "sequence")
+plot(exampleSeq)
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <img class="centerblock" src="images/anim-seq.svg" width="672" height="367" alt="An animation sequence constructed by animaker">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>A track</p>
+      <pre class="prettyprint" data-lang="r">
+d &lt;- atomic(start = 0, durn = 10, label = "d")
+exampleTrack <- trac(exampleSeq, d, label = "track")
+plot(exampleTrack)
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <img class="centerblock" src="images/anim-track.svg" width="672" height="367" alt="An animation track constructed by animaker">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>The whole point is to produce a <b>timing scheme</b>:</p>
+      <pre class="prettyprint" data-lang="r">
+timing(exampleTrack)
+</pre>
+      <pre>
+  label start durn vec      vecNum trac  tracNum
+1 a     0      3   sequence 1      track 1      
+2 b     4      2   sequence 2      track 1      
+3 c     6      1   sequence 3      track 1      
+4 d     0     10                   track 2 
+</pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Animation Sequencing</h2>
+    </hgroup>
+    <article>
+      <p>These animation sequences are only <b>descriptions</b>, we need to <b>apply</b> them</p>
+      <p>The <a href="http://sjp.co.nz/projects/timing-manager/">TimingManager</a> JS library performs this task by matching JavaScript functions with atomic animations (omitted)</p>
+      <p>We now have a way of managing animation sequences. Let's see what we can do with this!</p>
+      <p><a href="http://localhost:13060/">Sampling Variation Example</a></p>
+    </article>
+  </slide>
+
+  <slide class="thank-you-slide segue nobackground">
+    <article class="flexbox vleft auto-fadein">
+      <h2>Thank You!</h2><br>
+      <h2>Any Questions?</h2>
+    </article>
+    <p class="auto-fadein" data-config-contact>
+      <!-- populated from slide_config.json -->
+    </p>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Non-rectangular Clipping Paths</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.clipPath()</code></p>
+      <img class="centerblock" src="images/non-rect-clipping-paths.svg" width="576" height="288" alt="Non-rectangular clipping paths with gridSVG">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Opacity Masks</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.mask()</code></p>
+      <img class="centerblock" src="images/opacity-mask-def.svg" width="576" height="288" alt="An image alongside a mask definition">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Opacity Masks</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.mask()</code></p>
+      <img class="centerblock" src="images/opacity-mask-applied.svg" width="400" height="400" alt="An image with a mask applied">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Patterns</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.patternFill()</code></p>
+      <img class="centerblock" src="images/pattern-def.svg" width="576" height="288" alt="A barchart with a pattern definition alongside">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Patterns</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.patternFill()</code></p>
+      <img class="centerblock" src="images/pattern-applied.svg" width="400" height="400" alt="A barchart with a pattern applied">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Gradients</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.gradientFill()</code></p>
+      <img class="centerblock" src="images/gradients.svg" width="576" height="288" alt="Linear and radial gradients applied to grobs">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Filter Effects</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.filter()</code></p>
+      <img class="centerblock" src="images/drop-shadow.svg" width="700" height="350" alt="The process of applying a drop-shadow filter effect">
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Extras</h2>
+      <h3>Filter Effects</h3>
+    </hgroup>
+    <article>
+      <p><code>grid.filter()</code></p>
+      <img class="centerblock" src="images/leaf-drop.svg" width="400" height="400" alt="A filter effect applied to a grob">
+    </article>
+  </slide>
+
+  <slide class="backdrop"></slide>
+
+</slides>
+
+<script>
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-XXXXXXXX-1']); //'UA-12917558-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+
+</body>
+</html>

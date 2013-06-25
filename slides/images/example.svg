@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="192px" height="192.03px" viewBox="0 0 192 192.03" version="1.1">
+  <g transform="translate(0, 192.03) scale(1, -1)">
+    <g id="gridSVG" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1.33" font-size="16.04" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0" font-weight="normal" font-style="normal">
+      <g id="myrect.1">
+        <rect id="myrect.1.1" x="0" y="0" width="192" height="192.03"/>
+      </g>
+      <g id="mycircle.1">
+        <circle id="mycircle.1.1" cx="96" cy="96.02" r="96"/>
+      </g>
+    </g>
+  </g>
+</svg>

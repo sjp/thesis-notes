@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="one-way" width="768px" height="384.07px" viewBox="0 0 768 384.07" version="1.1">
+  <metadata xmlns:gridsvg="http://www.stat.auckland.ac.nz/~paul/R/gridSVG/">
+    <gridsvg:generator name="gridSVG" version="1.2-0" time="2013-06-19 17:16:25"/>
+    <gridsvg:argument name="name" value="one-way-street.svg"/>
+    <gridsvg:argument name="exportCoords" value="none"/>
+    <gridsvg:argument name="exportMappings" value="none"/>
+    <gridsvg:argument name="exportJS" value="none"/>
+    <gridsvg:argument name="res" value="96.11"/>
+    <gridsvg:argument name="prefix" value="one-way"/>
+    <gridsvg:argument name="addClasses" value="FALSE"/>
+    <gridsvg:argument name="indent" value="TRUE"/>
+    <gridsvg:argument name="htmlWrapper" value="FALSE"/>
+    <gridsvg:argument name="usePaths" value="vpPaths"/>
+    <gridsvg:argument name="uniqueNames" value="TRUE"/>
+    <gridsvg:separator name="id.sep" value="."/>
+    <gridsvg:separator name="gPath.sep" value="::"/>
+    <gridsvg:separator name="vpPath.sep" value="::"/>
+  </metadata>
+  <g transform="translate(0, 384.07) scale(1, -1)">
+    <g id="one-waygridSVG" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1.33" font-size="16.04" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0" font-weight="normal" font-style="normal">
+      <g id="one-wayGRID.VP.1.1">
+        <g id="one-wayGRID.text.1.1">
+          <g id="one-wayGRID.text.1.1.1" transform="translate(76.8, 192.03)" stroke-width="0.1">
+            <g transform="scale(1, -1)">
+              <text x="0" y="0" text-anchor="middle" font-size="128.15" fill="rgb(0,0,0)" fill-opacity="1">
+                <tspan dy="46.51" x="0">R</tspan>
+              </text>
+            </g>
+          </g>
+        </g>
+        <g id="one-wayGRID.lines.2.1">
+          <defs>
+            <marker id="one-wayGRID.lines.2.1.1.markerStart" refX="-27.09" refY="-9.86" overflow="visible" markerUnits="userSpaceOnUse" markerWidth="27.09" markerHeight="19.72" orient="auto">
+              <path d="M 0 0 L 27.09 9.86 L 0 19.72 Z" stroke-width="4" fill="rgb(0,0,0)" fill-opacity="1" transform="rotate(180)"/>
+            </marker>
+            <marker id="one-wayGRID.lines.2.1.1.markerEnd" refX="27.09" refY="9.86" overflow="visible" markerUnits="userSpaceOnUse" markerWidth="27.09" markerHeight="19.72" orient="auto">
+              <path d="M 0 0 L 27.09 9.86 L 0 19.72 Z" stroke-width="4" fill="rgb(0,0,0)" fill-opacity="1"/>
+            </marker>
+          </defs>
+          <polyline id="one-wayGRID.lines.2.1.1" points="153.6,268.85 499.2,268.85" marker-end="url(#one-wayGRID.lines.2.1.1.markerEnd)" stroke-width="4" fill="none" fill-opacity="1"/>
+        </g>
+        <g id="one-wayGRID.lines.3.1">
+          <defs>
+            <marker id="one-wayGRID.lines.3.1.1.markerStart" refX="-27.09" refY="-9.86" overflow="visible" markerUnits="userSpaceOnUse" markerWidth="27.09" markerHeight="19.72" orient="auto">
+              <path d="M 0 0 L 27.09 9.86 L 0 19.72 Z" stroke-width="4" fill="rgb(0,0,0)" fill-opacity="1" transform="rotate(180)"/>
+            </marker>
+            <marker id="one-wayGRID.lines.3.1.1.markerEnd" refX="27.09" refY="9.86" overflow="visible" markerUnits="userSpaceOnUse" markerWidth="27.09" markerHeight="19.72" orient="auto">
+              <path d="M 0 0 L 27.09 9.86 L 0 19.72 Z" stroke-width="4" fill="rgb(0,0,0)" fill-opacity="1"/>
+            </marker>
+          </defs>
+          <polyline id="one-wayGRID.lines.3.1.1" points="499.2,115.22 153.6,115.22" marker-end="url(#one-wayGRID.lines.3.1.1.markerEnd)" stroke-width="4" fill="none" fill-opacity="1"/>
+        </g>
+        <g id="one-wayGRID.polyline.4.1">
+          <polyline id="one-wayGRID.polyline.4.1.1" points="192,38.41 268.8,192.03" stroke-width="4" stroke="rgb(255,0,0)" stroke-opacity="1" fill="none"/>
+          <polyline id="one-wayGRID.polyline.4.1.2" points="288,38.41 364.8,192.03" stroke-width="4" stroke="rgb(255,0,0)" stroke-opacity="1" fill="none"/>
+          <polyline id="one-wayGRID.polyline.4.1.3" points="384,38.41 460.8,192.03" stroke-width="4" stroke="rgb(255,0,0)" stroke-opacity="1" fill="none"/>
+        </g>
+      </g>
+      <g id="one-wayGRID.VP.2.1">
+        <g id="one-wayGRID.VP.2::GRID.VP.3.1" stroke="rgb(0,0,0)" fill="none" stroke-opacity="1" fill-opacity="0">
+          <g id="one-wayGRID.VP.2::GRID.VP.3::GRID.VP.4.1">
+            <g id="one-wayGRID.VP.2::GRID.VP.3::GRID.VP.4::GRID.VP.5.1">
+              <g id="one-wayGRID.rect.5.1">
+                <rect id="one-wayGRID.rect.5.1.1" x="583.77" y="176.55" width="138.06" height="188.27"/>
+              </g>
+              <animate xlink:href="#one-waychain.1.1" attributeName="d" begin="0s" calcMode="linear" dur="5s" values="M 652.8 364.82 L 715.56 219.15 Z;M 652.8 364.82 L 714.09 218.69 Z;M 652.8 364.82 L 709.76 217.35 Z;M 652.8 364.82 L 702.76 215.33 Z;M 652.8 364.82 L 693.43 212.94 Z;M 652.8 364.82 L 682.2 210.62 Z;M 652.8 364.82 L 669.59 208.82 Z;M 652.8 364.82 L 656.2 207.97 Z;M 652.8 364.82 L 642.65 208.26 Z;M 652.8 364.82 L 629.57 209.62 Z;M 652.8 364.82 L 617.58 211.74 Z;M 652.8 364.82 L 607.24 214.16 Z;M 652.8 364.82 L 599.03 216.41 Z;M 652.8 364.82 L 593.33 218.12 Z;M 652.8 364.82 L 590.41 219.04 Z;M 652.8 364.82 L 590.41 219.04 Z;M 652.8 364.82 L 593.33 218.12 Z;M 652.8 364.82 L 599.03 216.41 Z;M 652.8 364.82 L 607.24 214.16 Z;M 652.8 364.82 L 617.58 211.74 Z;M 652.8 364.82 L 629.57 209.62 Z;M 652.8 364.82 L 642.65 208.26 Z;M 652.8 364.82 L 656.2 207.97 Z;M 652.8 364.82 L 669.59 208.82 Z;M 652.8 364.82 L 682.2 210.62 Z;M 652.8 364.82 L 693.43 212.94 Z;M 652.8 364.82 L 702.76 215.33 Z;M 652.8 364.82 L 709.76 217.35 Z;M 652.8 364.82 L 714.09 218.69 Z;M 652.8 364.82 L 715.56 219.15 Z" repeatCount="indefinite" fill="freeze"/>
+              <g id="one-waychain.1">
+                <path id="one-waychain.1.1" d="M 652.8 364.82 L 715.56 219.15 Z" fill-rule="nonzero"/>
+              </g>
+              <animate xlink:href="#one-wayweight.1.1" attributeName="cx" begin="0s" calcMode="linear" dur="5s" values="715.56;714.09;709.76;702.76;693.43;682.2;669.59;656.2;642.65;629.57;617.58;607.24;599.03;593.33;590.41;590.41;593.33;599.03;607.24;617.58;629.57;642.65;656.2;669.59;682.2;693.43;702.76;709.76;714.09;715.56" repeatCount="indefinite" fill="freeze"/>
+              <animate xlink:href="#one-wayweight.1.1" attributeName="cy" begin="0s" calcMode="linear" dur="5s" values="219.15;218.69;217.35;215.33;212.94;210.62;208.82;207.97;208.26;209.62;211.74;214.16;216.41;218.12;219.04;219.04;218.12;216.41;214.16;211.74;209.62;208.26;207.97;208.82;210.62;212.94;215.33;217.35;218.69;219.15" repeatCount="indefinite" fill="freeze"/>
+              <g id="one-wayweight.1">
+                <circle id="one-wayweight.1.1" cx="715.56" cy="219.15" r="3.78" fill="rgb(0,0,0)" fill-opacity="1"/>
+              </g>
+            </g>
+            <g id="one-wayGRID.VP.2::GRID.VP.3::GRID.VP.4::GRID.VP.6.1">
+              <g id="one-wayGRID.rect.6.1">
+                <rect id="one-wayGRID.rect.6.1.1" x="583.77" y="38.49" width="138.06" height="138.06"/>
+              </g>
+              <g id="one-wayGRID.lines.7.1">
+                <polyline id="one-wayGRID.lines.7.1.1" points="652.8,38.49 652.8,176.55" stroke-dasharray="5.34,5.34" stroke="rgb(190,190,190)" stroke-opacity="1" fill="none"/>
+              </g>
+              <g id="one-wayGRID.lines.8.1">
+                <polyline id="one-wayGRID.lines.8.1.1" points="583.77,107.52 721.83,107.52" stroke-dasharray="5.34,5.34" stroke="rgb(190,190,190)" stroke-opacity="1" fill="none"/>
+              </g>
+              <g id="one-wayGRID.text.9.1">
+                <g id="one-wayGRID.text.9.1.1" transform="translate(652.8, 19.24)" stroke-width="0.1">
+                  <g transform="scale(1, -1)">
+                    <text x="0" y="0" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                      <tspan dy="6" x="0">Displacement</tspan>
+                    </text>
+                  </g>
+                </g>
+              </g>
+              <g id="one-wayGRID.text.10.1">
+                <g id="one-wayGRID.text.10.1.1" transform="translate(564.52, 107.52)" stroke-width="0.1">
+                  <g transform="scale(1, -1)">
+                    <text x="0" y="0" transform="rotate(-90)" text-anchor="middle" fill="rgb(0,0,0)" fill-opacity="1">
+                      <tspan dy="6" x="0">Velocity</tspan>
+                    </text>
+                  </g>
+                </g>
+              </g>
+              <animate xlink:href="#one-waykey.1.1" attributeName="cx" begin="0s" calcMode="linear" dur="5s" values="715.56;714.09;709.76;702.76;693.43;682.2;669.59;656.2;642.65;629.57;617.58;607.24;599.03;593.33;590.41;590.41;593.33;599.03;607.24;617.58;629.57;642.65;656.2;669.59;682.2;693.43;702.76;709.76;714.09;715.56" repeatCount="indefinite" fill="freeze"/>
+              <animate xlink:href="#one-waykey.1.1" attributeName="cy" begin="0s" calcMode="linear" dur="5s" values="107.52;94.03;81.17;69.54;59.69;52.08;47.05;44.86;45.59;49.22;55.58;64.36;75.17;87.48;100.74;114.31;127.56;139.88;150.68;159.46;165.82;169.45;170.19;167.99;162.97;155.35;145.5;133.87;121.01;107.52" repeatCount="indefinite" fill="freeze"/>
+              <g id="one-waykey.1">
+                <circle id="one-waykey.1.1" cx="715.56" cy="107.52" r="3.78" fill="rgb(0,0,0)" fill-opacity="1"/>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

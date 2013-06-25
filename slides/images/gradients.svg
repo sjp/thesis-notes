@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="576px" height="288px" viewBox="0 0 576 288" version="1.1">
+  <metadata xmlns:gridsvg="http://www.stat.auckland.ac.nz/~paul/R/gridSVG/">
+    <gridsvg:generator name="gridSVG" version="1.2-0" time="2013-06-25 11:42:31"/>
+    <gridsvg:argument name="name" value="gradients.svg"/>
+    <gridsvg:argument name="exportCoords" value="none"/>
+    <gridsvg:argument name="exportMappings" value="none"/>
+    <gridsvg:argument name="exportJS" value="none"/>
+    <gridsvg:argument name="res" value="72"/>
+    <gridsvg:argument name="prefix" value=""/>
+    <gridsvg:argument name="addClasses" value="FALSE"/>
+    <gridsvg:argument name="indent" value="TRUE"/>
+    <gridsvg:argument name="htmlWrapper" value="FALSE"/>
+    <gridsvg:argument name="usePaths" value="vpPaths"/>
+    <gridsvg:argument name="uniqueNames" value="TRUE"/>
+    <gridsvg:separator name="id.sep" value="."/>
+    <gridsvg:separator name="gPath.sep" value="::"/>
+    <gridsvg:separator name="vpPath.sep" value="::"/>
+  </metadata>
+  <g transform="translate(0, 288) scale(1, -1)">
+    <g id="gridSVG" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1" font-size="12" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0" font-weight="normal" font-style="normal">
+      <g id="lvp.1">
+        <g id="arect.1" fill="url(#gridSVG.gradientFill.1.1)" fill-opacity="1">
+          <rect id="arect.1.1" x="28.8" y="28.8" width="230.4" height="230.4"/>
+        </g>
+      </g>
+      <g id="rvp.1">
+        <g id="acirc.1" fill="url(#gridSVG.gradientFill.2.1)" fill-opacity="1">
+          <circle id="acirc.1.1" cx="432" cy="144" r="115.2"/>
+        </g>
+      </g>
+      <defs>
+        <linearGradient id="gridSVG.gradientFill.1.1" x1="0" x2="1" y1="0" y2="1" gradientUnits="objectBoundingBox" spreadMethod="pad">
+          <stop offset="0" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+          <stop offset="0.5" stop-color="rgb(255,0,0)" stop-opacity="1"/>
+          <stop offset="1" stop-color="rgb(255,255,0)" stop-opacity="1"/>
+        </linearGradient>
+        <radialGradient id="gridSVG.gradientFill.2.1" cx="0.5" cy="0.5" r="0.5" fx="0.5" fy="0.8" gradientUnits="objectBoundingBox" spreadMethod="pad">
+          <stop offset="0" stop-color="rgb(255,255,255)" stop-opacity="1"/>
+          <stop offset="0.5" stop-color="rgb(0,191,255)" stop-opacity="1"/>
+          <stop offset="1" stop-color="rgb(0,0,0)" stop-opacity="1"/>
+        </radialGradient>
+      </defs>
+    </g>
+  </g>
+</svg>

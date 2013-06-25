@@ -1,0 +1,899 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="600px" height="300px" viewBox="0 0 720 360" version="1.1">
+  <metadata xmlns:gridsvg="http://www.stat.auckland.ac.nz/~paul/R/gridSVG/">
+    <gridsvg:generator name="gridSVG" version="1.2-0" time="2013-06-25 11:28:22"/>
+    <gridsvg:argument name="name" value="opacity-mask-def.svg"/>
+    <gridsvg:argument name="exportCoords" value="none"/>
+    <gridsvg:argument name="exportMappings" value="none"/>
+    <gridsvg:argument name="exportJS" value="none"/>
+    <gridsvg:argument name="res" value="72"/>
+    <gridsvg:argument name="prefix" value=""/>
+    <gridsvg:argument name="addClasses" value="FALSE"/>
+    <gridsvg:argument name="indent" value="TRUE"/>
+    <gridsvg:argument name="htmlWrapper" value="FALSE"/>
+    <gridsvg:argument name="usePaths" value="vpPaths"/>
+    <gridsvg:argument name="uniqueNames" value="TRUE"/>
+    <gridsvg:separator name="id.sep" value="."/>
+    <gridsvg:separator name="gPath.sep" value="::"/>
+    <gridsvg:separator name="vpPath.sep" value="::"/>
+  </metadata>
+  <g transform="translate(0, 360) scale(1, -1)">
+    <g id="gridSVG" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1" font-size="12" font-family="Helvetica, Arial, FreeSans, Liberation Sans, Nimbus Sans L, sans-serif" opacity="1" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-opacity="1" fill-opacity="0" font-weight="normal" font-style="normal">
+      <g id="lvp.1">
+        <g id="plot_02.background.1">
+          <rect id="plot_02.background.1.1" x="0" y="0" width="360" height="360" fill="none" stroke="none" stroke-opacity="0" fill-opacity="0"/>
+        </g>
+        <g id="lvp::plot_02.toplevel.vp.1" font-size="12">
+          <g id="lvp::plot_02.toplevel.vp::plot_02.xlab.vp.1">
+            <g id="plot_02.xlab.1">
+              <g id="plot_02.xlab.1.1" transform="translate(189.87, 16.31)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                    <tspan dy="4.31" x="0">disp</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.ylab.vp.1">
+            <g id="plot_02.ylab.1">
+              <g id="plot_02.ylab.1.1" transform="translate(10.31, 187.9)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" transform="rotate(-90)" text-anchor="middle" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                    <tspan dy="4.31" x="0">mpg</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.figure.vp.1"/>
+          <defs>
+            <clipPath id="lvp::plot_02.toplevel.vp::plot_02.panel.1.1.vp.1.clipPath">
+              <rect x="48.74" y="50.8" width="282.25" height="274.19" fill="none" stroke="none"/>
+            </clipPath>
+          </defs>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.panel.1.1.vp.1" clip-path="url(#lvp::plot_02.toplevel.vp::plot_02.panel.1.1.vp.1.clipPath)"/>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.strip.1.1.off.vp.1">
+            <g id="plot_02.ticks.top.panel.1.1.1">
+              <polyline id="plot_02.ticks.top.panel.1.1.1.1" points="83.92,324.99 83.92,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.top.panel.1.1.1.2" points="145.68,324.99 145.68,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.top.panel.1.1.1.3" points="207.44,324.99 207.44,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.top.panel.1.1.1.4" points="269.2,324.99 269.2,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.top.panel.1.1.1.5" points="330.95,324.99 330.95,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.strip.left.1.1.off.vp.1">
+            <g id="plot_02.ticks.left.panel.1.1.1">
+              <polyline id="plot_02.ticks.left.panel.1.1.1.1" points="48.74,63.55 43.07,63.55" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.left.panel.1.1.1.2" points="48.74,114.72 43.07,114.72" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.left.panel.1.1.1.3" points="48.74,165.89 43.07,165.89" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.left.panel.1.1.1.4" points="48.74,217.07 43.07,217.07" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.left.panel.1.1.1.5" points="48.74,268.24 43.07,268.24" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.left.panel.1.1.1.6" points="48.74,319.41 43.07,319.41" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_02.ticklabels.left.panel.1.1.1">
+              <g id="plot_02.ticklabels.left.panel.1.1.1.1" transform="translate(37.41, 63.55)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">10</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.left.panel.1.1.1.2" transform="translate(37.41, 114.72)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">15</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.left.panel.1.1.1.3" transform="translate(37.41, 165.89)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">20</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.left.panel.1.1.1.4" transform="translate(37.41, 217.07)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">25</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.left.panel.1.1.1.5" transform="translate(37.41, 268.24)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">30</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.left.panel.1.1.1.6" transform="translate(37.41, 319.41)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">35</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.panel.1.1.off.vp.1">
+            <g id="plot_02.ticks.bottom.panel.1.1.1">
+              <polyline id="plot_02.ticks.bottom.panel.1.1.1.1" points="83.92,50.8 83.92,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.bottom.panel.1.1.1.2" points="145.68,50.8 145.68,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.bottom.panel.1.1.1.3" points="207.44,50.8 207.44,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.bottom.panel.1.1.1.4" points="269.2,50.8 269.2,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.bottom.panel.1.1.1.5" points="330.95,50.8 330.95,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_02.ticklabels.bottom.panel.1.1.1">
+              <g id="plot_02.ticklabels.bottom.panel.1.1.1.1" transform="translate(83.92, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">100</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.bottom.panel.1.1.1.2" transform="translate(145.68, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">200</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.bottom.panel.1.1.1.3" transform="translate(207.44, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">300</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_02.ticklabels.bottom.panel.1.1.1.4" transform="translate(269.2, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">400</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+            <g id="plot_02.ticks.right.panel.1.1.1">
+              <polyline id="plot_02.ticks.right.panel.1.1.1.1" points="330.99,63.55 336.66,63.55" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.right.panel.1.1.1.2" points="330.99,114.72 336.66,114.72" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.right.panel.1.1.1.3" points="330.99,165.89 336.66,165.89" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.right.panel.1.1.1.4" points="330.99,217.07 336.66,217.07" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.right.panel.1.1.1.5" points="330.99,268.24 336.66,268.24" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.ticks.right.panel.1.1.1.6" points="330.99,319.41 336.66,319.41" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+          </g>
+          <defs>
+            <clipPath id="lvp::plot_02.toplevel.vp::plot_02.panel.1.1.vp.2.clipPath">
+              <rect x="48.74" y="50.8" width="282.25" height="274.19" fill="none" stroke="none"/>
+            </clipPath>
+          </defs>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.panel.1.1.vp.2" clip-path="url(#lvp::plot_02.toplevel.vp::plot_02.panel.1.1.vp.2.clipPath)">
+            <g id="plot_02.grid.h.panel.1.1.1">
+              <polyline id="plot_02.grid.h.panel.1.1.1.1" points="48.74,63.55 330.99,63.55" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.h.panel.1.1.1.2" points="48.74,114.72 330.99,114.72" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.h.panel.1.1.1.3" points="48.74,165.89 330.99,165.89" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.h.panel.1.1.1.4" points="48.74,217.07 330.99,217.07" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.h.panel.1.1.1.5" points="48.74,268.24 330.99,268.24" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.h.panel.1.1.1.6" points="48.74,319.41 330.99,319.41" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_02.grid.v.panel.1.1.1">
+              <polyline id="plot_02.grid.v.panel.1.1.1.1" points="83.92,50.8 83.92,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.v.panel.1.1.1.2" points="145.68,50.8 145.68,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.v.panel.1.1.1.3" points="207.44,50.8 207.44,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.v.panel.1.1.1.4" points="269.2,50.8 269.2,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_02.grid.v.panel.1.1.1.5" points="330.95,50.8 330.95,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_02.xyplot.points.group.1.panel.1.1.1">
+              <defs>
+                <symbol id="gridSVG.pch16" viewBox="-5 -5 10 10" overflow="visible">
+                  <circle cx="0" cy="0" r="3.75"/>
+                </symbol>
+              </defs>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.1" xlink:href="#gridSVG.pch16" x="181.5" y="180.22" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.2" xlink:href="#gridSVG.pch16" x="244.49" y="152.59" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.3" xlink:href="#gridSVG.pch16" x="161.12" y="146.45" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.4" xlink:href="#gridSVG.pch16" x="244.49" y="107.56" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.5" xlink:href="#gridSVG.pch16" x="112.76" y="210.93" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.6" xlink:href="#gridSVG.pch16" x="109.12" y="194.55" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.7" xlink:href="#gridSVG.pch16" x="125.67" y="157.71" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.8" xlink:href="#gridSVG.pch16" x="125.67" y="143.38" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.9" xlink:href="#gridSVG.pch16" x="192.49" y="129.05" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.10" xlink:href="#gridSVG.pch16" x="192.49" y="138.26" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.11" xlink:href="#gridSVG.pch16" x="192.49" y="116.77" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.12" xlink:href="#gridSVG.pch16" x="313.66" y="67.64" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.13" xlink:href="#gridSVG.pch16" x="306.25" y="67.64" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.14" xlink:href="#gridSVG.pch16" x="293.9" y="111.65" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.15" xlink:href="#gridSVG.pch16" x="96.34" y="181.25" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.16" xlink:href="#gridSVG.pch16" x="218.55" y="119.84" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.17" xlink:href="#gridSVG.pch16" x="209.91" y="116.77" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.18" xlink:href="#gridSVG.pch16" x="238.32" y="97.32" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.1.panel.1.1.1.19" xlink:href="#gridSVG.pch16" x="269.2" y="157.71" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+            </g>
+            <g id="plot_02.xyplot.points.group.2.panel.1.1.1">
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.1" xlink:href="#gridSVG.pch16" x="120.98" y="176.13" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.2" xlink:href="#gridSVG.pch16" x="120.98" y="176.13" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.3" xlink:href="#gridSVG.pch16" x="88.86" y="194.55" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.4" xlink:href="#gridSVG.pch16" x="70.77" y="292.8" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.5" xlink:href="#gridSVG.pch16" x="68.92" y="272.33" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.6" xlink:href="#gridSVG.pch16" x="66.07" y="308.16" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.7" xlink:href="#gridSVG.pch16" x="70.95" y="240.61" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.8" xlink:href="#gridSVG.pch16" x="96.46" y="227.3" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.9" xlink:href="#gridSVG.pch16" x="80.9" y="272.33" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.10" xlink:href="#gridSVG.pch16" x="238.93" y="122.91" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.11" xlink:href="#gridSVG.pch16" x="111.71" y="162.82" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.12" xlink:href="#gridSVG.pch16" x="208.06" y="114.72" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_02.xyplot.points.group.2.panel.1.1.1.13" xlink:href="#gridSVG.pch16" x="96.89" y="180.22" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.panel.1.1.off.vp.2">
+            <g id="plot_02.border.panel.1.1.1">
+              <rect id="plot_02.border.panel.1.1.1.1" x="48.74" y="50.8" width="282.25" height="274.19" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0"/>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp.1">
+            <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp.1">
+              <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp::GRID.VP.1.1">
+                <g id="plot_02.key.frame.1">
+                  <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp::GRID.VP.1::GRID.VP.2.1">
+                    <g id="GRID.cellGrob.11.1">
+                      <g id="plot_02.key.background.1">
+                        <rect id="plot_02.key.background.1.1" x="232.21" y="249.35" width="85.38" height="34.51" fill="none" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill-opacity="0"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp::GRID.VP.1::GRID.VP.3.1">
+                    <g id="GRID.cellGrob.12.1">
+                      <g id="plot_02.key.text.1.1.1">
+                        <g id="plot_02.key.text.1.1.1.1" transform="translate(238.88, 275.24)" stroke-width="0.1">
+                          <g transform="scale(1, -1)">
+                            <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                              <tspan dy="4.31" x="0">automatic</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp::GRID.VP.1::GRID.VP.4.1">
+                    <g id="GRID.cellGrob.13.1">
+                      <g id="plot_02.key.text.1.2.1">
+                        <g id="plot_02.key.text.1.2.1.1" transform="translate(238.88, 257.98)" stroke-width="0.1">
+                          <g transform="scale(1, -1)">
+                            <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                              <tspan dy="4.31" x="0">manual</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp::GRID.VP.1::GRID.VP.5.1">
+                    <g id="GRID.cellGrob.14.1">
+                      <g id="plot_02.key.points.2.1.1">
+                        <use id="plot_02.key.points.2.1.1.1" xlink:href="#gridSVG.pch16" x="307.58" y="275.24" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(0,128,255)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="lvp::plot_02.toplevel.vp::plot_02.legend.region.vp::plot_02.legend.inside.vp::GRID.VP.1::GRID.VP.6.1">
+                    <g id="GRID.cellGrob.15.1">
+                      <g id="plot_02.key.points.2.2.1">
+                        <use id="plot_02.key.points.2.2.1.1" xlink:href="#gridSVG.pch16" x="307.58" y="257.98" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(255,0,255)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="lvp::plot_02.toplevel.vp::plot_02..1"/>
+        </g>
+      </g>
+      <defs>
+        <clipPath id="rvp.1.clipPath">
+          <rect x="360" y="0" width="360" height="360" fill="none" stroke="none"/>
+        </clipPath>
+      </defs>
+      <g id="rvp.1" clip-path="url(#rvp.1.clipPath)">
+        <g id="plot_03.background.1">
+          <rect id="plot_03.background.1.1" x="360" y="0" width="360" height="360" fill="none" stroke="none" stroke-opacity="0" fill-opacity="0"/>
+        </g>
+        <g id="rvp::plot_03.toplevel.vp.1" font-size="12">
+          <g id="rvp::plot_03.toplevel.vp::plot_03.xlab.vp.1">
+            <g id="plot_03.xlab.1">
+              <g id="plot_03.xlab.1.1" transform="translate(549.87, 16.31)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                    <tspan dy="4.31" x="0">disp</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.ylab.vp.1">
+            <g id="plot_03.ylab.1">
+              <g id="plot_03.ylab.1.1" transform="translate(370.31, 187.9)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" transform="rotate(-90)" text-anchor="middle" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                    <tspan dy="4.31" x="0">mpg</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.figure.vp.1"/>
+          <defs>
+            <clipPath id="rvp::plot_03.toplevel.vp::plot_03.panel.1.1.vp.1.clipPath">
+              <rect x="408.74" y="50.8" width="282.25" height="274.19" fill="none" stroke="none"/>
+            </clipPath>
+          </defs>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.panel.1.1.vp.1" clip-path="url(#rvp::plot_03.toplevel.vp::plot_03.panel.1.1.vp.1.clipPath)"/>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.strip.1.1.off.vp.1">
+            <g id="plot_03.ticks.top.panel.1.1.1">
+              <polyline id="plot_03.ticks.top.panel.1.1.1.1" points="443.92,324.99 443.92,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.top.panel.1.1.1.2" points="505.68,324.99 505.68,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.top.panel.1.1.1.3" points="567.44,324.99 567.44,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.top.panel.1.1.1.4" points="629.2,324.99 629.2,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.top.panel.1.1.1.5" points="690.95,324.99 690.95,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.strip.left.1.1.off.vp.1">
+            <g id="plot_03.ticks.left.panel.1.1.1">
+              <polyline id="plot_03.ticks.left.panel.1.1.1.1" points="408.74,63.55 403.07,63.55" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.left.panel.1.1.1.2" points="408.74,114.72 403.07,114.72" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.left.panel.1.1.1.3" points="408.74,165.89 403.07,165.89" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.left.panel.1.1.1.4" points="408.74,217.07 403.07,217.07" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.left.panel.1.1.1.5" points="408.74,268.24 403.07,268.24" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.left.panel.1.1.1.6" points="408.74,319.41 403.07,319.41" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_03.ticklabels.left.panel.1.1.1">
+              <g id="plot_03.ticklabels.left.panel.1.1.1.1" transform="translate(397.41, 63.55)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">10</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.left.panel.1.1.1.2" transform="translate(397.41, 114.72)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">15</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.left.panel.1.1.1.3" transform="translate(397.41, 165.89)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">20</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.left.panel.1.1.1.4" transform="translate(397.41, 217.07)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">25</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.left.panel.1.1.1.5" transform="translate(397.41, 268.24)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">30</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.left.panel.1.1.1.6" transform="translate(397.41, 319.41)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">35</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.panel.1.1.off.vp.1">
+            <g id="plot_03.ticks.bottom.panel.1.1.1">
+              <polyline id="plot_03.ticks.bottom.panel.1.1.1.1" points="443.92,50.8 443.92,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.bottom.panel.1.1.1.2" points="505.68,50.8 505.68,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.bottom.panel.1.1.1.3" points="567.44,50.8 567.44,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.bottom.panel.1.1.1.4" points="629.2,50.8 629.2,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.bottom.panel.1.1.1.5" points="690.95,50.8 690.95,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_03.ticklabels.bottom.panel.1.1.1">
+              <g id="plot_03.ticklabels.bottom.panel.1.1.1.1" transform="translate(443.92, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">100</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.bottom.panel.1.1.1.2" transform="translate(505.68, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">200</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.bottom.panel.1.1.1.3" transform="translate(567.44, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">300</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot_03.ticklabels.bottom.panel.1.1.1.4" transform="translate(629.2, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">400</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+            <g id="plot_03.ticks.right.panel.1.1.1">
+              <polyline id="plot_03.ticks.right.panel.1.1.1.1" points="690.99,63.55 696.66,63.55" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.right.panel.1.1.1.2" points="690.99,114.72 696.66,114.72" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.right.panel.1.1.1.3" points="690.99,165.89 696.66,165.89" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.right.panel.1.1.1.4" points="690.99,217.07 696.66,217.07" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.right.panel.1.1.1.5" points="690.99,268.24 696.66,268.24" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.ticks.right.panel.1.1.1.6" points="690.99,319.41 696.66,319.41" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+          </g>
+          <defs>
+            <clipPath id="rvp::plot_03.toplevel.vp::plot_03.panel.1.1.vp.2.clipPath">
+              <rect x="408.74" y="50.8" width="282.25" height="274.19" fill="none" stroke="none"/>
+            </clipPath>
+          </defs>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.panel.1.1.vp.2" clip-path="url(#rvp::plot_03.toplevel.vp::plot_03.panel.1.1.vp.2.clipPath)">
+            <g id="plot_03.grid.h.panel.1.1.1">
+              <polyline id="plot_03.grid.h.panel.1.1.1.1" points="408.74,63.55 690.99,63.55" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.h.panel.1.1.1.2" points="408.74,114.72 690.99,114.72" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.h.panel.1.1.1.3" points="408.74,165.89 690.99,165.89" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.h.panel.1.1.1.4" points="408.74,217.07 690.99,217.07" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.h.panel.1.1.1.5" points="408.74,268.24 690.99,268.24" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.h.panel.1.1.1.6" points="408.74,319.41 690.99,319.41" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_03.grid.v.panel.1.1.1">
+              <polyline id="plot_03.grid.v.panel.1.1.1.1" points="443.92,50.8 443.92,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.v.panel.1.1.1.2" points="505.68,50.8 505.68,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.v.panel.1.1.1.3" points="567.44,50.8 567.44,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.v.panel.1.1.1.4" points="629.2,50.8 629.2,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot_03.grid.v.panel.1.1.1.5" points="690.95,50.8 690.95,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot_03.xyplot.points.group.1.panel.1.1.1">
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.1" xlink:href="#gridSVG.pch16" x="541.5" y="180.22" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.2" xlink:href="#gridSVG.pch16" x="604.49" y="152.59" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.3" xlink:href="#gridSVG.pch16" x="521.12" y="146.45" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.4" xlink:href="#gridSVG.pch16" x="604.49" y="107.56" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.5" xlink:href="#gridSVG.pch16" x="472.76" y="210.93" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.6" xlink:href="#gridSVG.pch16" x="469.12" y="194.55" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.7" xlink:href="#gridSVG.pch16" x="485.67" y="157.71" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.8" xlink:href="#gridSVG.pch16" x="485.67" y="143.38" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.9" xlink:href="#gridSVG.pch16" x="552.49" y="129.05" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.10" xlink:href="#gridSVG.pch16" x="552.49" y="138.26" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.11" xlink:href="#gridSVG.pch16" x="552.49" y="116.77" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.12" xlink:href="#gridSVG.pch16" x="673.66" y="67.64" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.13" xlink:href="#gridSVG.pch16" x="666.25" y="67.64" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.14" xlink:href="#gridSVG.pch16" x="653.9" y="111.65" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.15" xlink:href="#gridSVG.pch16" x="456.34" y="181.25" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.16" xlink:href="#gridSVG.pch16" x="578.55" y="119.84" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.17" xlink:href="#gridSVG.pch16" x="569.91" y="116.77" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.18" xlink:href="#gridSVG.pch16" x="598.32" y="97.32" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.1.panel.1.1.1.19" xlink:href="#gridSVG.pch16" x="629.2" y="157.71" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+            </g>
+            <g id="plot_03.xyplot.points.group.2.panel.1.1.1">
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.1" xlink:href="#gridSVG.pch16" x="480.98" y="176.13" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.2" xlink:href="#gridSVG.pch16" x="480.98" y="176.13" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.3" xlink:href="#gridSVG.pch16" x="448.86" y="194.55" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.4" xlink:href="#gridSVG.pch16" x="430.77" y="292.8" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.5" xlink:href="#gridSVG.pch16" x="428.92" y="272.33" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.6" xlink:href="#gridSVG.pch16" x="426.07" y="308.16" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.7" xlink:href="#gridSVG.pch16" x="430.95" y="240.61" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.8" xlink:href="#gridSVG.pch16" x="456.46" y="227.3" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.9" xlink:href="#gridSVG.pch16" x="440.9" y="272.33" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.10" xlink:href="#gridSVG.pch16" x="598.93" y="122.91" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.11" xlink:href="#gridSVG.pch16" x="471.71" y="162.82" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.12" xlink:href="#gridSVG.pch16" x="568.06" y="114.72" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot_03.xyplot.points.group.2.panel.1.1.1.13" xlink:href="#gridSVG.pch16" x="456.89" y="180.22" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.panel.1.1.off.vp.2">
+            <g id="plot_03.border.panel.1.1.1">
+              <rect id="plot_03.border.panel.1.1.1.1" x="408.74" y="50.8" width="282.25" height="274.19" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0"/>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp.1">
+            <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp.1">
+              <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp::GRID.VP.7.1">
+                <g id="plot_03.key.frame.1">
+                  <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp::GRID.VP.7::GRID.VP.8.1">
+                    <g id="GRID.cellGrob.20.1">
+                      <g id="plot_03.key.background.1">
+                        <rect id="plot_03.key.background.1.1" x="592.21" y="249.35" width="85.38" height="34.51" fill="none" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill-opacity="0"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp::GRID.VP.7::GRID.VP.9.1">
+                    <g id="GRID.cellGrob.21.1">
+                      <g id="plot_03.key.text.1.1.1">
+                        <g id="plot_03.key.text.1.1.1.1" transform="translate(598.88, 275.24)" stroke-width="0.1">
+                          <g transform="scale(1, -1)">
+                            <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                              <tspan dy="4.31" x="0">automatic</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp::GRID.VP.7::GRID.VP.10.1">
+                    <g id="GRID.cellGrob.22.1">
+                      <g id="plot_03.key.text.1.2.1">
+                        <g id="plot_03.key.text.1.2.1.1" transform="translate(598.88, 257.98)" stroke-width="0.1">
+                          <g transform="scale(1, -1)">
+                            <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                              <tspan dy="4.31" x="0">manual</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp::GRID.VP.7::GRID.VP.11.1">
+                    <g id="GRID.cellGrob.23.1">
+                      <g id="plot_03.key.points.2.1.1">
+                        <use id="plot_03.key.points.2.1.1.1" xlink:href="#gridSVG.pch16" x="667.58" y="275.24" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(0,128,255)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot_03.toplevel.vp::plot_03.legend.region.vp::plot_03.legend.inside.vp::GRID.VP.7::GRID.VP.12.1">
+                    <g id="GRID.cellGrob.24.1">
+                      <g id="plot_03.key.points.2.2.1">
+                        <use id="plot_03.key.points.2.2.1.1" xlink:href="#gridSVG.pch16" x="667.58" y="257.98" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(255,0,255)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot_03.toplevel.vp::plot_03..1"/>
+        </g>
+        <g id="plot-mask.background.1">
+          <rect id="plot-mask.background.1.1" x="360" y="0" width="360" height="360" fill="none" stroke="none" stroke-opacity="0" fill-opacity="0"/>
+        </g>
+        <g id="rvp::plot-mask.toplevel.vp.1" font-size="12">
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.xlab.vp.1">
+            <g id="plot-mask.xlab.1">
+              <g id="plot-mask.xlab.1.1" transform="translate(549.87, 16.31)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                    <tspan dy="4.31" x="0">disp</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.ylab.vp.1">
+            <g id="plot-mask.ylab.1">
+              <g id="plot-mask.ylab.1.1" transform="translate(370.31, 187.9)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" transform="rotate(-90)" text-anchor="middle" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                    <tspan dy="4.31" x="0">mpg</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.figure.vp.1"/>
+          <defs>
+            <clipPath id="rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.vp.1.clipPath">
+              <rect x="408.74" y="50.8" width="282.25" height="274.19" fill="none" stroke="none"/>
+            </clipPath>
+          </defs>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.vp.1" clip-path="url(#rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.vp.1.clipPath)"/>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.strip.1.1.off.vp.1">
+            <g id="plot-mask.ticks.top.panel.1.1.1">
+              <polyline id="plot-mask.ticks.top.panel.1.1.1.1" points="443.92,324.99 443.92,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.top.panel.1.1.1.2" points="505.68,324.99 505.68,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.top.panel.1.1.1.3" points="567.44,324.99 567.44,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.top.panel.1.1.1.4" points="629.2,324.99 629.2,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.top.panel.1.1.1.5" points="690.95,324.99 690.95,330.66" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.strip.left.1.1.off.vp.1">
+            <g id="plot-mask.ticks.left.panel.1.1.1">
+              <polyline id="plot-mask.ticks.left.panel.1.1.1.1" points="408.74,63.55 403.07,63.55" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.left.panel.1.1.1.2" points="408.74,114.72 403.07,114.72" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.left.panel.1.1.1.3" points="408.74,165.89 403.07,165.89" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.left.panel.1.1.1.4" points="408.74,217.07 403.07,217.07" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.left.panel.1.1.1.5" points="408.74,268.24 403.07,268.24" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.left.panel.1.1.1.6" points="408.74,319.41 403.07,319.41" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot-mask.ticklabels.left.panel.1.1.1">
+              <g id="plot-mask.ticklabels.left.panel.1.1.1.1" transform="translate(397.41, 63.55)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">10</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.left.panel.1.1.1.2" transform="translate(397.41, 114.72)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">15</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.left.panel.1.1.1.3" transform="translate(397.41, 165.89)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">20</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.left.panel.1.1.1.4" transform="translate(397.41, 217.07)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">25</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.left.panel.1.1.1.5" transform="translate(397.41, 268.24)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">30</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.left.panel.1.1.1.6" transform="translate(397.41, 319.41)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="end" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="3.59" x="0">35</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.off.vp.1">
+            <g id="plot-mask.ticks.bottom.panel.1.1.1">
+              <polyline id="plot-mask.ticks.bottom.panel.1.1.1.1" points="443.92,50.8 443.92,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.bottom.panel.1.1.1.2" points="505.68,50.8 505.68,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.bottom.panel.1.1.1.3" points="567.44,50.8 567.44,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.bottom.panel.1.1.1.4" points="629.2,50.8 629.2,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.bottom.panel.1.1.1.5" points="690.95,50.8 690.95,45.13" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot-mask.ticklabels.bottom.panel.1.1.1">
+              <g id="plot-mask.ticklabels.bottom.panel.1.1.1.1" transform="translate(443.92, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">100</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.bottom.panel.1.1.1.2" transform="translate(505.68, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">200</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.bottom.panel.1.1.1.3" transform="translate(567.44, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">300</tspan>
+                  </text>
+                </g>
+              </g>
+              <g id="plot-mask.ticklabels.bottom.panel.1.1.1.4" transform="translate(629.2, 39.47)" stroke-width="0.1">
+                <g transform="scale(1, -1)">
+                  <text x="0" y="0" text-anchor="middle" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="9.6" font-weight="normal" font-style="normal">
+                    <tspan dy="7.18" x="0">400</tspan>
+                  </text>
+                </g>
+              </g>
+            </g>
+            <g id="plot-mask.ticks.right.panel.1.1.1">
+              <polyline id="plot-mask.ticks.right.panel.1.1.1.1" points="690.99,63.55 696.66,63.55" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.right.panel.1.1.1.2" points="690.99,114.72 696.66,114.72" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.right.panel.1.1.1.3" points="690.99,165.89 696.66,165.89" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.right.panel.1.1.1.4" points="690.99,217.07 696.66,217.07" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.right.panel.1.1.1.5" points="690.99,268.24 696.66,268.24" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.ticks.right.panel.1.1.1.6" points="690.99,319.41 696.66,319.41" stroke="rgb(0,0,0)" opacity="1" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+          </g>
+          <defs>
+            <clipPath id="rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.vp.2.clipPath">
+              <rect x="408.74" y="50.8" width="282.25" height="274.19" fill="none" stroke="none"/>
+            </clipPath>
+          </defs>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.vp.2" clip-path="url(#rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.vp.2.clipPath)">
+            <g id="plot-mask.grid.h.panel.1.1.1">
+              <polyline id="plot-mask.grid.h.panel.1.1.1.1" points="408.74,63.55 690.99,63.55" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.h.panel.1.1.1.2" points="408.74,114.72 690.99,114.72" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.h.panel.1.1.1.3" points="408.74,165.89 690.99,165.89" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.h.panel.1.1.1.4" points="408.74,217.07 690.99,217.07" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.h.panel.1.1.1.5" points="408.74,268.24 690.99,268.24" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.h.panel.1.1.1.6" points="408.74,319.41 690.99,319.41" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot-mask.grid.v.panel.1.1.1">
+              <polyline id="plot-mask.grid.v.panel.1.1.1.1" points="443.92,50.8 443.92,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.v.panel.1.1.1.2" points="505.68,50.8 505.68,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.v.panel.1.1.1.3" points="567.44,50.8 567.44,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.v.panel.1.1.1.4" points="629.2,50.8 629.2,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+              <polyline id="plot-mask.grid.v.panel.1.1.1.5" points="690.95,50.8 690.95,324.99" stroke="rgb(230,230,230)" stroke-dasharray="none" stroke-width="1" stroke-opacity="1" fill="none"/>
+            </g>
+            <g id="plot-mask.xyplot.points.group.1.panel.1.1.1">
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.1" xlink:href="#gridSVG.pch16" x="541.5" y="180.22" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.2" xlink:href="#gridSVG.pch16" x="604.49" y="152.59" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.3" xlink:href="#gridSVG.pch16" x="521.12" y="146.45" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.4" xlink:href="#gridSVG.pch16" x="604.49" y="107.56" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.5" xlink:href="#gridSVG.pch16" x="472.76" y="210.93" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.6" xlink:href="#gridSVG.pch16" x="469.12" y="194.55" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.7" xlink:href="#gridSVG.pch16" x="485.67" y="157.71" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.8" xlink:href="#gridSVG.pch16" x="485.67" y="143.38" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.9" xlink:href="#gridSVG.pch16" x="552.49" y="129.05" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.10" xlink:href="#gridSVG.pch16" x="552.49" y="138.26" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.11" xlink:href="#gridSVG.pch16" x="552.49" y="116.77" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.12" xlink:href="#gridSVG.pch16" x="673.66" y="67.64" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.13" xlink:href="#gridSVG.pch16" x="666.25" y="67.64" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.14" xlink:href="#gridSVG.pch16" x="653.9" y="111.65" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.15" xlink:href="#gridSVG.pch16" x="456.34" y="181.25" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.16" xlink:href="#gridSVG.pch16" x="578.55" y="119.84" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.17" xlink:href="#gridSVG.pch16" x="569.91" y="116.77" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.18" xlink:href="#gridSVG.pch16" x="598.32" y="97.32" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.1.panel.1.1.1.19" xlink:href="#gridSVG.pch16" x="629.2" y="157.71" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(0,128,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+            </g>
+            <g id="plot-mask.xyplot.points.group.2.panel.1.1.1">
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.1" xlink:href="#gridSVG.pch16" x="480.98" y="176.13" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.2" xlink:href="#gridSVG.pch16" x="480.98" y="176.13" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.3" xlink:href="#gridSVG.pch16" x="448.86" y="194.55" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.4" xlink:href="#gridSVG.pch16" x="430.77" y="292.8" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.5" xlink:href="#gridSVG.pch16" x="428.92" y="272.33" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.6" xlink:href="#gridSVG.pch16" x="426.07" y="308.16" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.7" xlink:href="#gridSVG.pch16" x="430.95" y="240.61" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.8" xlink:href="#gridSVG.pch16" x="456.46" y="227.3" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.9" xlink:href="#gridSVG.pch16" x="440.9" y="272.33" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.10" xlink:href="#gridSVG.pch16" x="598.93" y="122.91" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.11" xlink:href="#gridSVG.pch16" x="471.71" y="162.82" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.12" xlink:href="#gridSVG.pch16" x="568.06" y="114.72" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+              <use id="plot-mask.xyplot.points.group.2.panel.1.1.1.13" xlink:href="#gridSVG.pch16" x="456.89" y="180.22" width="6.4" height="6.4" transform="translate(-3.2,-3.2)" stroke="none" stroke-width="1.56" opacity="1" fill="rgb(255,0,255)" font-size="6.4" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.panel.1.1.off.vp.2">
+            <g id="plot-mask.border.panel.1.1.1">
+              <rect id="plot-mask.border.panel.1.1.1.1" x="408.74" y="50.8" width="282.25" height="274.19" stroke="rgb(0,0,0)" stroke-dasharray="none" stroke-width="1" opacity="1" fill="none" stroke-opacity="1" fill-opacity="0"/>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp.1">
+            <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp.1">
+              <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.13.1">
+                <g id="plot-mask.key.frame.1">
+                  <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.13::GRID.VP.14.1">
+                    <g id="GRID.cellGrob.29.1">
+                      <g id="plot-mask.key.background.1">
+                        <rect id="plot-mask.key.background.1.1" x="592.21" y="249.35" width="85.38" height="34.51" fill="none" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill-opacity="0"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.13::GRID.VP.15.1">
+                    <g id="GRID.cellGrob.30.1">
+                      <g id="plot-mask.key.text.1.1.1">
+                        <g id="plot-mask.key.text.1.1.1.1" transform="translate(598.88, 275.24)" stroke-width="0.1">
+                          <g transform="scale(1, -1)">
+                            <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                              <tspan dy="4.31" x="0">automatic</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.13::GRID.VP.16.1">
+                    <g id="GRID.cellGrob.31.1">
+                      <g id="plot-mask.key.text.1.2.1">
+                        <g id="plot-mask.key.text.1.2.1.1" transform="translate(598.88, 257.98)" stroke-width="0.1">
+                          <g transform="scale(1, -1)">
+                            <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                              <tspan dy="4.31" x="0">manual</tspan>
+                            </text>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.13::GRID.VP.17.1">
+                    <g id="GRID.cellGrob.32.1">
+                      <g id="plot-mask.key.points.2.1.1">
+                        <use id="plot-mask.key.points.2.1.1.1" xlink:href="#gridSVG.pch16" x="667.58" y="275.24" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(0,128,255)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                      </g>
+                    </g>
+                  </g>
+                  <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.13::GRID.VP.18.1">
+                    <g id="GRID.cellGrob.33.1">
+                      <g id="plot-mask.key.points.2.2.1">
+                        <use id="plot-mask.key.points.2.2.1.1" xlink:href="#gridSVG.pch16" x="667.58" y="257.98" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(255,0,255)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask..1"/>
+        </g>
+        <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp.2" font-size="12">
+          <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp.3">
+            <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp.4">
+              <g id="GRID.gTree.38.1">
+                <g id="GRID.rect.39.1">
+                  <rect id="GRID.rect.39.1.1" x="-776.35" y="-1104.33" width="2822.48" height="2741.88" stroke="rgb(255,255,255)" fill="rgb(255,255,255)" stroke-opacity="1" fill-opacity="1"/>
+                </g>
+                <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.1.1">
+                  <g id="plot_02.key.frame.2">
+                    <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.1::GRID.VP.2.1">
+                      <g id="GRID.cellGrob.11.2">
+                        <g id="plot_02.key.background.2">
+                          <rect id="plot_02.key.background.2.1" x="592.21" y="249.35" width="85.38" height="34.51" fill="rgb(0,0,0)" opacity="1" stroke="rgb(0,0,0)" stroke-opacity="1" fill-opacity="1"/>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.1::GRID.VP.3.1">
+                      <g id="GRID.cellGrob.12.2">
+                        <g id="plot_02.key.text.1.1.2">
+                          <g id="plot_02.key.text.1.1.2.1" transform="translate(598.88, 275.24)" stroke-width="0.1">
+                            <g transform="scale(1, -1)">
+                              <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                                <tspan dy="4.31" x="0">automatic</tspan>
+                              </text>
+                            </g>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.1::GRID.VP.4.1">
+                      <g id="GRID.cellGrob.13.2">
+                        <g id="plot_02.key.text.1.2.2">
+                          <g id="plot_02.key.text.1.2.2.1" transform="translate(598.88, 257.98)" stroke-width="0.1">
+                            <g transform="scale(1, -1)">
+                              <text x="0" y="0" text-anchor="start" stroke="rgb(0,0,0)" opacity="1" stroke-opacity="1" fill="rgb(0,0,0)" fill-opacity="1" font-size="12" font-weight="normal" font-style="normal">
+                                <tspan dy="4.31" x="0">manual</tspan>
+                              </text>
+                            </g>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.1::GRID.VP.5.1">
+                      <g id="GRID.cellGrob.14.2">
+                        <g id="plot_02.key.points.2.1.2">
+                          <use id="plot_02.key.points.2.1.2.1" xlink:href="#gridSVG.pch16" x="667.58" y="275.24" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(0,0,0)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                        </g>
+                      </g>
+                    </g>
+                    <g id="rvp::plot-mask.toplevel.vp::plot-mask.legend.region.vp::plot-mask.legend.inside.vp::GRID.VP.1::GRID.VP.6.1">
+                      <g id="GRID.cellGrob.15.2">
+                        <g id="plot_02.key.points.2.2.2">
+                          <use id="plot_02.key.points.2.2.2.1" xlink:href="#gridSVG.pch16" x="667.58" y="257.98" width="8" height="8" transform="translate(-4,-4)" stroke="none" opacity="1" stroke-width="1.25" fill="rgb(0,0,0)" font-size="8" stroke-opacity="0" fill-opacity="1" font-weight="normal" font-style="normal"/>
+                        </g>
+                      </g>
+                    </g>
+                  </g>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+      <defs>
+        <clipPath id="rvp.2.clipPath">
+          <rect x="360" y="0" width="360" height="360" fill="none" stroke="none"/>
+        </clipPath>
+      </defs>
+      <g id="rvp.2" clip-path="url(#rvp.2.clipPath)">
+        <g id="GRID.rect.40.1">
+          <rect id="GRID.rect.40.1.1" x="360" y="0" width="360" height="360"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
